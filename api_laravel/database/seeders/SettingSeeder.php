@@ -122,6 +122,33 @@ class SettingSeeder extends Seeder
                 'description' => 'Color secundario del tema (hexadecimal)',
                 'is_public' => true,
             ],
+            [
+                'key' => 'theme_bg_color',
+                'value' => '#dfe8f6',
+                'type' => 'text',
+                'group' => 'branding',
+                'label' => 'Color de Fondo',
+                'description' => 'Color de fondo principal de la aplicación',
+                'is_public' => true,
+            ],
+            [
+                'key' => 'theme_panel_color',
+                'value' => '#99bbe8',
+                'type' => 'text',
+                'group' => 'branding',
+                'label' => 'Color de Paneles',
+                'description' => 'Color de cabeceras de paneles y barras',
+                'is_public' => true,
+            ],
+            [
+                'key' => 'theme_text_color',
+                'value' => '#1f2d3d',
+                'type' => 'text',
+                'group' => 'branding',
+                'label' => 'Color de Texto',
+                'description' => 'Color principal del texto',
+                'is_public' => true,
+            ],
 
             // === GENERAL ===
             [

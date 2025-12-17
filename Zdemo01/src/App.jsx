@@ -33,7 +33,7 @@ function getStoredActivePage() {
 }
 
 function App() {
-  const { theme, setTheme, availableThemes } = useTheme()
+  const { theme, setTheme, availableThemes, themeLabels, updateCustomTheme } = useTheme()
   const [activePage, setActivePage] = useState(() => getStoredActivePage() || 'dashboard')
   const [isAuthed, setIsAuthed] = useState(false)
   const [userData, setUserData] = useState(null)
@@ -59,9 +59,10 @@ function App() {
       getPublicConfig().then(config => {
         setAppConfig(config)
         applyConfigToDOM(config)
+        updateCustomTheme(config) // Actualizar tema personalizado
       })
     }
-  }, [])
+  }, [updateCustomTheme])
 
   useEffect(() => {
     if (!isAuthed) return
@@ -157,7 +158,7 @@ function App() {
               }}
             >
               {availableThemes?.map((t) => (
-                <option key={t} value={t}>{t}</option>
+                <option key={t} value={t}>{themeLabels?.[t] || t}</option>
               ))}
             </select>
           </div>

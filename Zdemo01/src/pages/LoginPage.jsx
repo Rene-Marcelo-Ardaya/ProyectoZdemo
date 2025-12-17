@@ -16,7 +16,7 @@ import logoToretoStatic from '../img/Toreto Pet Company PNG.png';
  * Los logos se cargan dinámicamente desde la configuración con fallback estático
  */
 export function LoginPage({ onLoginSuccess }) {
-    const { theme, setTheme, availableThemes } = useTheme();
+    const { theme, setTheme, availableThemes, themeLabels } = useTheme();
     const [nombre, setNombre] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -132,7 +132,7 @@ export function LoginPage({ onLoginSuccess }) {
                                             >
                                                 {(availableThemes || []).map((t) => (
                                                     <option key={t} value={t}>
-                                                        {t}
+                                                        {themeLabels?.[t] || t}
                                                     </option>
                                                 ))}
                                             </select>

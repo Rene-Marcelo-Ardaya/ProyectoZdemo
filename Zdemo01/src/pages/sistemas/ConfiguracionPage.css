@@ -105,12 +105,19 @@
 }
 
 .config-subsection h4 {
-    margin: 0 0 12px 0;
+    margin: 0 0 8px 0;
     font-size: 12px;
     font-weight: 600;
     color: #666;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
+
+.config-hint {
+    margin: 0 0 12px 0;
+    font-size: 11px;
+    color: #888;
+    font-style: italic;
 }
 
 /* ============================================
@@ -122,10 +129,35 @@
     gap: 16px;
 }
 
+.config-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
 .config-images-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
+}
+
+/* ============================================
+   THEME INDICATOR
+   ============================================ */
+.config-theme-indicator {
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    border-radius: 4px;
+    font-size: 12px;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+.config-theme-indicator.active {
+    background: #e8f5e9;
+    border-color: #a5d6a7;
+    color: #2e7d32;
 }
 
 /* ============================================
@@ -513,6 +545,7 @@
 @media (max-width: 700px) {
 
     .config-grid-2,
+    .config-grid-3,
     .config-images-grid {
         grid-template-columns: 1fr;
     }
