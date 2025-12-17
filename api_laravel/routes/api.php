@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
 
 // Rutas públicas de autenticación
 Route::post('/login', [AuthController::class, 'login']);
@@ -22,9 +23,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return $request->user();
     });
     
-    // Usuarios y Roles
+    // Usuarios y Roles (para combo de usuarios)
     Route::get('/roles-list', [UserController::class, 'getRoles']);
     Route::apiResource('users', UserController::class);
+
+    // Gestión de Roles y Accesos
+    Route::get('/menus-list', [RoleController::class, 'getMenus']);
+    Route::apiResource('roles', RoleController::class);
 
     // Chat
     Route::get('/conversations', [ChatController::class, 'index']);

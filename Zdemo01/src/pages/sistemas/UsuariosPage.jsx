@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Users, UserPlus, Pencil, Trash2, X, Save, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Users, UserPlus, Pencil, Trash2, X, Save, Loader2, AlertCircle, CheckCircle, HelpCircle } from 'lucide-react';
 import { getUsers, getRolesList, createUser, updateUser, deleteUser } from '../../services/userService';
 import './UsuariosPage.css';
 
@@ -62,14 +62,27 @@ function Modal({ isOpen, onClose, title, children, footer }) {
 }
 
 // ============================================
+// COMPONENTE: Tooltip
+// ============================================
+function Tooltip({ text }) {
+    return (
+        <span className="usuarios-tooltip">
+            <HelpCircle size={14} />
+            <span className="usuarios-tooltip__text">{text}</span>
+        </span>
+    );
+}
+
+// ============================================
 // COMPONENTE: FormField
 // ============================================
-function FormField({ label, children, required }) {
+function FormField({ label, children, required, help }) {
     return (
         <div className="usuarios-form__field">
             <label className="usuarios-form__label">
                 {label}
                 {required && <span className="usuarios-form__required">*</span>}
+                {help && <Tooltip text={help} />}
             </label>
             {children}
         </div>
@@ -341,7 +354,11 @@ export function UsuariosPage() {
                 <Alert type="error" message={formError} onDismiss={() => setFormError(null)} />
 
                 <form className="usuarios-form" onSubmit={e => e.preventDefault()}>
-                    <FormField label="Nombre Completo" required>
+                    <FormField
+                        label="Nombre Completo"
+                        required
+                        help="Nombre y apellido del usuario. Será visible en el sistema."
+                    >
                         <input
                             type="text"
                             className="usuarios-input"
@@ -351,7 +368,11 @@ export function UsuariosPage() {
                         />
                     </FormField>
 
-                    <FormField label="Correo Electrónico" required>
+                    <FormField
+                        label="Correo Electrónico"
+                        required
+                        help="Email único para identificar al usuario. Se usa para notificaciones."
+                    >
                         <input
                             type="email"
                             className="usuarios-input"
@@ -361,7 +382,11 @@ export function UsuariosPage() {
                         />
                     </FormField>
 
-                    <FormField label={editingUser ? 'Contraseña (opcional)' : 'Contraseña'} required={!editingUser}>
+                    <FormField
+                        label={editingUser ? 'Contraseña (opcional)' : 'Contraseña'}
+                        required={!editingUser}
+                        help="Mínimo 6 caracteres. Al editar, dejar vacío para mantener la contraseña actual."
+                    >
                         <input
                             type="password"
                             className="usuarios-input"
@@ -371,7 +396,11 @@ export function UsuariosPage() {
                         />
                     </FormField>
 
-                    <FormField label="Rol Asignado" required>
+                    <FormField
+                        label="Rol Asignado"
+                        required
+                        help="Define los permisos y menús que el usuario podrá ver."
+                    >
                         <select
                             className="usuarios-input usuarios-select"
                             value={form.role_id}
@@ -386,7 +415,10 @@ export function UsuariosPage() {
                         </select>
                     </FormField>
 
-                    <FormField label="Estado">
+                    <FormField
+                        label="Estado"
+                        help="Los usuarios inactivos no pueden iniciar sesión en el sistema."
+                    >
                         <label className="usuarios-checkbox">
                             <input
                                 type="checkbox"

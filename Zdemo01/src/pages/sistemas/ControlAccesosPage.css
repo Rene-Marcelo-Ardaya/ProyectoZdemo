@@ -1,18 +1,18 @@
 /**
- * UsuariosPage Styles
+ * ControlAccesosPage Styles
  * Diseño clásico tipo "enterprise/legacy"
  */
 
 /* ============================================
    PAGE LAYOUT
    ============================================ */
-.usuarios-page {
+.accesos-page {
     padding: 16px 20px;
     min-height: 100%;
     background: #f0f2f5;
 }
 
-.usuarios-page__header {
+.accesos-page__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -21,14 +21,14 @@
     border-bottom: 1px solid #c8ced5;
 }
 
-.usuarios-page__title {
+.accesos-page__title {
     display: flex;
     align-items: center;
     gap: 10px;
     color: #2c3e50;
 }
 
-.usuarios-page__title h1 {
+.accesos-page__title h1 {
     margin: 0;
     font-size: 20px;
     font-weight: 600;
@@ -36,16 +36,15 @@
 }
 
 /* ============================================
-   PANEL (Contenedor tipo Ext.Panel)
+   PANEL
    ============================================ */
-.usuarios-panel {
+.accesos-panel {
     background: #fff;
     border: 1px solid #99bbe8;
-    border-radius: 0;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
-.usuarios-panel__header {
+.accesos-panel__header {
     background: linear-gradient(to bottom, #d6e4f2 0%, #c2d6eb 100%);
     border-bottom: 1px solid #99bbe8;
     padding: 8px 12px;
@@ -58,7 +57,7 @@
     font-family: Tahoma, Arial, sans-serif;
 }
 
-.usuarios-panel__count {
+.accesos-panel__count {
     font-weight: 400;
     font-size: 11px;
     color: #666;
@@ -68,20 +67,20 @@
 }
 
 /* ============================================
-   TABLE (Estilo clásico grid)
+   TABLE
    ============================================ */
-.usuarios-table-wrapper {
+.accesos-table-wrapper {
     overflow-x: auto;
 }
 
-.usuarios-table {
+.accesos-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 12px;
     font-family: Tahoma, Arial, sans-serif;
 }
 
-.usuarios-table th {
+.accesos-table th {
     background: linear-gradient(to bottom, #f9f9f9 0%, #e3e4e6 100%);
     border: 1px solid #d0d0d0;
     border-top: none;
@@ -90,10 +89,9 @@
     font-weight: 600;
     color: #333;
     white-space: nowrap;
-    user-select: none;
 }
 
-.usuarios-table td {
+.accesos-table td {
     border: 1px solid #ededed;
     border-top: none;
     padding: 7px 10px;
@@ -102,25 +100,55 @@
     vertical-align: middle;
 }
 
-.usuarios-table tbody tr:nth-child(even) td {
+.accesos-table tbody tr:nth-child(even) td {
     background: #f6f8fa;
 }
 
-.usuarios-table tbody tr:hover td {
+.accesos-table tbody tr:hover td {
     background: #dfe8f6;
 }
 
-.usuarios-table__empty {
+.accesos-table__empty {
     text-align: center;
     color: #888;
     font-style: italic;
     padding: 30px !important;
 }
 
+.accesos-center {
+    text-align: center;
+}
+
+.accesos-code {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 11px;
+    background: #f4f4f4;
+    padding: 2px 6px;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+.accesos-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #e3eaf5;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #15428b;
+}
+
+.accesos-count--users {
+    background: #f0e6ff;
+    color: #5b3d99;
+}
+
 /* ============================================
-   BADGE (Estado)
+   BADGE
    ============================================ */
-.usuarios-badge {
+.accesos-badge {
     display: inline-block;
     padding: 2px 8px;
     border-radius: 2px;
@@ -128,13 +156,13 @@
     font-weight: 600;
 }
 
-.usuarios-badge.is-active {
+.accesos-badge.is-active {
     background: #d4edda;
     color: #155724;
     border: 1px solid #b1dfbb;
 }
 
-.usuarios-badge.is-inactive {
+.accesos-badge.is-inactive {
     background: #f8d7da;
     color: #721c24;
     border: 1px solid #f1b0b7;
@@ -143,15 +171,15 @@
 /* ============================================
    ACTIONS
    ============================================ */
-.usuarios-actions {
+.accesos-actions {
     display: flex;
     gap: 4px;
 }
 
 /* ============================================
-   BUTTONS (Estilo clásico tipo Ext)
+   BUTTONS
    ============================================ */
-.usuarios-btn {
+.accesos-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -169,42 +197,37 @@
     transition: all 0.1s;
 }
 
-.usuarios-btn:hover {
+.accesos-btn:hover {
     background: linear-gradient(to bottom, #f0f4fa 0%, #d8dce6 100%);
     border-color: #8db2e3;
 }
 
-.usuarios-btn:active {
-    background: #d8dce6;
-}
-
-.usuarios-btn:disabled {
-    opacity: 0.6;
+.accesos-btn:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
-.usuarios-btn--primary {
+.accesos-btn--primary {
     background: linear-gradient(to bottom, #5fa5df 0%, #4388cf 100%);
     border-color: #3b7cbf;
     color: #fff;
 }
 
-.usuarios-btn--primary:hover {
+.accesos-btn--primary:hover {
     background: linear-gradient(to bottom, #6db3e9 0%, #4f94d8 100%);
-    border-color: #326aa8;
 }
 
-.usuarios-btn--icon {
+.accesos-btn--icon {
     padding: 4px 6px;
     min-width: 26px;
     min-height: 26px;
 }
 
-.usuarios-btn--danger {
+.accesos-btn--danger {
     color: #c0392b;
 }
 
-.usuarios-btn--danger:hover {
+.accesos-btn--danger:hover {
     background: linear-gradient(to bottom, #ffebee 0%, #ffcdd2 100%);
     border-color: #e57373;
 }
@@ -212,7 +235,7 @@
 /* ============================================
    LOADING
    ============================================ */
-.usuarios-loading {
+.accesos-loading {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -238,20 +261,20 @@
 }
 
 /* ============================================
-   MODAL (Ventana tipo Ext.Window)
+   MODAL
    ============================================ */
-.usuarios-modal-overlay {
+.accesos-modal-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding-top: 8vh;
+    padding-top: 5vh;
     z-index: 1000;
 }
 
-.usuarios-modal {
+.accesos-modal {
     background: #fff;
     border: 1px solid #99bbe8;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
@@ -259,7 +282,12 @@
     max-width: 90vw;
 }
 
-.usuarios-modal__header {
+.accesos-modal--wide {
+    min-width: 700px;
+    max-width: 800px;
+}
+
+.accesos-modal__header {
     background: linear-gradient(to bottom, #d6e4f2 0%, #c2d6eb 100%);
     border-bottom: 1px solid #99bbe8;
     padding: 8px 12px;
@@ -268,33 +296,34 @@
     align-items: center;
 }
 
-.usuarios-modal__title {
+.accesos-modal__title {
     font-weight: 600;
     font-size: 13px;
     color: #15428b;
     font-family: Tahoma, Arial, sans-serif;
 }
 
-.usuarios-modal__close {
+.accesos-modal__close {
     background: transparent;
     border: none;
     cursor: pointer;
     color: #666;
     padding: 2px;
     display: flex;
-    align-items: center;
 }
 
-.usuarios-modal__close:hover {
+.accesos-modal__close:hover {
     color: #c0392b;
 }
 
-.usuarios-modal__body {
+.accesos-modal__body {
     padding: 16px;
     background: #f9f9f9;
+    max-height: 70vh;
+    overflow-y: auto;
 }
 
-.usuarios-modal__footer {
+.accesos-modal__footer {
     padding: 10px 16px;
     background: #f0f2f5;
     border-top: 1px solid #d0d0d0;
@@ -304,28 +333,61 @@
 }
 
 /* ============================================
+   FORM GRID (2 columnas)
+   ============================================ */
+.accesos-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.accesos-form-col {
+    min-width: 0;
+}
+
+.accesos-form-section {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #d0d0d0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #15428b;
+    font-family: Tahoma, Arial, sans-serif;
+}
+
+.accesos-form-section-help {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+/* ============================================
    FORM
    ============================================ */
-.usuarios-form {
+.accesos-form {
     display: flex;
     flex-direction: column;
     gap: 14px;
 }
 
-.usuarios-form__field {
+.accesos-form__field {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    position: relative;
 }
 
-.usuarios-form__label {
+.accesos-form__label {
     font-size: 12px;
     font-weight: 600;
     color: #333;
     font-family: Tahoma, Arial, sans-serif;
 }
 
-.usuarios-form__required {
+.accesos-form__required {
     color: #c0392b;
     margin-left: 2px;
 }
@@ -333,7 +395,7 @@
 /* ============================================
    TOOLTIP (Ayuda contextual)
    ============================================ */
-.usuarios-tooltip {
+.accesos-tooltip {
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -342,11 +404,11 @@
     cursor: help;
 }
 
-.usuarios-tooltip:hover {
+.accesos-tooltip:hover {
     color: #15428b;
 }
 
-.usuarios-tooltip__text {
+.accesos-tooltip__text {
     position: absolute;
     left: 100%;
     top: 50%;
@@ -369,7 +431,7 @@
     z-index: 9999;
 }
 
-.usuarios-tooltip__text::after {
+.accesos-tooltip__text::after {
     content: '';
     position: absolute;
     right: 100%;
@@ -379,12 +441,12 @@
     border-right-color: #2c3e50;
 }
 
-.usuarios-tooltip:hover .usuarios-tooltip__text {
+.accesos-tooltip:hover .accesos-tooltip__text {
     opacity: 1;
     visibility: visible;
 }
 
-.usuarios-input {
+.accesos-input {
     padding: 6px 8px;
     font-size: 12px;
     font-family: Tahoma, Arial, sans-serif;
@@ -396,19 +458,22 @@
     transition: border-color 0.15s;
 }
 
-.usuarios-input:focus {
+.accesos-input:focus {
     border-color: #7eadd9;
     box-shadow: 0 0 0 2px rgba(126, 173, 217, 0.25);
 }
 
-.usuarios-select {
-    cursor: pointer;
+.accesos-input:disabled {
+    background: #e9ecef;
+    color: #6c757d;
 }
 
-/* ============================================
-   CHECKBOX (Estilo clásico)
-   ============================================ */
-.usuarios-checkbox {
+.accesos-textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.accesos-checkbox {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -417,16 +482,83 @@
     cursor: pointer;
 }
 
-.usuarios-checkbox input[type="checkbox"] {
+.accesos-checkbox input {
     width: 14px;
     height: 14px;
     cursor: pointer;
 }
 
 /* ============================================
+   MENU TREE (Selector de menús)
+   ============================================ */
+.accesos-menu-tree {
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    padding: 10px;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.accesos-menu-tree__group {
+    margin-bottom: 8px;
+}
+
+.accesos-menu-tree__group:last-child {
+    margin-bottom: 0;
+}
+
+.accesos-menu-tree__parent {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    background: #e8f0f8;
+    border: 1px solid #c8d8e8;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    color: #15428b;
+}
+
+.accesos-menu-tree__parent:hover {
+    background: #d8e8f8;
+}
+
+.accesos-menu-tree__parent input {
+    width: 14px;
+    height: 14px;
+}
+
+.accesos-menu-tree__children {
+    margin-left: 20px;
+    border-left: 2px solid #d0d0d0;
+    padding-left: 10px;
+    margin-top: 4px;
+}
+
+.accesos-menu-tree__child {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 11px;
+    color: #333;
+}
+
+.accesos-menu-tree__child:hover {
+    background: #f0f4f8;
+}
+
+.accesos-menu-tree__child input {
+    width: 13px;
+    height: 13px;
+}
+
+/* ============================================
    ALERT
    ============================================ */
-.usuarios-alert {
+.accesos-alert {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -437,19 +569,19 @@
     border-radius: 2px;
 }
 
-.usuarios-alert--error {
+.accesos-alert--error {
     background: #fff5f5;
     border-color: #f5c6cb;
     color: #721c24;
 }
 
-.usuarios-alert--success {
+.accesos-alert--success {
     background: #d4edda;
     border-color: #c3e6cb;
     color: #155724;
 }
 
-.usuarios-alert__dismiss {
+.accesos-alert__dismiss {
     margin-left: auto;
     background: transparent;
     border: none;
@@ -460,6 +592,6 @@
     display: flex;
 }
 
-.usuarios-alert__dismiss:hover {
+.accesos-alert__dismiss:hover {
     opacity: 1;
 }
