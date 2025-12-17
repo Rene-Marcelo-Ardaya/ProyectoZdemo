@@ -1,0 +1,302 @@
+.ds-window-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 1000;
+}
+
+.ds-window {
+  width: min(520px, 100%);
+  background: linear-gradient(var(--ds-headerGradTop, #eef3fb), var(--ds-panelBg, #ffffff));
+  border: 1px solid var(--ds-panelBorder, #c2d3ef);
+  border-radius: 6px;
+  box-shadow: var(--ds-shadowMd, 0 3px 8px rgba(0, 0, 0, 0.12));
+  overflow: auto;
+  /* resize: both; removed to fix design */
+  min-height: 200px;
+  min-width: 300px;
+}
+
+/* Include other window styles if needed, kept generic */
+
+.ds-loading-mask {
+  position: relative;
+  background: color-mix(in srgb, var(--ds-panelBg, #ffffff) 92%, transparent);
+  border: 1px solid var(--ds-panelBorder, #c2d3ef);
+  border-radius: 6px;
+  padding: 12px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--ds-shadowSm, 0 1px 2px rgba(0, 0, 0, 0.08));
+}
+
+.ds-loading-mask.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.35);
+  z-index: 1200;
+}
+
+.ds-loading-mask__spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid var(--ds-surfaceBorder, #d6deeb);
+  border-top-color: var(--ds-fieldBorderFocus, #3a6ea5);
+  border-radius: 50%;
+  animation: ds-spin 0.9s linear infinite;
+}
+
+@keyframes ds-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* ============================================
+   DS MESSAGE BOX - SweetAlert Style (Minimalist)
+   ============================================ */
+
+.ds-messagebox-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease-out;
+  backdrop-filter: blur(2px);
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  /* Force clean font */
+}
+
+.ds-messagebox-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ds-messagebox-backdrop.is-closing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ds-messagebox {
+  background: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  width: 32em;
+  max-width: 100%;
+  padding: 1.25em;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+
+  transform: scale(0.9);
+  opacity: 0;
+  transition: all 0.2s;
+}
+
+.ds-messagebox.is-visible {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.ds-messagebox.is-closing {
+  transform: scale(0.9);
+  opacity: 0;
+}
+
+.ds-messagebox__content-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+/* Animated Icon Ring */
+.ds-sw-icon-ring {
+  width: 5em;
+  height: 5em;
+  border-width: 0.25em;
+  border-style: solid;
+  border-radius: 50%;
+  margin: 1.5em auto 1.8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: content-box;
+  animation: none;
+}
+
+.ds-sw-icon-ring.animate {
+  animation: ds-popup 0.3s;
+}
+
+@keyframes ds-popup {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.ds-sw-title {
+  position: relative;
+  max-width: 100%;
+  margin: 0 0 0.4em;
+  padding: 0;
+  color: #1f2937;
+  /* Gray 800 */
+  font-size: 1.875em;
+  font-weight: 600;
+  text-align: center;
+  text-transform: none;
+  word-wrap: break-word;
+}
+
+.ds-sw-text {
+  z-index: 1;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  color: #545454;
+  font-size: 1.125em;
+  font-weight: 300;
+  line-height: 1.6;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+/* Actions */
+.ds-sw-actions {
+  display: flex;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  justify-content: center;
+  gap: 12px;
+  margin: 1.25em auto 0;
+}
+
+/* Button Styles (Specific to Alert) */
+.ds-btn--sw-confirm {
+  display: inline-block;
+  background-color: #3085d6;
+  color: #fff;
+  border: 0;
+  border-radius: 0.25em;
+  font-size: 1em;
+  padding: 0.625em 1.1em;
+  cursor: pointer;
+  transition: background-color 0.1s;
+}
+
+.ds-btn--sw-cancel {
+  display: inline-block;
+  background-color: #aaa;
+  color: #fff;
+  border: 0;
+  border-radius: 0.25em;
+  font-size: 1em;
+  padding: 0.625em 1.1em;
+  cursor: pointer;
+}
+
+.ds-btn--sw-cancel:hover {
+  background-color: #999;
+}
+
+/* Color variants */
+.ds-btn--sw-success {
+  background-color: #7066e0;
+}
+
+.ds-btn--sw-success:hover {
+  background-color: #5b52bf;
+}
+
+.ds-btn--sw-error {
+  background-color: #d33;
+}
+
+.ds-btn--sw-error:hover {
+  background-color: #b32b2b;
+}
+
+.ds-btn--sw-warning {
+  background-color: #f8bb86;
+  color: #fff;
+}
+
+.ds-btn--sw-warning:hover {
+  background-color: #e0a878;
+}
+
+.ds-btn--sw-info {
+  background-color: #3fc3ee;
+}
+
+.ds-btn--sw-info:hover {
+  background-color: #33a5ca;
+}
+
+/* Global Modal Content Standard */
+.ds-modal-content {
+  padding: 16px 0;
+  color: var(--ds-primaryText, #1e293b);
+}
+
+.ds-modal-description {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 1.1rem;
+}
+
+.ds-modal-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.ds-code-input {
+  font-size: 1.5rem;
+  text-align: center;
+  letter-spacing: 4px;
+  max-width: 200px;
+  background: var(--ds-inputBg);
+  color: var(--ds-inputText);
+  border: 1px solid var(--ds-border);
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.ds-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+}

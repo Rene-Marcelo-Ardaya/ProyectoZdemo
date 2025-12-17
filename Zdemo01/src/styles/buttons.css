@@ -1,0 +1,77 @@
+.ds-btn {
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.ds-btn--primary {
+  background: linear-gradient(var(--ds-toolbarGradTop, #dbe6f7), var(--ds-toolbarGradBottom, #c3d6f0));
+  color: var(--ds-panelHeaderText, #0f1f33);
+  border-color: var(--ds-toolbarBorder, #9ab6dc);
+}
+
+.ds-btn--primary:hover {
+  background: var(--ds-hoverBg, #e4ebf7);
+}
+
+.ds-btn--ghost {
+  background: var(--ds-surfaceBg, #f0f3f9);
+  color: var(--ds-primaryText, #1f2d3d);
+  border-color: var(--ds-surfaceBorder, #cfd8eb);
+}
+
+.ds-btn--ghost:hover {
+  background: var(--ds-hoverBg, #e4ebf7);
+}
+
+/* Action Variants */
+.ds-btn--recojo {
+  background-color: var(--ds-buttonSecondaryBg, #eff6ff);
+  color: var(--ds-buttonSecondaryText, #1d4ed8);
+  border-color: var(--ds-buttonSecondaryBorder, #dbeafe);
+}
+
+.ds-btn--recojo:hover:not(:disabled) {
+  background-color: var(--ds-buttonSecondaryBgHover, #dbeafe);
+}
+
+.ds-btn--entrega {
+  background-color: var(--ds-buttonSuccessBg, #ecfdf5);
+  color: var(--ds-buttonSuccessText, #047857);
+  border-color: var(--ds-buttonSuccessBorder, #d1fae5);
+}
+
+.ds-btn--entrega:hover:not(:disabled) {
+  background-color: var(--ds-buttonSuccessBgHover, #d1fae5);
+}
+
+.ds-btn:disabled,
+.ds-btn--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--ds-disabledBg, #f1f5f9);
+  color: var(--ds-disabledText, #94a3b8);
+  border-color: var(--ds-border, #e2e8f0);
+}
+
+/* Flex/Icon Button */
+.ds-btn--flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Responsive Icon Only */
+@media (max-width: 600px) {
+  .ds-btn-label-responsive {
+    display: none;
+  }
+
+  .ds-btn--icon-only-responsive {
+    padding: 8px;
+  }
+}

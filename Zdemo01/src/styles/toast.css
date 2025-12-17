@@ -1,0 +1,12 @@
+.ds-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--ds-infoBg, #e2ecfb);
+  color: var(--ds-infoText, #1e4b87);
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--ds-panelBorder, #8db2e3);
+  box-shadow: var(--ds-shadowMd, 0 3px 8px rgba(0, 0, 0, 0.12));
+  z-index: 1100;
+}

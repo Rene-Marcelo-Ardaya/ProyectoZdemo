@@ -1,0 +1,88 @@
+import React, { useMemo, useState } from 'react'
+
+// ComboBox con input editable y filtrado simple
+export function DSComboBox({
+  label,
+  name,
+  value,
+  options = [],
+  onChange,
+  placeholder = 'Selecciona...',
+  help,
+  error,
+  disabled = false,
+  editable = true,
+}) {
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
+
+  const filtered = useMemo(() => {
+    if (!editable || !query) return options
+    return options.filter((opt) => opt.label.toLowerCase().includes(query.toLowerCase()))
+  }, [editable, options, query])
+
+  const currentLabel = useMemo(() => {
+    const match = options.find((opt) => opt.value === value)
+    return match ? match.label : ''
+  }, [options, value])
+
+  const displayValue = editable ? query || currentLabel : currentLabel
+
+  const handleSelect = (opt) => {
+    onChange?.(opt.value)
+    setQuery('')
+    setOpen(false)
+  }
+
+  return (
+    <div className={`ds-field ds-combo ${open ? 'is-open' : ''}`}>
+      {label ? (
+        <label className="ds-field__label" htmlFor={name}>
+          {label}
+        </label>
+      ) : null}
+      <div className="ds-combo__control">
+        <input
+          id={name}
+          name={name}
+          className="ds-field__control"
+          value={displayValue}
+          onChange={(e) => {
+            setQuery(e.target.value)
+            if (!editable) return
+            if (!open) setOpen(true)
+          }}
+          onFocus={() => setOpen(true)}
+          onBlur={() => {
+            setTimeout(() => setOpen(false), 120) // permitir click en opciones
+          }}
+          placeholder={placeholder}
+          disabled={disabled}
+          readOnly={!editable}
+          style={{ background: disabled ? 'var(--ds-fieldDisabledBg, #e3eaf5)' : undefined }}
+        />
+        <span className="ds-combo__arrow">v</span>
+      </div>
+      {open ? (
+        <div className="ds-combo__menu">
+          {filtered.length === 0 ? (
+            <div className="ds-combo__option is-empty">Sin resultados</div>
+          ) : (
+            filtered.map((opt) => (
+              <div
+                key={opt.value}
+                className={`ds-combo__option ${opt.value === value ? 'is-selected' : ''}`}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => handleSelect(opt)}
+              >
+                {opt.label}
+              </div>
+            ))
+          )}
+        </div>
+      ) : null}
+      {help && !error ? <div className="ds-field__help">{help}</div> : null}
+      {error ? <div className="ds-field__error">{error}</div> : null}
+    </div>
+  )
+}

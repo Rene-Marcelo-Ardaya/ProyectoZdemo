@@ -1,0 +1,88 @@
+/* Global Form Styles */
+
+.ds-input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.ds-input {
+    width: 100%;
+    padding: 6px 12px;
+    border: 1px solid var(--ds-border, #e2e8f0);
+    border-radius: 6px;
+    background: var(--ds-inputBg, #ffffff);
+    color: var(--ds-inputText, #1e293b);
+    transition: box-shadow 0.2s;
+}
+
+.ds-input:focus {
+    outline: none;
+    border-color: var(--ds-primary, #3b82f6);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Specific Search Input with Icon padding handled by container usually */
+.ds-search-container {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+}
+
+.ds-search-input {
+    width: 100%;
+    padding: 6px 30px 6px 30px;
+    border: 1px solid var(--ds-border, #e2e8f0);
+    border-radius: 6px;
+    background: var(--ds-inputBg, #ffffff);
+    color: var(--ds-inputText, #1e293b);
+}
+
+.ds-search-icon {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ds-icon, #94a3b8);
+}
+
+.ds-clear-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--ds-icon, #94a3b8);
+    cursor: pointer;
+}
+
+.ds-select {
+    padding: 6px 12px;
+    border: 1px solid var(--ds-border, #e2e8f0);
+    border-radius: 6px;
+    background: var(--ds-inputBg, #ffffff);
+    color: var(--ds-inputText, #1e293b);
+    cursor: pointer;
+}
+
+.ds-select:focus {
+    outline: none;
+    border-color: var(--ds-primary, #3b82f6);
+}
+
+.ds-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--ds-primaryText, #1e293b);
+}
+
+.ds-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--ds-primaryText);
+}

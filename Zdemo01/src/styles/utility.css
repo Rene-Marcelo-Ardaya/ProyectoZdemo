@@ -1,0 +1,129 @@
+/* Global Utility Styles */
+
+/* Badges */
+.ds-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.ds-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.ds-tag {
+    background: var(--ds-hoverBg, #fef3c7);
+    color: var(--ds-infoText, #d97706);
+    font-size: 0.7rem;
+    padding: 1px 4px;
+    border-radius: 4px;
+    border: 1px solid var(--ds-surfaceBorder, transparent);
+    font-weight: 700;
+}
+
+/* Links */
+.ds-link {
+    color: var(--ds-primary, #3b82f6);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.ds-link:hover {
+    text-decoration: underline;
+}
+
+/* Text Utilities */
+.ds-text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.ds-text-secondary {
+    font-size: 0.75rem;
+    color: var(--ds-secondaryText, #64748b);
+}
+
+.ds-text-header {
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--ds-panelHeaderText, #0f172a);
+    text-transform: uppercase;
+}
+
+/* Spacers */
+.ds-spacer {
+    flex: 1;
+}
+
+/* Toggle Pill */
+.ds-toggle-group {
+    display: flex;
+    align-items: center;
+}
+
+.ds-toggle-pill {
+    display: flex;
+    background: var(--ds-surfaceBorder, #e2e8f0);
+    padding: 2px;
+    border-radius: 9999px;
+}
+
+.ds-toggle-option {
+    border: none;
+    background: transparent;
+    padding: 6px 12px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ds-secondaryText, #64748b);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ds-toggle-option.active {
+    background: var(--ds-surfaceBg, #fff);
+    color: var(--ds-primary, #3b82f6);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Global Legend */
+.ds-legend-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    background: var(--ds-surfaceBg, #fff);
+    border: 1px solid var(--ds-border, #e2e8f0);
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.ds-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--ds-primaryText, #334155);
+    font-weight: 500;
+}
+
+/* State Messages (Loading/Error) */
+.ds-state-message {
+    text-align: center;
+    padding: 40px;
+    color: var(--ds-secondaryText, #64748b);
+}
+
+.ds-state-message.error {
+    color: #ef4444;
+}

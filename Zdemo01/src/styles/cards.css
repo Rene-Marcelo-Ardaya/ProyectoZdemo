@@ -1,0 +1,75 @@
+/* Global Card Styles */
+
+.ds-card {
+    background: var(--ds-panelBg, #ffffff);
+    border: 1px solid var(--ds-panelBorder, #e2e8f0);
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: var(--ds-primaryText, #1e293b);
+    box-sizing: border-box;
+}
+
+.ds-card:hover {
+    box-shadow: var(--ds-shadowSm, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+}
+
+.ds-card.selected {
+    border-color: var(--ds-primary, #3b82f6);
+    box-shadow: 0 0 0 1px var(--ds-primary, #3b82f6);
+    background-color: var(--ds-hoverBg, #f0f9ff);
+}
+
+.ds-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.ds-card-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.ds-card-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px dashed var(--ds-border, #e2e8f0);
+    font-size: 0.75rem;
+    color: var(--ds-secondaryText, #64748b);
+}
+
+/* Checkbox Selection in Card */
+.ds-card-selection {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+.ds-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--ds-border, #cbd5e1);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ds-inputBg, #fff);
+}
+
+.ds-checkbox.checked {
+    background-color: var(--ds-primary, #3b82f6);
+    border-color: var(--ds-primary, #3b82f6);
+    color: white;
+}

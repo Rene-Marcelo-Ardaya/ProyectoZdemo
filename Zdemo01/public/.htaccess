@@ -1,0 +1,9 @@
+# SPA routing - redirigir todo al index.html
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /toreto_pro/
+    RewriteRule ^index\.html$ - [L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /toreto_pro/index.html [L]
+</IfModule>
