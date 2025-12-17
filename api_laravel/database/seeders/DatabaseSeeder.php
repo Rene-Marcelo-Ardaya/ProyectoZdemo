@@ -120,5 +120,8 @@ class DatabaseSeeder extends Seeder
                 'menu_id' => $menuId
              ]);
         }
+
+        // Cargar configuraciones del sistema
+        $this->call(SettingSeeder::class);
     }
 }

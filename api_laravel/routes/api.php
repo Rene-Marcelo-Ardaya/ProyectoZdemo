@@ -7,10 +7,12 @@ use App\Http\Controllers\ChatController;
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SettingController;
 
-// Rutas públicas de autenticación
+// Rutas públicas (sin autenticación)
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::get('/config/public', [SettingController::class, 'getPublic']); // Configuración pública para branding
 
 // Rutas protegidas
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -30,6 +32,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Gestión de Roles y Accesos
     Route::get('/menus-list', [RoleController::class, 'getMenus']);
     Route::apiResource('roles', RoleController::class);
+
+    // Configuración del Sistema (Branding)
+    Route::get('/settings', [SettingController::class, 'index']);
+    Route::put('/settings/{key}', [SettingController::class, 'update']);
+    Route::post('/settings/{key}/upload', [SettingController::class, 'uploadImage']);
+    Route::put('/settings', [SettingController::class, 'bulkUpdate']);
 
     // Chat
     Route::get('/conversations', [ChatController::class, 'index']);
