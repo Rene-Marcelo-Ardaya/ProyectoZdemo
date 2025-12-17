@@ -37,6 +37,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/settings', [SettingController::class, 'index']);
     Route::put('/settings/{key}', [SettingController::class, 'update']);
     Route::post('/settings/{key}/upload', [SettingController::class, 'uploadImage']);
+    Route::delete('/settings/{key}/image', [SettingController::class, 'deleteImage']);
     Route::put('/settings', [SettingController::class, 'bulkUpdate']);
 
     // Chat

@@ -9,7 +9,12 @@ const CONFIG = {
     // URL base de la API Laravel
     // Prioridad: Variable de entorno > localhost en dev > /api en producción
     API_BASE_URL: import.meta.env.VITE_API_URL || 
-                  (import.meta.env.DEV ? 'http://localhost:8000/api' : '/api')
+                  (import.meta.env.DEV ? 'http://localhost:8000/api' : '/api'),
+    
+    // Alias para compatibilidad
+    get API_URL() {
+        return this.API_BASE_URL;
+    }
 };
 
 export default CONFIG;

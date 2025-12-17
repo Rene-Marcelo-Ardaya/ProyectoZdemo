@@ -131,4 +131,42 @@ class SettingController extends Controller
             'message' => 'Configuraciones actualizadas'
         ]);
     }
+
+    /**
+     * Eliminar imagen de una configuración (borra archivo y limpia valor)
+     */
+    public function deleteImage($key)
+    {
+        $setting = Setting::where('key', $key)->first();
+        
+        if (!$setting) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Configuración no encontrada'
+            ], 404);
+        }
+
+        if ($setting->type !== 'image') {
+            return response()->json([
+                'success' => false,
+                'error' => 'Esta configuración no es de tipo imagen'
+            ], 400);
+        }
+
+        // Eliminar archivo si existe
+        if ($setting->value && Storage::disk('public')->exists($setting->value)) {
+            Storage::disk('public')->delete($setting->value);
+        }
+
+        // Limpiar valor
+        $setting->value = null;
+        $setting->save();
+        
+        Setting::clearCache();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Imagen eliminada correctamente'
+        ]);
+    }
 }

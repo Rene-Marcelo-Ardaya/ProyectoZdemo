@@ -7,9 +7,11 @@ import { DashboardPage } from './pages/DashboardPage'
 import { ChatPage } from "./pages/chat/ChatPage";
 import { UsuariosPage } from './pages/sistemas/UsuariosPage';
 import { ControlAccesosPage } from './pages/sistemas/ControlAccesosPage';
+import { ConfiguracionPage } from './pages/sistemas/ConfiguracionPage';
 import { Sidebar } from './components/Sidebar'
 import { logout, getSession } from './services/authService'
 import { getStoredMenu, getHeaderConfig, staticMenus } from './services/menuService'
+import { getPublicConfig, applyConfigToDOM } from './services/settingService'
 
 const ACTIVE_PAGE_STORAGE_KEY = 'zdemo:lastActivePage'
 
@@ -17,7 +19,8 @@ const SUPPORTED_ROUTES = new Set([
   'dashboard',
   '/chat',
   '/sistemas/usuarios',
-  '/sistemas/accesos'
+  '/sistemas/accesos',
+  '/sistemas/configuracion'
 ])
 
 function getStoredActivePage() {
@@ -36,6 +39,7 @@ function App() {
   const [userData, setUserData] = useState(null)
   const [userMenus, setUserMenus] = useState([])
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [appConfig, setAppConfig] = useState({})
 
   // Verificar sesión al cargar
   useEffect(() => {
@@ -50,6 +54,12 @@ function App() {
       // Usar menú guardado
       const storedMenu = getStoredMenu()
       setUserMenus(storedMenu || staticMenus)
+
+      // Cargar configuración pública
+      getPublicConfig().then(config => {
+        setAppConfig(config)
+        applyConfigToDOM(config)
+      })
     }
   }, [])
 
@@ -111,6 +121,7 @@ function App() {
         onLogout={handleLogout}
         isCollapsed={isCollapsed}
         onToggle={() => setIsCollapsed(!isCollapsed)}
+        appConfig={appConfig}
       />
 
       {/* Contenido principal */}
@@ -158,6 +169,7 @@ function App() {
           {activePage === '/chat' && <ChatPage />}
           {activePage === '/sistemas/usuarios' && <UsuariosPage />}
           {activePage === '/sistemas/accesos' && <ControlAccesosPage />}
+          {activePage === '/sistemas/configuracion' && <ConfiguracionPage />}
         </div>
       </div>
     </div>

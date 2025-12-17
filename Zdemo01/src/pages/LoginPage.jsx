@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { login } from '../services/authService';
+import { getPublicConfig, getImageUrl, applyConfigToDOM } from '../services/settingService';
 import { useTheme } from '../theme';
 import { DSFormPanel, DSTextField, DSPasswordField } from '../ds-forms';
 import '../styles/helpers.css';
 import '../styles/login.css';
-import logoHK from '../img/Final new hk no bc.png';
-import logoToreto from '../img/Toreto Pet Company PNG.png';
+
+// Logos estáticos como fallback
+import logoHKStatic from '../img/Final new hk no bc.png';
+import logoToretoStatic from '../img/Toreto Pet Company PNG.png';
 
 /**
  * Página de Login
  * Diseño visual atractivo con autenticación via API Laravel
+ * Los logos se cargan dinámicamente desde la configuración con fallback estático
  */
 export function LoginPage({ onLoginSuccess }) {
     const { theme, setTheme, availableThemes } = useTheme();
@@ -17,6 +21,31 @@ export function LoginPage({ onLoginSuccess }) {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    // Configuración dinámica
+    const [config, setConfig] = useState({});
+    const [configLoaded, setConfigLoaded] = useState(false);
+
+    // Cargar configuración pública al inicio
+    useEffect(() => {
+        async function loadConfig() {
+            try {
+                const publicConfig = await getPublicConfig();
+                setConfig(publicConfig);
+                applyConfigToDOM(publicConfig);
+            } catch (err) {
+                console.error('Error cargando config:', err);
+            } finally {
+                setConfigLoaded(true);
+            }
+        }
+        loadConfig();
+    }, []);
+
+    // Determinar logos (dinámico o fallback estático)
+    const logoHK = config.logo_login ? getImageUrl(config.logo_login) : logoHKStatic;
+    const logoToreto = config.logo_login_secondary ? getImageUrl(config.logo_login_secondary) : logoToretoStatic;
+    const loginTitle = config.login_title || 'Iniciar Sesión';
 
     const handleSubmit = async (e) => {
         if (e && e.preventDefault) e.preventDefault();
@@ -77,7 +106,7 @@ export function LoginPage({ onLoginSuccess }) {
                     <div className="login-page__card">
                         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
                             <DSFormPanel
-                                title="Iniciar Sesión"
+                                title={loginTitle}
                                 footer={
                                     <div className="login-page__footer">
                                         {error && (
@@ -136,7 +165,7 @@ export function LoginPage({ onLoginSuccess }) {
 
                     {/* Footer info */}
                     <div className="login-page__info">
-                        <p>© {new Date().getFullYear()} Toreto Pet Company. Todos los derechos reservados.</p>
+                        <p>© {new Date().getFullYear()} {config.company_name || 'Toreto Pet Company'}. Todos los derechos reservados.</p>
                     </div>
                 </div>
             </div>

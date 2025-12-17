@@ -87,6 +87,19 @@ class DatabaseSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        // Submenú: Configuración
+        \Illuminate\Support\Facades\DB::table('menus')->insert([
+            'name' => 'Configuración',
+            'url' => '/sistemas/configuracion',
+            'icon' => 'Wrench',
+            'parent_id' => $sysMenuId,
+            'order' => 3,
+            'module' => 'Sistemas',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
         
         // Módulo: Comunicación (Chat)
         $comMenuId = \Illuminate\Support\Facades\DB::table('menus')->insertGetId([

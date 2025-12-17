@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './Sidebar.css';
-import logoToreto from '../img/Final new hk no bc.png';
 import { getMenuIconComponent, getSubmenuIconComponent } from '../services/menuService';
+import { getImageUrl } from '../services/settingService';
 import {
     Home,
     User,
@@ -11,10 +11,14 @@ import {
     ChevronRight
 } from 'lucide-react';
 
+// Logo estático como fallback
+import logoStatic from '../img/Final new hk no bc.png';
+
 /**
  * Sidebar con menús desplegables - RESPONSIVE y con TEMA
+ * El logo se carga dinámicamente desde la configuración con fallback estático
  */
-export function Sidebar({ menus = [], activePage, onNavigate, user, onLogout, isCollapsed, onToggle }) {
+export function Sidebar({ menus = [], activePage, onNavigate, user, onLogout, isCollapsed, onToggle, appConfig = {} }) {
     const [expandedMenus, setExpandedMenus] = useState({});
     const [isOpen, setIsOpen] = useState(false);
     // Internal isCollapsed removed, using prop
@@ -85,8 +89,8 @@ export function Sidebar({ menus = [], activePage, onNavigate, user, onLogout, is
                 <div className="sidebar__header">
                     <div className="sidebar__logo">
                         <img
-                            src={logoToreto}
-                            alt="Toreto Logo"
+                            src={appConfig.logo_sidebar ? getImageUrl(appConfig.logo_sidebar) : logoStatic}
+                            alt={appConfig.app_name || "Logo"}
                             className="sidebar__logo-img"
                         />
                     </div>
