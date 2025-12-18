@@ -1,6 +1,6 @@
 /**
  * ControlAccesosPage Styles
- * Diseño clásico tipo "enterprise/legacy"
+ * Diseño clásico tipo "enterprise/legacy" - Usa variables de tema
  */
 
 /* ============================================
@@ -9,7 +9,7 @@
 .accesos-page {
     padding: 16px 20px;
     min-height: 100%;
-    background: #f0f2f5;
+    background: var(--ds-primaryBg);
 }
 
 .accesos-page__header {
@@ -18,14 +18,14 @@
     align-items: center;
     margin-bottom: 16px;
     padding-bottom: 12px;
-    border-bottom: 1px solid #c8ced5;
+    border-bottom: 1px solid var(--ds-surfaceBorder);
 }
 
 .accesos-page__title {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #2c3e50;
+    color: var(--ds-primaryText);
 }
 
 .accesos-page__title h1 {
@@ -39,31 +39,31 @@
    PANEL
    ============================================ */
 .accesos-panel {
-    background: #fff;
-    border: 1px solid #99bbe8;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    background: var(--ds-panelBg);
+    border: 1px solid var(--ds-panelBorder);
+    box-shadow: var(--ds-shadowSm);
 }
 
 .accesos-panel__header {
-    background: linear-gradient(to bottom, #d6e4f2 0%, #c2d6eb 100%);
-    border-bottom: 1px solid #99bbe8;
+    background: linear-gradient(to bottom, var(--ds-headerGradTop) 0%, var(--ds-headerGradBottom) 100%);
+    border-bottom: 1px solid var(--ds-panelBorder);
     padding: 8px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-weight: 600;
     font-size: 13px;
-    color: #15428b;
+    color: var(--ds-panelHeaderText);
     font-family: Tahoma, Arial, sans-serif;
 }
 
 .accesos-panel__count {
     font-weight: 400;
     font-size: 11px;
-    color: #666;
-    background: #fff;
+    color: var(--ds-secondaryText);
+    background: var(--ds-panelBg);
     padding: 2px 8px;
-    border: 1px solid #c8ced5;
+    border: 1px solid var(--ds-surfaceBorder);
 }
 
 /* ============================================
@@ -81,36 +81,36 @@
 }
 
 .accesos-table th {
-    background: linear-gradient(to bottom, #f9f9f9 0%, #e3e4e6 100%);
-    border: 1px solid #d0d0d0;
+    background: linear-gradient(to bottom, var(--ds-surfaceBg) 0%, var(--ds-headerGradBottom) 100%);
+    border: 1px solid var(--ds-surfaceBorder);
     border-top: none;
     padding: 8px 10px;
     text-align: left;
     font-weight: 600;
-    color: #333;
+    color: var(--ds-primaryText);
     white-space: nowrap;
 }
 
 .accesos-table td {
-    border: 1px solid #ededed;
+    border: 1px solid var(--ds-surfaceBorder);
     border-top: none;
     padding: 7px 10px;
-    color: #333;
-    background: #fff;
+    color: var(--ds-primaryText);
+    background: var(--ds-panelBg);
     vertical-align: middle;
 }
 
 .accesos-table tbody tr:nth-child(even) td {
-    background: #f6f8fa;
+    background: var(--ds-surfaceBg);
 }
 
 .accesos-table tbody tr:hover td {
-    background: #dfe8f6;
+    background: var(--ds-hoverBg);
 }
 
 .accesos-table__empty {
     text-align: center;
-    color: #888;
+    color: var(--ds-secondaryText);
     font-style: italic;
     padding: 30px !important;
 }
@@ -122,22 +122,22 @@
 .accesos-code {
     font-family: 'Consolas', 'Monaco', monospace;
     font-size: 11px;
-    background: #f4f4f4;
+    background: var(--ds-surfaceBg);
     padding: 2px 6px;
-    border: 1px solid #ddd;
-    color: #666;
+    border: 1px solid var(--ds-surfaceBorder);
+    color: var(--ds-secondaryText);
 }
 
 .accesos-count {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    background: #e3eaf5;
+    background: var(--ds-infoBg);
     padding: 2px 8px;
     border-radius: 10px;
     font-size: 11px;
     font-weight: 600;
-    color: #15428b;
+    color: var(--ds-infoText);
 }
 
 .accesos-count--users {
@@ -157,15 +157,15 @@
 }
 
 .accesos-badge.is-active {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #b1dfbb;
+    background: var(--ds-successBg);
+    color: var(--ds-successText);
+    border: 1px solid var(--ds-successText);
 }
 
 .accesos-badge.is-inactive {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f1b0b7;
+    background: var(--ds-errorBg);
+    color: var(--ds-errorText);
+    border: 1px solid var(--ds-errorText);
 }
 
 /* ============================================
@@ -188,18 +188,18 @@
     font-size: 12px;
     font-family: Tahoma, Arial, sans-serif;
     font-weight: 500;
-    border: 1px solid #b5b8c8;
+    border: 1px solid var(--ds-fieldBorder);
     border-radius: 2px;
-    background: linear-gradient(to bottom, #ffffff 0%, #e8e8e8 100%);
-    color: #333;
+    background: linear-gradient(to bottom, var(--ds-panelBg) 0%, var(--ds-surfaceBg) 100%);
+    color: var(--ds-primaryText);
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.1s;
 }
 
 .accesos-btn:hover {
-    background: linear-gradient(to bottom, #f0f4fa 0%, #d8dce6 100%);
-    border-color: #8db2e3;
+    background: linear-gradient(to bottom, var(--ds-hoverBg) 0%, var(--ds-surfaceBg) 100%);
+    border-color: var(--ds-fieldBorderHover);
 }
 
 .accesos-btn:disabled {
@@ -208,13 +208,13 @@
 }
 
 .accesos-btn--primary {
-    background: linear-gradient(to bottom, #5fa5df 0%, #4388cf 100%);
-    border-color: #3b7cbf;
-    color: #fff;
+    background: linear-gradient(to bottom, var(--ds-panelHeaderBg) 0%, var(--ds-toolbarBg) 100%);
+    border-color: var(--ds-toolbarBorder);
+    color: var(--ds-panelHeaderText);
 }
 
 .accesos-btn--primary:hover {
-    background: linear-gradient(to bottom, #6db3e9 0%, #4f94d8 100%);
+    filter: brightness(1.05);
 }
 
 .accesos-btn--icon {
@@ -224,12 +224,12 @@
 }
 
 .accesos-btn--danger {
-    color: #c0392b;
+    color: var(--ds-errorText);
 }
 
 .accesos-btn--danger:hover {
-    background: linear-gradient(to bottom, #ffebee 0%, #ffcdd2 100%);
-    border-color: #e57373;
+    background: linear-gradient(to bottom, var(--ds-errorBg) 0%, #ffcdd2 100%);
+    border-color: var(--ds-errorText);
 }
 
 /* ============================================
@@ -242,7 +242,7 @@
     justify-content: center;
     gap: 10px;
     padding: 40px;
-    color: #666;
+    color: var(--ds-secondaryText);
     font-size: 13px;
 }
 
@@ -275,9 +275,9 @@
 }
 
 .accesos-modal {
-    background: #fff;
-    border: 1px solid #99bbe8;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    background: var(--ds-panelBg);
+    border: 1px solid var(--ds-panelBorder);
+    box-shadow: var(--ds-shadowMd);
     min-width: 420px;
     max-width: 90vw;
 }
@@ -288,8 +288,8 @@
 }
 
 .accesos-modal__header {
-    background: linear-gradient(to bottom, #d6e4f2 0%, #c2d6eb 100%);
-    border-bottom: 1px solid #99bbe8;
+    background: linear-gradient(to bottom, var(--ds-headerGradTop) 0%, var(--ds-headerGradBottom) 100%);
+    border-bottom: 1px solid var(--ds-panelBorder);
     padding: 8px 12px;
     display: flex;
     justify-content: space-between;
@@ -299,7 +299,7 @@
 .accesos-modal__title {
     font-weight: 600;
     font-size: 13px;
-    color: #15428b;
+    color: var(--ds-panelHeaderText);
     font-family: Tahoma, Arial, sans-serif;
 }
 
@@ -307,26 +307,26 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    color: #666;
+    color: var(--ds-secondaryText);
     padding: 2px;
     display: flex;
 }
 
 .accesos-modal__close:hover {
-    color: #c0392b;
+    color: var(--ds-errorText);
 }
 
 .accesos-modal__body {
     padding: 16px;
-    background: #f9f9f9;
+    background: var(--ds-surfaceBg);
     max-height: 70vh;
     overflow-y: auto;
 }
 
 .accesos-modal__footer {
     padding: 10px 16px;
-    background: #f0f2f5;
-    border-top: 1px solid #d0d0d0;
+    background: var(--ds-primaryBg);
+    border-top: 1px solid var(--ds-surfaceBorder);
     display: flex;
     justify-content: flex-end;
     gap: 8px;
@@ -351,16 +351,16 @@
     gap: 6px;
     margin: 0 0 12px 0;
     padding-bottom: 8px;
-    border-bottom: 1px solid #d0d0d0;
+    border-bottom: 1px solid var(--ds-surfaceBorder);
     font-size: 13px;
     font-weight: 600;
-    color: #15428b;
+    color: var(--ds-panelHeaderText);
     font-family: Tahoma, Arial, sans-serif;
 }
 
 .accesos-form-section-help {
     font-size: 11px;
-    color: #666;
+    color: var(--ds-secondaryText);
     margin-bottom: 10px;
 }
 
@@ -383,12 +383,12 @@
 .accesos-form__label {
     font-size: 12px;
     font-weight: 600;
-    color: #333;
+    color: var(--ds-primaryText);
     font-family: Tahoma, Arial, sans-serif;
 }
 
 .accesos-form__required {
-    color: #c0392b;
+    color: var(--ds-errorText);
     margin-left: 2px;
 }
 
@@ -400,12 +400,12 @@
     display: inline-flex;
     align-items: center;
     margin-left: 6px;
-    color: #7a8ca8;
+    color: var(--ds-secondaryText);
     cursor: help;
 }
 
 .accesos-tooltip:hover {
-    color: #15428b;
+    color: var(--ds-panelHeaderText);
 }
 
 .accesos-tooltip__text {
@@ -415,8 +415,8 @@
     transform: translateY(-50%);
     margin-left: 10px;
     padding: 8px 12px;
-    background: #2c3e50;
-    color: #fff;
+    background: var(--ds-primaryText);
+    color: var(--ds-panelBg);
     font-size: 11px;
     font-weight: 400;
     line-height: 1.4;
@@ -424,7 +424,7 @@
     max-width: 300px;
     white-space: normal;
     border-radius: 3px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--ds-shadowMd);
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s, visibility 0.2s;
@@ -438,7 +438,7 @@
     top: 50%;
     transform: translateY(-50%);
     border: 6px solid transparent;
-    border-right-color: #2c3e50;
+    border-right-color: var(--ds-primaryText);
 }
 
 .accesos-tooltip:hover .accesos-tooltip__text {
@@ -450,22 +450,22 @@
     padding: 6px 8px;
     font-size: 12px;
     font-family: Tahoma, Arial, sans-serif;
-    border: 1px solid #b5b8c8;
-    background: #fff;
-    color: #333;
+    border: 1px solid var(--ds-fieldBorder);
+    background: var(--ds-fieldBg);
+    color: var(--ds-fieldText);
     border-radius: 0;
     outline: none;
     transition: border-color 0.15s;
 }
 
 .accesos-input:focus {
-    border-color: #7eadd9;
+    border-color: var(--ds-fieldBorderFocus);
     box-shadow: 0 0 0 2px rgba(126, 173, 217, 0.25);
 }
 
 .accesos-input:disabled {
-    background: #e9ecef;
-    color: #6c757d;
+    background: var(--ds-fieldDisabledBg);
+    color: var(--ds-secondaryText);
 }
 
 .accesos-textarea {
@@ -478,7 +478,7 @@
     align-items: center;
     gap: 8px;
     font-size: 12px;
-    color: #333;
+    color: var(--ds-primaryText);
     cursor: pointer;
 }
 
@@ -492,8 +492,8 @@
    MENU TREE (Selector de menús)
    ============================================ */
 .accesos-menu-tree {
-    background: #fff;
-    border: 1px solid #d0d0d0;
+    background: var(--ds-panelBg);
+    border: 1px solid var(--ds-surfaceBorder);
     padding: 10px;
     max-height: 280px;
     overflow-y: auto;
@@ -512,16 +512,16 @@
     align-items: center;
     gap: 6px;
     padding: 6px 8px;
-    background: #e8f0f8;
-    border: 1px solid #c8d8e8;
+    background: var(--ds-infoBg);
+    border: 1px solid var(--ds-surfaceBorder);
     cursor: pointer;
     font-size: 12px;
     font-weight: 600;
-    color: #15428b;
+    color: var(--ds-infoText);
 }
 
 .accesos-menu-tree__parent:hover {
-    background: #d8e8f8;
+    background: var(--ds-hoverBg);
 }
 
 .accesos-menu-tree__parent input {
@@ -531,7 +531,7 @@
 
 .accesos-menu-tree__children {
     margin-left: 20px;
-    border-left: 2px solid #d0d0d0;
+    border-left: 2px solid var(--ds-surfaceBorder);
     padding-left: 10px;
     margin-top: 4px;
 }
@@ -543,11 +543,11 @@
     padding: 4px 8px;
     cursor: pointer;
     font-size: 11px;
-    color: #333;
+    color: var(--ds-primaryText);
 }
 
 .accesos-menu-tree__child:hover {
-    background: #f0f4f8;
+    background: var(--ds-hoverBg);
 }
 
 .accesos-menu-tree__child input {
@@ -570,15 +570,15 @@
 }
 
 .accesos-alert--error {
-    background: #fff5f5;
-    border-color: #f5c6cb;
-    color: #721c24;
+    background: var(--ds-errorBg);
+    border-color: var(--ds-errorText);
+    color: var(--ds-errorText);
 }
 
 .accesos-alert--success {
-    background: #d4edda;
-    border-color: #c3e6cb;
-    color: #155724;
+    background: var(--ds-successBg);
+    border-color: var(--ds-successText);
+    color: var(--ds-successText);
 }
 
 .accesos-alert__dismiss {

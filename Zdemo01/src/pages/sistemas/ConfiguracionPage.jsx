@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Settings, Upload, Save, Loader2, AlertCircle, CheckCircle, X, Image, Type, Palette, Building2, HelpCircle, Eye, User, Lock } from 'lucide-react';
 import { getAllSettings, updateSetting, uploadSettingImage, deleteSettingImage, getImageUrl } from '../../services/settingService';
-import { useTheme } from '../../theme';
 import './ConfiguracionPage.css';
 
 // ============================================
@@ -278,7 +277,6 @@ function LoginPreview({ config }) {
 // ============================================
 export function ConfiguracionPage() {
     const { settings, flatSettings, loading, error: loadError, refetch } = useSettings();
-    const { isCustomTheme, updateCustomTheme } = useTheme();
     const [success, setSuccess] = useState(null);
     const [error, setError] = useState(null);
     const [saving, setSaving] = useState({});
@@ -287,7 +285,6 @@ export function ConfiguracionPage() {
     const [previewConfig, setPreviewConfig] = useState({});
 
     // Refs para evitar bucles infinitos
-    const initializedRef = useRef(false);
     const lastFlatSettingsRef = useRef('');
 
     // Inicializar preview solo cuando flatSettings realmente cambia
@@ -313,11 +310,7 @@ export function ConfiguracionPage() {
             initial[key] = flatSettings[key]?.value;
         });
         setPreviewConfig(initial);
-        initializedRef.current = true;
     }, [flatSettings, loading]);
-
-    // Lista de claves de colores del tema
-    const themeColorKeys = ['theme_bg_color', 'theme_panel_color', 'theme_text_color', 'primary_color', 'secondary_color'];
 
     const handleSave = async (key, value) => {
         setSaving(prev => ({ ...prev, [key]: true }));
@@ -326,20 +319,7 @@ export function ConfiguracionPage() {
 
         if (result.success) {
             setSuccess('Configuración guardada');
-            const newPreviewConfig = { ...previewConfig, [key]: value };
-            setPreviewConfig(newPreviewConfig);
-
-            // Si es un color del tema y estamos en tema personalizado, actualizar tema
-            if (isCustomTheme && themeColorKeys.includes(key)) {
-                updateCustomTheme({
-                    theme_bg_color: newPreviewConfig.theme_bg_color,
-                    theme_panel_color: newPreviewConfig.theme_panel_color,
-                    theme_text_color: newPreviewConfig.theme_text_color,
-                    primary_color: newPreviewConfig.primary_color,
-                    secondary_color: newPreviewConfig.secondary_color,
-                });
-            }
-
+            setPreviewConfig(prev => ({ ...prev, [key]: value }));
             refetch();
             setTimeout(() => setSuccess(null), 3000);
         } else {
@@ -526,39 +506,7 @@ export function ConfiguracionPage() {
                                     </div>
                                 </div>
 
-                                <div className="config-subsection">
-                                    <h4>Colores del Tema Personalizado</h4>
-                                    <div className={`config-theme-indicator ${isCustomTheme ? 'active' : ''}`}>
-                                        {isCustomTheme ? (
-                                            <span>✓ Tema personalizado activo - los cambios se verán en tiempo real</span>
-                                        ) : (
-                                            <span>ℹ Para ver estos colores, selecciona "Personalizado" en el selector de temas</span>
-                                        )}
-                                    </div>
-                                    <div className="config-grid-3">
-                                        <ColorField
-                                            label="Fondo General"
-                                            value={flatSettings.theme_bg_color?.value}
-                                            onChange={(v) => handlePreviewChange('theme_bg_color', v)}
-                                            onSave={(v) => handleSave('theme_bg_color', v)}
-                                            saving={saving.theme_bg_color}
-                                        />
-                                        <ColorField
-                                            label="Paneles y Barras"
-                                            value={flatSettings.theme_panel_color?.value}
-                                            onChange={(v) => handlePreviewChange('theme_panel_color', v)}
-                                            onSave={(v) => handleSave('theme_panel_color', v)}
-                                            saving={saving.theme_panel_color}
-                                        />
-                                        <ColorField
-                                            label="Texto Principal"
-                                            value={flatSettings.theme_text_color?.value}
-                                            onChange={(v) => handlePreviewChange('theme_text_color', v)}
-                                            onSave={(v) => handleSave('theme_text_color', v)}
-                                            saving={saving.theme_text_color}
-                                        />
-                                    </div>
-                                </div>
+
 
                                 <div className="config-subsection">
                                     <h4>Logos e Imágenes</h4>
