@@ -3,51 +3,115 @@
 namespace App\Http\Controllers;
 
 use App\Events\MessageSent;
-use App\Http\Resources\ConversationResource;
+use App\Events\MessageStatusUpdated;
+use App\Events\UserTyping;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ChatController extends Controller
 {
     /**
-     * List conversations for the authenticated user.
-     * Los grupos siempre aparecen primero.
+     * Listar conversaciones del usuario autenticado.
+     * Incluye contadores de mensajes no leídos.
      */
     public function index()
     {
         $user = Auth::user();
+        $userId = $user->id;
+
         $conversations = $user->conversations()
             ->with(['users', 'messages' => function($q) {
                 $q->latest()->limit(1);
             }])
             ->get()
             ->sortByDesc(function($conv) {
-                // Grupos primero, luego por fecha de actualización
                 return [$conv->is_group ? 1 : 0, $conv->updated_at];
             })
             ->values();
 
-        return ConversationResource::collection($conversations);
+        // Formatear respuesta con contadores de no leídos
+        $data = $conversations->map(function($conv) use ($userId) {
+            $lastMessage = $conv->messages->first();
+            
+            // Contar mensajes no leídos (mensajes de otros usuarios con status != 'read')
+            $unreadCount = Message::where('conversation_id', $conv->id)
+                ->where('user_id', '!=', $userId)
+                ->where('status', '!=', 'read')
+                ->count();
+
+            return [
+                'id' => $conv->id,
+                'name' => $conv->name,
+                'is_group' => $conv->is_group,
+                'users' => $conv->users->map(fn($u) => [
+                    'id' => $u->id,
+                    'name' => $u->name,
+                    'email' => $u->email
+                ]),
+                'last_message' => $lastMessage ? [
+                    'body' => $lastMessage->body,
+                    'user_id' => $lastMessage->user_id,
+                    'status' => $lastMessage->status,
+                    'created_at' => $lastMessage->created_at
+                ] : null,
+                'unread_count' => $unreadCount,
+                'updated_at' => $conv->updated_at,
+            ];
+        });
+
+        return response()->json(['data' => $data]);
     }
 
     /**
-     * Show messages for a specific conversation.
+     * Mostrar mensajes de una conversación.
+     * Marca mensajes de otros como entregados.
      */
     public function show(Conversation $conversation)
     {
-        // Ensure user belongs to the conversation
-        abort_unless($conversation->users()->where('user_id', Auth::id())->exists(), 403);
+        $userId = Auth::id();
+        
+        // Verificar que el usuario pertenece a la conversación
+        abort_unless($conversation->users()->where('user_id', $userId)->exists(), 403);
 
-        $messages = $conversation->messages()->with('user')->orderBy('created_at', 'asc')->get();
+        // Marcar mensajes de otros como entregados
+        Message::where('conversation_id', $conversation->id)
+            ->where('user_id', '!=', $userId)
+            ->where('status', 'sent')
+            ->update([
+                'status' => 'delivered',
+                'delivered_at' => now()
+            ]);
+
+        $messages = $conversation->messages()
+            ->with('user')
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->map(function($msg) {
+                return [
+                    'id' => $msg->id,
+                    'conversation_id' => $msg->conversation_id,
+                    'user_id' => $msg->user_id,
+                    'body' => $msg->body,
+                    'status' => $msg->status,
+                    'created_at' => $msg->created_at,
+                    'delivered_at' => $msg->delivered_at,
+                    'read_at' => $msg->read_at,
+                    'user' => [
+                        'id' => $msg->user->id,
+                        'name' => $msg->user->name,
+                    ]
+                ];
+            });
 
         return response()->json($messages);
     }
 
     /**
-     * Store a new message.
+     * Enviar un nuevo mensaje.
      */
     public function store(Request $request)
     {
@@ -57,26 +121,111 @@ class ChatController extends Controller
         ]);
 
         $conversation = Conversation::findOrFail($request->conversation_id);
+        $userId = Auth::id();
 
-        // Ensure user belongs to the conversation
-        abort_unless($conversation->users()->where('user_id', Auth::id())->exists(), 403);
+        // Verificar que el usuario pertenece a la conversación
+        abort_unless($conversation->users()->where('user_id', $userId)->exists(), 403);
 
         $message = $conversation->messages()->create([
-            'user_id' => Auth::id(),
+            'user_id' => $userId,
             'body' => $request->body,
+            'status' => 'sent',
         ]);
 
         // Actualizar timestamp de la conversación
         $conversation->touch();
 
-        // Broadcast to others
+        // Broadcast del mensaje a otros usuarios
         broadcast(new MessageSent($message))->toOthers();
 
-        return response()->json(['message' => 'Message sent!', 'data' => $message]);
+        return response()->json([
+            'message' => 'Mensaje enviado',
+            'data' => [
+                'id' => $message->id,
+                'conversation_id' => $message->conversation_id,
+                'user_id' => $message->user_id,
+                'body' => $message->body,
+                'status' => $message->status,
+                'created_at' => $message->created_at,
+                'user' => [
+                    'id' => Auth::user()->id,
+                    'name' => Auth::user()->name,
+                ]
+            ]
+        ]);
     }
 
     /**
-     * Search users to start a new conversation.
+     * Marcar mensajes como leídos.
+     */
+    public function markAsRead(Request $request)
+    {
+        $request->validate([
+            'conversation_id' => 'required|exists:conversations,id',
+        ]);
+
+        $conversation = Conversation::findOrFail($request->conversation_id);
+        $userId = Auth::id();
+
+        // Verificar que el usuario pertenece a la conversación
+        abort_unless($conversation->users()->where('user_id', $userId)->exists(), 403);
+
+        // Obtener mensajes no leídos de otros usuarios
+        $unreadMessages = Message::where('conversation_id', $conversation->id)
+            ->where('user_id', '!=', $userId)
+            ->where('status', '!=', 'read')
+            ->get();
+
+        foreach ($unreadMessages as $message) {
+            $message->update([
+                'status' => 'read',
+                'read_at' => now()
+            ]);
+
+            // Broadcast del cambio de estado
+            broadcast(new MessageStatusUpdated(
+                $message->id,
+                $conversation->id,
+                'read',
+                now()->toISOString()
+            ))->toOthers();
+        }
+
+        return response()->json([
+            'message' => 'Mensajes marcados como leídos',
+            'count' => $unreadMessages->count()
+        ]);
+    }
+
+    /**
+     * Indicador de "escribiendo..."
+     */
+    public function typing(Request $request)
+    {
+        $request->validate([
+            'conversation_id' => 'required|exists:conversations,id',
+            'is_typing' => 'boolean',
+        ]);
+
+        $conversation = Conversation::findOrFail($request->conversation_id);
+        $user = Auth::user();
+
+        // Verificar que el usuario pertenece a la conversación
+        abort_unless($conversation->users()->where('user_id', $user->id)->exists(), 403);
+
+        // Broadcast del evento de typing
+        broadcast(new UserTyping(
+            $user->id,
+            $user->name,
+            $conversation->id,
+            $request->get('is_typing', true)
+        ))->toOthers();
+
+        return response()->json(['message' => 'OK']);
+    }
+
+    /**
+     * Buscar usuarios para iniciar nueva conversación.
      */
     public function searchUsers(Request $request)
     {
@@ -84,6 +233,7 @@ class ChatController extends Controller
         $currentUserId = Auth::id();
 
         $users = User::where('id', '!=', $currentUserId)
+            ->where('is_active', true)
             ->when($query, function($q) use ($query) {
                 $q->where(function($q2) use ($query) {
                     $q2->where('name', 'like', "%{$query}%")
@@ -98,7 +248,7 @@ class ChatController extends Controller
     }
 
     /**
-     * Create a new conversation (1:1 or group).
+     * Crear nueva conversación (1:1 o grupo).
      */
     public function createConversation(Request $request)
     {
@@ -128,8 +278,8 @@ class ChatController extends Controller
 
             if ($existingConversation) {
                 return response()->json([
-                    'message' => 'Conversation already exists',
-                    'data' => new ConversationResource($existingConversation->load('users'))
+                    'message' => 'Conversación existente',
+                    'data' => $this->formatConversation($existingConversation->load('users'))
                 ]);
             }
         }
@@ -145,8 +295,28 @@ class ChatController extends Controller
         $conversation->users()->attach($allUserIds);
 
         return response()->json([
-            'message' => 'Conversation created!',
-            'data' => new ConversationResource($conversation->load('users'))
+            'message' => 'Conversación creada',
+            'data' => $this->formatConversation($conversation->load('users'))
         ], 201);
     }
+
+    /**
+     * Formatear conversación para respuesta JSON
+     */
+    private function formatConversation(Conversation $conv): array
+    {
+        return [
+            'id' => $conv->id,
+            'name' => $conv->name,
+            'is_group' => $conv->is_group,
+            'users' => $conv->users->map(fn($u) => [
+                'id' => $u->id,
+                'name' => $u->name,
+                'email' => $u->email
+            ]),
+            'unread_count' => 0,
+            'updated_at' => $conv->updated_at,
+        ];
+    }
 }
+

@@ -2,9 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Broadcast;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
-
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SettingController;
@@ -25,8 +25,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return $request->user();
     });
     
-    // Usuarios y Roles (para combo de usuarios)
+    // Broadcasting auth para Pusher
+    Broadcast::routes();
+    
+    // Usuarios y Roles
     Route::get('/roles-list', [UserController::class, 'getRoles']);
+    Route::get('/users/search', [ChatController::class, 'searchUsers']); // DEBE estar antes del apiResource
     Route::apiResource('users', UserController::class);
 
     // Gestión de Roles y Accesos
@@ -40,10 +44,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/settings/{key}/image', [SettingController::class, 'deleteImage']);
     Route::put('/settings', [SettingController::class, 'bulkUpdate']);
 
-    // Chat
+    // Chat / Mensajería
     Route::get('/conversations', [ChatController::class, 'index']);
     Route::post('/conversations', [ChatController::class, 'createConversation']);
     Route::get('/conversations/{conversation}', [ChatController::class, 'show']);
     Route::post('/messages', [ChatController::class, 'store']);
-    Route::get('/users/search', [ChatController::class, 'searchUsers']);
+    Route::post('/messages/read', [ChatController::class, 'markAsRead']);
+    Route::post('/messages/typing', [ChatController::class, 'typing']);
 });

@@ -4,11 +4,11 @@ import './styles/pages.css'
 import { useTheme } from './theme'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
-import { ChatPage } from "./pages/chat/ChatPage";
 import { UsuariosPage } from './pages/sistemas/UsuariosPage';
 import { ControlAccesosPage } from './pages/sistemas/ControlAccesosPage';
 import { ConfiguracionPage } from './pages/sistemas/ConfiguracionPage';
 import { Sidebar } from './components/Sidebar'
+import { ChatWidget } from './components/ChatWidget'
 import { logout, getSession } from './services/authService'
 import { getStoredMenu, getHeaderConfig, staticMenus } from './services/menuService'
 import { getPublicConfig, applyConfigToDOM } from './services/settingService'
@@ -17,7 +17,6 @@ const ACTIVE_PAGE_STORAGE_KEY = 'zdemo:lastActivePage'
 
 const SUPPORTED_ROUTES = new Set([
   'dashboard',
-  '/chat',
   '/sistemas/usuarios',
   '/sistemas/accesos',
   '/sistemas/configuracion'
@@ -177,12 +176,14 @@ function App() {
         {/* Páginas */}
         <div className="main-content__body">
           {activePage === 'dashboard' && <DashboardPage user={userData} menus={userMenus} />}
-          {activePage === '/chat' && <ChatPage />}
           {activePage === '/sistemas/usuarios' && <UsuariosPage />}
           {activePage === '/sistemas/accesos' && <ControlAccesosPage />}
           {activePage === '/sistemas/configuracion' && <ConfiguracionPage />}
         </div>
       </div>
+
+      {/* Chat Widget Flotante - Solo visible si el usuario tiene acceso al chat */}
+      <ChatWidget menus={userMenus} />
     </div>
   )
 }

@@ -138,4 +138,27 @@ class UserController extends Controller
             'data' => $roles
         ]);
     }
+
+    /**
+     * Buscar usuarios (para chat widget u otros componentes)
+     */
+    public function search(Request $request)
+    {
+        $query = $request->get('q', '');
+        $currentUserId = auth()->id();
+
+        $users = User::where('id', '!=', $currentUserId)
+            ->where('is_active', true)
+            ->when($query, function($q) use ($query) {
+                $q->where(function($q2) use ($query) {
+                    $q2->where('name', 'like', "%{$query}%")
+                       ->orWhere('email', 'like', "%{$query}%");
+                });
+            })
+            ->select('id', 'name', 'email')
+            ->limit(20)
+            ->get();
+
+        return response()->json(['data' => $users]);
+    }
 }

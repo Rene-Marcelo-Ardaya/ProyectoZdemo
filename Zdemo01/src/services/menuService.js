@@ -189,7 +189,6 @@ export function getHeaderConfig(activePage) {
     const key = activePage || 'dashboard';
 
     if (key === 'dashboard') return { Icon: Home, title: 'Dashboard' };
-    if (key === '/chat') return { Icon: MessageCircle, title: 'Chat' };
     if (key === '/sistemas/usuarios') return { Icon: Users, title: 'Usuarios' };
     if (key === '/sistemas/control-accesos') return { Icon: Shield, title: 'Control de Accesos' };
     if (key === '/tienda/marcas-producto') return { Icon: Tag, title: 'Marcas de Producto' };

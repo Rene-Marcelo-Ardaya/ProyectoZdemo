@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\Message;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -11,18 +10,24 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MessageSent implements ShouldBroadcast
+class UserTyping implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $message;
+    public $userId;
+    public $userName;
+    public $conversationId;
+    public $isTyping;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Message $message)
+    public function __construct(int $userId, string $userName, int $conversationId, bool $isTyping = true)
     {
-        $this->message = $message->load('user');
+        $this->userId = $userId;
+        $this->userName = $userName;
+        $this->conversationId = $conversationId;
+        $this->isTyping = $isTyping;
     }
 
     /**
@@ -31,7 +36,7 @@ class MessageSent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('conversation.' . $this->message->conversation_id),
+            new PrivateChannel('conversation.' . $this->conversationId),
         ];
     }
 
@@ -40,7 +45,7 @@ class MessageSent implements ShouldBroadcast
      */
     public function broadcastAs(): string
     {
-        return 'message.sent';
+        return 'user.typing';
     }
 
     /**
@@ -49,16 +54,10 @@ class MessageSent implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'id' => $this->message->id,
-            'conversation_id' => $this->message->conversation_id,
-            'user_id' => $this->message->user_id,
-            'body' => $this->message->body,
-            'status' => $this->message->status,
-            'created_at' => $this->message->created_at->toISOString(),
-            'user' => [
-                'id' => $this->message->user->id,
-                'name' => $this->message->user->name,
-            ],
+            'user_id' => $this->userId,
+            'user_name' => $this->userName,
+            'conversation_id' => $this->conversationId,
+            'is_typing' => $this->isTyping,
         ];
     }
 }

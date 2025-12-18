@@ -11,18 +11,24 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class MessageSent implements ShouldBroadcast
+class MessageStatusUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $message;
+    public $messageId;
+    public $conversationId;
+    public $status;
+    public $updatedAt;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Message $message)
+    public function __construct(int $messageId, int $conversationId, string $status, string $updatedAt)
     {
-        $this->message = $message->load('user');
+        $this->messageId = $messageId;
+        $this->conversationId = $conversationId;
+        $this->status = $status;
+        $this->updatedAt = $updatedAt;
     }
 
     /**
@@ -31,7 +37,7 @@ class MessageSent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('conversation.' . $this->message->conversation_id),
+            new PrivateChannel('conversation.' . $this->conversationId),
         ];
     }
 
@@ -40,7 +46,7 @@ class MessageSent implements ShouldBroadcast
      */
     public function broadcastAs(): string
     {
-        return 'message.sent';
+        return 'message.status';
     }
 
     /**
@@ -49,16 +55,10 @@ class MessageSent implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'id' => $this->message->id,
-            'conversation_id' => $this->message->conversation_id,
-            'user_id' => $this->message->user_id,
-            'body' => $this->message->body,
-            'status' => $this->message->status,
-            'created_at' => $this->message->created_at->toISOString(),
-            'user' => [
-                'id' => $this->message->user->id,
-                'name' => $this->message->user->name,
-            ],
+            'message_id' => $this->messageId,
+            'conversation_id' => $this->conversationId,
+            'status' => $this->status,
+            'updated_at' => $this->updatedAt,
         ];
     }
 }
