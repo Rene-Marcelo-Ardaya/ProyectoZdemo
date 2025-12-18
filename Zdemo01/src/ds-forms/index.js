@@ -11,6 +11,9 @@ import { DSComboBox } from './DSComboBox'
 import { DSCheckboxGroup } from './DSCheckboxGroup'
 import { DSRadioGroup } from './DSRadioGroup'
 import { DSTimeField } from './DSTimeField'
+import { DSButton, DSButtonGroup } from './DSButton'
+import { DSField, DSFieldInput, DSFieldsGrid, DSFieldsRow, DSColorField } from './DSField'
+import { DSImageUpload, DSImagesGrid } from './DSImageUpload'
 
 export {
   DSFormPanel,
@@ -25,6 +28,17 @@ export {
   DSCheckboxGroup,
   DSRadioGroup,
   DSTimeField,
+
+  // New components
+  DSButton,
+  DSButtonGroup,
+  DSField,
+  DSFieldInput,
+  DSFieldsGrid,
+  DSFieldsRow,
+  DSColorField,
+  DSImageUpload,
+  DSImagesGrid,
 }
 
 const placeholder = (name, children) =>

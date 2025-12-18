@@ -4,8 +4,17 @@ import { DSDialog } from './DSDialog'
 import { DSLoadingMask } from './DSLoadingMask'
 import { DSMessageBox } from './DSMessageBox'
 import { DSOverlayProvider, useMessageBox } from './DSOverlayContext'
+import { DSModal, DSModalSection, DSModalGrid } from './DSModal'
+import { DSAlert } from './DSAlert'
+import { DSLoading, DSSkeleton, DSSkeletonGroup, DSSkeletonRow, DSEmpty, DSErrorState } from './DSLoading'
 
-export { DSWindow, DSDialog, DSLoadingMask, DSMessageBox, DSOverlayProvider, useMessageBox }
+export {
+  DSWindow, DSDialog, DSLoadingMask, DSMessageBox, DSOverlayProvider, useMessageBox,
+  // New components
+  DSModal, DSModalSection, DSModalGrid,
+  DSAlert,
+  DSLoading, DSSkeleton, DSSkeletonGroup, DSSkeletonRow, DSEmpty, DSErrorState
+}
 
 const placeholder = (name, children) =>
   React.createElement(

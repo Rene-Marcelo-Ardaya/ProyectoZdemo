@@ -2,9 +2,19 @@ import React from 'react'
 import { DSPanel } from './DSPanel'
 import { DSTabs } from './DSTabs'
 import { DSAccordion } from './DSAccordion'
-import { DSBorderLayout } from './DSBorderLayout'
+import { DSPage, DSPageHeader, DSPageContent, DSPageGrid, DSBreadcrumbs, DSToolbar, DSToolbarGroup, DSToolbarSeparator, DSToolbarSpacer } from './DSPage'
+import { DSSection, DSSubsection, DSSectionDivider } from './DSSection'
 
-export { DSPanel, DSTabs, DSAccordion, DSBorderLayout }
+export {
+  DSPanel,
+  DSTabs,
+  DSAccordion,
+  DSBorderLayout,
+
+  // New components
+  DSPage, DSPageHeader, DSPageContent, DSPageGrid, DSBreadcrumbs, DSToolbar, DSToolbarGroup, DSToolbarSeparator, DSToolbarSpacer,
+  DSSection, DSSubsection, DSSectionDivider
+}
 
 const placeholder = (name, children) =>
   React.createElement(
