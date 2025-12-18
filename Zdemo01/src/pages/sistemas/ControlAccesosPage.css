@@ -1,62 +1,18 @@
 /**
  * ControlAccesosPage Styles
- * Diseño clásico tipo "enterprise/legacy" - Usa variables de tema
+ * Estilos ESPECÍFICOS de esta página - Los generales vienen de ds-components
  */
 
 /* ============================================
-   PAGE LAYOUT
+   ALERTA MARGIN
    ============================================ */
-.accesos-page {
-    padding: 16px 20px;
-    min-height: 100%;
-    background: var(--ds-primaryBg);
-}
-
-.accesos-page__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--ds-surfaceBorder);
-}
-
-.accesos-page__title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--ds-primaryText);
-}
-
-.accesos-page__title h1 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-    font-family: Tahoma, Arial, sans-serif;
+.accesos-alert-margin {
+    margin-bottom: 12px;
 }
 
 /* ============================================
-   PANEL
+   PANEL COUNT (específico de esta página)
    ============================================ */
-.accesos-panel {
-    background: var(--ds-panelBg);
-    border: 1px solid var(--ds-panelBorder);
-    box-shadow: var(--ds-shadowSm);
-}
-
-.accesos-panel__header {
-    background: linear-gradient(to bottom, var(--ds-headerGradTop) 0%, var(--ds-headerGradBottom) 100%);
-    border-bottom: 1px solid var(--ds-panelBorder);
-    padding: 8px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--ds-panelHeaderText);
-    font-family: Tahoma, Arial, sans-serif;
-}
-
 .accesos-panel__count {
     font-weight: 400;
     font-size: 11px;
@@ -67,333 +23,7 @@
 }
 
 /* ============================================
-   TABLE
-   ============================================ */
-.accesos-table-wrapper {
-    overflow-x: auto;
-}
-
-.accesos-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-    font-family: Tahoma, Arial, sans-serif;
-}
-
-.accesos-table th {
-    background: linear-gradient(to bottom, var(--ds-surfaceBg) 0%, var(--ds-headerGradBottom) 100%);
-    border: 1px solid var(--ds-surfaceBorder);
-    border-top: none;
-    padding: 8px 10px;
-    text-align: left;
-    font-weight: 600;
-    color: var(--ds-primaryText);
-    white-space: nowrap;
-}
-
-.accesos-table td {
-    border: 1px solid var(--ds-surfaceBorder);
-    border-top: none;
-    padding: 7px 10px;
-    color: var(--ds-primaryText);
-    background: var(--ds-panelBg);
-    vertical-align: middle;
-}
-
-.accesos-table tbody tr:nth-child(even) td {
-    background: var(--ds-surfaceBg);
-}
-
-.accesos-table tbody tr:hover td {
-    background: var(--ds-hoverBg);
-}
-
-.accesos-table__empty {
-    text-align: center;
-    color: var(--ds-secondaryText);
-    font-style: italic;
-    padding: 30px !important;
-}
-
-.accesos-center {
-    text-align: center;
-}
-
-.accesos-code {
-    font-family: 'Consolas', 'Monaco', monospace;
-    font-size: 11px;
-    background: var(--ds-surfaceBg);
-    padding: 2px 6px;
-    border: 1px solid var(--ds-surfaceBorder);
-    color: var(--ds-secondaryText);
-}
-
-.accesos-count {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: var(--ds-infoBg);
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--ds-infoText);
-}
-
-.accesos-count--users {
-    background: #f0e6ff;
-    color: #5b3d99;
-}
-
-/* ============================================
-   BADGE
-   ============================================ */
-.accesos-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 2px;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-.accesos-badge.is-active {
-    background: var(--ds-successBg);
-    color: var(--ds-successText);
-    border: 1px solid var(--ds-successText);
-}
-
-.accesos-badge.is-inactive {
-    background: var(--ds-errorBg);
-    color: var(--ds-errorText);
-    border: 1px solid var(--ds-errorText);
-}
-
-/* ============================================
-   ACTIONS
-   ============================================ */
-.accesos-actions {
-    display: flex;
-    gap: 4px;
-}
-
-/* ============================================
-   BUTTONS
-   ============================================ */
-.accesos-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 5px 12px;
-    font-size: 12px;
-    font-family: Tahoma, Arial, sans-serif;
-    font-weight: 500;
-    border: 1px solid var(--ds-fieldBorder);
-    border-radius: 2px;
-    background: linear-gradient(to bottom, var(--ds-panelBg) 0%, var(--ds-surfaceBg) 100%);
-    color: var(--ds-primaryText);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.1s;
-}
-
-.accesos-btn:hover {
-    background: linear-gradient(to bottom, var(--ds-hoverBg) 0%, var(--ds-surfaceBg) 100%);
-    border-color: var(--ds-fieldBorderHover);
-}
-
-.accesos-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.accesos-btn--primary {
-    background: linear-gradient(to bottom, var(--ds-panelHeaderBg) 0%, var(--ds-toolbarBg) 100%);
-    border-color: var(--ds-toolbarBorder);
-    color: var(--ds-panelHeaderText);
-}
-
-.accesos-btn--primary:hover {
-    filter: brightness(1.05);
-}
-
-.accesos-btn--icon {
-    padding: 4px 6px;
-    min-width: 26px;
-    min-height: 26px;
-}
-
-.accesos-btn--danger {
-    color: var(--ds-errorText);
-}
-
-.accesos-btn--danger:hover {
-    background: linear-gradient(to bottom, var(--ds-errorBg) 0%, #ffcdd2 100%);
-    border-color: var(--ds-errorText);
-}
-
-/* ============================================
-   LOADING
-   ============================================ */
-.accesos-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 40px;
-    color: var(--ds-secondaryText);
-    font-size: 13px;
-}
-
-.spin {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* ============================================
-   MODAL
-   ============================================ */
-.accesos-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 5vh;
-    z-index: 1000;
-}
-
-.accesos-modal {
-    background: var(--ds-panelBg);
-    border: 1px solid var(--ds-panelBorder);
-    box-shadow: var(--ds-shadowMd);
-    min-width: 420px;
-    max-width: 90vw;
-}
-
-.accesos-modal--wide {
-    min-width: 700px;
-    max-width: 800px;
-}
-
-.accesos-modal__header {
-    background: linear-gradient(to bottom, var(--ds-headerGradTop) 0%, var(--ds-headerGradBottom) 100%);
-    border-bottom: 1px solid var(--ds-panelBorder);
-    padding: 8px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.accesos-modal__title {
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--ds-panelHeaderText);
-    font-family: Tahoma, Arial, sans-serif;
-}
-
-.accesos-modal__close {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: var(--ds-secondaryText);
-    padding: 2px;
-    display: flex;
-}
-
-.accesos-modal__close:hover {
-    color: var(--ds-errorText);
-}
-
-.accesos-modal__body {
-    padding: 16px;
-    background: var(--ds-surfaceBg);
-    max-height: 70vh;
-    overflow-y: auto;
-}
-
-.accesos-modal__footer {
-    padding: 10px 16px;
-    background: var(--ds-primaryBg);
-    border-top: 1px solid var(--ds-surfaceBorder);
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-}
-
-/* ============================================
-   FORM GRID (2 columnas)
-   ============================================ */
-.accesos-form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.accesos-form-col {
-    min-width: 0;
-}
-
-.accesos-form-section {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin: 0 0 12px 0;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--ds-surfaceBorder);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ds-panelHeaderText);
-    font-family: Tahoma, Arial, sans-serif;
-}
-
-.accesos-form-section-help {
-    font-size: 11px;
-    color: var(--ds-secondaryText);
-    margin-bottom: 10px;
-}
-
-/* ============================================
-   FORM
-   ============================================ */
-.accesos-form {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.accesos-form__field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    position: relative;
-}
-
-.accesos-form__label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--ds-primaryText);
-    font-family: Tahoma, Arial, sans-serif;
-}
-
-.accesos-form__required {
-    color: var(--ds-errorText);
-    margin-left: 2px;
-}
-
-/* ============================================
-   TOOLTIP (Ayuda contextual)
+   TOOLTIP (específico de esta página)
    ============================================ */
 .accesos-tooltip {
     position: relative;
@@ -446,26 +76,13 @@
     visibility: visible;
 }
 
-.accesos-input {
-    padding: 6px 8px;
-    font-size: 12px;
-    font-family: Tahoma, Arial, sans-serif;
-    border: 1px solid var(--ds-fieldBorder);
-    background: var(--ds-fieldBg);
-    color: var(--ds-fieldText);
-    border-radius: 0;
-    outline: none;
-    transition: border-color 0.15s;
-}
-
-.accesos-input:focus {
-    border-color: var(--ds-fieldBorderFocus);
-    box-shadow: 0 0 0 2px rgba(126, 173, 217, 0.25);
-}
-
-.accesos-input:disabled {
-    background: var(--ds-fieldDisabledBg);
-    color: var(--ds-secondaryText);
+/* ============================================
+   FORM (específico del modal)
+   ============================================ */
+.accesos-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
 .accesos-textarea {
@@ -489,7 +106,7 @@
 }
 
 /* ============================================
-   MENU TREE (Selector de menús)
+   MENU TREE (Selector de menús específico)
    ============================================ */
 .accesos-menu-tree {
     background: var(--ds-panelBg);
@@ -553,45 +170,4 @@
 .accesos-menu-tree__child input {
     width: 13px;
     height: 13px;
-}
-
-/* ============================================
-   ALERT
-   ============================================ */
-.accesos-alert {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 12px;
-    margin-bottom: 12px;
-    font-size: 12px;
-    border: 1px solid;
-    border-radius: 2px;
-}
-
-.accesos-alert--error {
-    background: var(--ds-errorBg);
-    border-color: var(--ds-errorText);
-    color: var(--ds-errorText);
-}
-
-.accesos-alert--success {
-    background: var(--ds-successBg);
-    border-color: var(--ds-successText);
-    color: var(--ds-successText);
-}
-
-.accesos-alert__dismiss {
-    margin-left: auto;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: inherit;
-    opacity: 0.7;
-    padding: 0;
-    display: flex;
-}
-
-.accesos-alert__dismiss:hover {
-    opacity: 1;
 }

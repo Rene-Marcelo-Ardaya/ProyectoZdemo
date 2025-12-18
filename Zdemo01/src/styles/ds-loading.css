@@ -1,0 +1,321 @@
+/**
+ * DSLoading Styles
+ * Componente de estados de carga reutilizable
+ */
+
+/* ============================================
+   LOADING CONTAINER
+   ============================================ */
+.ds-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 20px;
+    color: var(--ds-secondaryText, #5a6a85);
+    font-size: 13px;
+    font-family: Tahoma, Arial, sans-serif;
+}
+
+.ds-loading--inline {
+    flex-direction: row;
+    padding: 12px;
+}
+
+.ds-loading--fullscreen {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.9);
+    z-index: 9999;
+}
+
+.ds-loading--overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.85);
+    z-index: 10;
+}
+
+/* ============================================
+   SPINNER VARIANTS
+   ============================================ */
+
+/* Default Spinner */
+.ds-loading__spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--ds-surfaceBorder, #cfd8eb);
+    border-top-color: var(--ds-fieldBorderFocus, #3a6ea5);
+    border-radius: 50%;
+    animation: ds-loading-spin 0.8s linear infinite;
+}
+
+.ds-loading__spinner--sm {
+    width: 18px;
+    height: 18px;
+    border-width: 2px;
+}
+
+.ds-loading__spinner--lg {
+    width: 48px;
+    height: 48px;
+    border-width: 4px;
+}
+
+@keyframes ds-loading-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Dots Spinner */
+.ds-loading__dots {
+    display: flex;
+    gap: 6px;
+}
+
+.ds-loading__dot {
+    width: 8px;
+    height: 8px;
+    background: var(--ds-fieldBorderFocus, #3a6ea5);
+    border-radius: 50%;
+    animation: ds-loading-bounce 1.4s infinite ease-in-out both;
+}
+
+.ds-loading__dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.ds-loading__dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes ds-loading-bounce {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+    }
+
+    40% {
+        transform: scale(1);
+    }
+}
+
+/* Pulse Spinner */
+.ds-loading__pulse {
+    width: 32px;
+    height: 32px;
+    background: var(--ds-fieldBorderFocus, #3a6ea5);
+    border-radius: 50%;
+    animation: ds-loading-pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes ds-loading-pulse {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+/* Bar Spinner */
+.ds-loading__bar {
+    width: 100%;
+    max-width: 200px;
+    height: 4px;
+    background: var(--ds-surfaceBorder, #cfd8eb);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.ds-loading__bar-progress {
+    width: 40%;
+    height: 100%;
+    background: var(--ds-fieldBorderFocus, #3a6ea5);
+    border-radius: 2px;
+    animation: ds-loading-bar 1.5s infinite ease-in-out;
+}
+
+@keyframes ds-loading-bar {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(350%);
+    }
+}
+
+/* ============================================
+   LOADING TEXT
+   ============================================ */
+.ds-loading__text {
+    text-align: center;
+}
+
+.ds-loading__text--animated::after {
+    content: '';
+    animation: ds-loading-dots 1.5s infinite;
+}
+
+@keyframes ds-loading-dots {
+
+    0%,
+    20% {
+        content: '.';
+    }
+
+    40% {
+        content: '..';
+    }
+
+    60%,
+    100% {
+        content: '...';
+    }
+}
+
+/* ============================================
+   SKELETON LOADING
+   ============================================ */
+.ds-skeleton {
+    background: linear-gradient(90deg,
+            var(--ds-surfaceBg, #f5f7fb) 25%,
+            var(--ds-surfaceBorder, #e4ebf7) 50%,
+            var(--ds-surfaceBg, #f5f7fb) 75%);
+    background-size: 200% 100%;
+    animation: ds-skeleton-shimmer 1.5s infinite;
+    border-radius: 3px;
+}
+
+.ds-skeleton--text {
+    height: 14px;
+    width: 100%;
+}
+
+.ds-skeleton--title {
+    height: 20px;
+    width: 60%;
+}
+
+.ds-skeleton--avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.ds-skeleton--button {
+    width: 80px;
+    height: 32px;
+}
+
+.ds-skeleton--input {
+    height: 36px;
+    width: 100%;
+}
+
+.ds-skeleton--image {
+    height: 120px;
+    width: 100%;
+}
+
+@keyframes ds-skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Skeleton groups */
+.ds-skeleton-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ds-skeleton-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.ds-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--ds-secondaryText, #5a6a85);
+}
+
+.ds-empty__icon {
+    opacity: 0.4;
+}
+
+.ds-empty__title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ds-primaryText, #1f2d3d);
+}
+
+.ds-empty__message {
+    margin: 0;
+    font-size: 13px;
+    max-width: 300px;
+}
+
+.ds-empty__action {
+    margin-top: 8px;
+}
+
+/* ============================================
+   ERROR STATE
+   ============================================ */
+.ds-error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.ds-error-state__icon {
+    color: var(--ds-errorText, #dc2626);
+    opacity: 0.7;
+}
+
+.ds-error-state__title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ds-errorText, #dc2626);
+}
+
+.ds-error-state__message {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ds-secondaryText, #5a6a85);
+    max-width: 300px;
+}
+
+.ds-error-state__action {
+    margin-top: 8px;
+}

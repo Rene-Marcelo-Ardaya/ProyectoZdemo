@@ -1,6 +1,24 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Shield, Plus, Pencil, Trash2, X, Save, Loader2, AlertCircle, CheckCircle, Users, Menu as MenuIcon, ChevronRight, HelpCircle } from 'lucide-react';
+import { Shield, Plus, Pencil, Trash2, Save, Loader2, Users, Menu as MenuIcon, ChevronRight, HelpCircle } from 'lucide-react';
 import { getRoles, getRole, getMenusList, createRole, updateRole, deleteRole } from '../../services/roleService';
+
+// Importar componentes DS
+import {
+    DSPage,
+    DSPageHeader,
+    DSSection,
+    DSAlert,
+    DSButton,
+    DSLoading,
+    DSField,
+    DSBadge,
+    DSCount,
+    DSCode,
+    DSModal,
+    DSModalSection,
+    DSModalGrid,
+} from '../../ds-components';
+
 import './ControlAccesosPage.css';
 
 // ============================================
@@ -34,34 +52,6 @@ function useRoles() {
 }
 
 // ============================================
-// COMPONENTE: Modal
-// ============================================
-function Modal({ isOpen, onClose, title, children, footer, wide }) {
-    if (!isOpen) return null;
-
-    return (
-        <div className="accesos-modal-overlay" onClick={onClose}>
-            <div className={`accesos-modal ${wide ? 'accesos-modal--wide' : ''}`} onClick={e => e.stopPropagation()}>
-                <div className="accesos-modal__header">
-                    <span className="accesos-modal__title">{title}</span>
-                    <button className="accesos-modal__close" onClick={onClose} type="button">
-                        <X size={18} />
-                    </button>
-                </div>
-                <div className="accesos-modal__body">
-                    {children}
-                </div>
-                {footer && (
-                    <div className="accesos-modal__footer">
-                        {footer}
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-}
-
-// ============================================
 // COMPONENTE: Tooltip
 // ============================================
 function Tooltip({ text }) {
@@ -74,37 +64,25 @@ function Tooltip({ text }) {
 }
 
 // ============================================
-// COMPONENTE: FormField
+// COMPONENTE: FormField (usando DSField base)
 // ============================================
 function FormField({ label, children, required, help }) {
-    return (
-        <div className="accesos-form__field">
-            <label className="accesos-form__label">
-                {label}
-                {required && <span className="accesos-form__required">*</span>}
-                {help && <Tooltip text={help} />}
-            </label>
-            {children}
-        </div>
+    const labelContent = (
+        <>
+            {label}
+            {help && <Tooltip text={help} />}
+        </>
     );
-}
-
-// ============================================
-// COMPONENTE: Alert
-// ============================================
-function Alert({ type = 'error', message, onDismiss }) {
-    if (!message) return null;
-    const Icon = type === 'error' ? AlertCircle : CheckCircle;
 
     return (
-        <div className={`accesos-alert accesos-alert--${type}`}>
-            <Icon size={16} />
-            <span>{message}</span>
-            {onDismiss && (
-                <button onClick={onDismiss} className="accesos-alert__dismiss">
-                    <X size={14} />
-                </button>
-            )}
+        <div className="ds-field">
+            <label className="ds-field__label">
+                <span className="ds-field__label-text">{labelContent}</span>
+                {required && <span className="ds-field__required">*</span>}
+            </label>
+            <div className="ds-field__control-wrapper">
+                {children}
+            </div>
         </div>
     );
 }
@@ -120,10 +98,8 @@ function MenuTree({ menus, selectedIds, onChange }) {
         const isSelected = selectedIds.includes(menuId);
 
         if (isSelected) {
-            // Deseleccionar este y sus hijos
             onChange(selectedIds.filter(id => !allIds.includes(id)));
         } else {
-            // Seleccionar este y sus hijos
             onChange([...new Set([...selectedIds, ...allIds])]);
         }
     };
@@ -135,7 +111,6 @@ function MenuTree({ menus, selectedIds, onChange }) {
         if (isSelected) {
             newIds = selectedIds.filter(id => id !== childId);
         } else {
-            // Asegurar que el padre esté seleccionado
             newIds = [...new Set([...selectedIds, childId, parentId])];
         }
         onChange(newIds);
@@ -211,7 +186,6 @@ export function ControlAccesosPage() {
 
     // Abrir modal para editar
     const openEdit = async (role) => {
-        // Cargar detalle del rol con sus menús
         const roleDetail = await getRole(role.id);
         if (roleDetail) {
             setEditingRole(role);
@@ -246,7 +220,7 @@ export function ControlAccesosPage() {
         setForm(prev => ({
             ...prev,
             name,
-            slug: editingRole ? prev.slug : slug // Solo auto-generar en creación
+            slug: editingRole ? prev.slug : slug
         }));
     };
 
@@ -318,37 +292,40 @@ export function ControlAccesosPage() {
     };
 
     return (
-        <div className="accesos-page">
+        <DSPage>
             {/* HEADER */}
-            <div className="accesos-page__header">
-                <div className="accesos-page__title">
-                    <Shield size={22} />
-                    <h1>Control de Accesos</h1>
-                </div>
-                <button className="accesos-btn accesos-btn--primary" onClick={openCreate}>
-                    <Plus size={16} />
-                    <span>Nuevo Rol</span>
-                </button>
-            </div>
+            <DSPageHeader
+                title="Control de Accesos"
+                icon={<Shield size={22} />}
+                actions={
+                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                        Nuevo Rol
+                    </DSButton>
+                }
+            />
 
             {/* ALERTAS */}
-            <Alert type="success" message={formSuccess} onDismiss={() => setFormSuccess(null)} />
-            <Alert type="error" message={loadError} />
+            {formSuccess && (
+                <DSAlert variant="success" dismissible onDismiss={() => setFormSuccess(null)} className="accesos-alert-margin">
+                    {formSuccess}
+                </DSAlert>
+            )}
+            {loadError && (
+                <DSAlert variant="error" className="accesos-alert-margin">
+                    {loadError}
+                </DSAlert>
+            )}
 
             {/* TABLA */}
-            <div className="accesos-panel">
-                <div className="accesos-panel__header">
-                    <span>Perfiles y Roles del Sistema</span>
-                    <span className="accesos-panel__count">{roles.length} roles</span>
-                </div>
-                <div className="accesos-table-wrapper">
+            <DSSection
+                title="Perfiles y Roles del Sistema"
+                actions={<span className="accesos-panel__count">{roles.length} roles</span>}
+            >
+                <div className="ds-table-wrapper">
                     {loading ? (
-                        <div className="accesos-loading">
-                            <Loader2 size={24} className="spin" />
-                            <span>Cargando...</span>
-                        </div>
+                        <DSLoading text="Cargando..." />
                     ) : (
-                        <table className="accesos-table">
+                        <table className="ds-table ds-table--striped ds-table--hover">
                             <thead>
                                 <tr>
                                     <th style={{ width: '5%' }}>ID</th>
@@ -364,7 +341,7 @@ export function ControlAccesosPage() {
                             <tbody>
                                 {roles.length === 0 ? (
                                     <tr>
-                                        <td colSpan="8" className="accesos-table__empty">
+                                        <td colSpan="8" className="ds-table__empty">
                                             No hay roles registrados
                                         </td>
                                     </tr>
@@ -373,38 +350,39 @@ export function ControlAccesosPage() {
                                         <tr key={role.id}>
                                             <td>{role.id}</td>
                                             <td><strong>{role.name}</strong></td>
-                                            <td><code className="accesos-code">{role.slug}</code></td>
+                                            <td><DSCode>{role.slug}</DSCode></td>
                                             <td>{role.description || '-'}</td>
-                                            <td className="accesos-center">
-                                                <span className="accesos-count">{role.menus_count}</span>
+                                            <td className="ds-table__center">
+                                                <DSCount>{role.menus_count}</DSCount>
                                             </td>
-                                            <td className="accesos-center">
-                                                <span className="accesos-count accesos-count--users">
-                                                    <Users size={12} /> {role.users_count}
-                                                </span>
+                                            <td className="ds-table__center">
+                                                <DSCount variant="purple" icon={<Users size={12} />}>
+                                                    {role.users_count}
+                                                </DSCount>
                                             </td>
                                             <td>
-                                                <span className={`accesos-badge ${role.is_active == 1 || role.is_active === true ? 'is-active' : 'is-inactive'}`}>
+                                                <DSBadge variant={role.is_active == 1 || role.is_active === true ? 'success' : 'error'}>
                                                     {role.is_active == 1 || role.is_active === true ? 'Activo' : 'Inactivo'}
-                                                </span>
+                                                </DSBadge>
                                             </td>
                                             <td>
-                                                <div className="accesos-actions">
-                                                    <button
-                                                        className="accesos-btn accesos-btn--icon"
+                                                <div className="ds-table__actions">
+                                                    <DSButton
+                                                        size="sm"
+                                                        iconOnly
+                                                        icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(role)}
                                                         title="Editar"
-                                                    >
-                                                        <Pencil size={15} />
-                                                    </button>
-                                                    <button
-                                                        className="accesos-btn accesos-btn--icon accesos-btn--danger"
+                                                    />
+                                                    <DSButton
+                                                        size="sm"
+                                                        variant="outline-danger"
+                                                        iconOnly
+                                                        icon={<Trash2 size={15} />}
                                                         onClick={() => handleDelete(role)}
                                                         title="Eliminar"
                                                         disabled={role.users_count > 0}
-                                                    >
-                                                        <Trash2 size={15} />
-                                                    </button>
+                                                    />
                                                 </div>
                                             </td>
                                         </tr>
@@ -414,113 +392,118 @@ export function ControlAccesosPage() {
                         </table>
                     )}
                 </div>
-            </div>
+            </DSSection>
 
             {/* MODAL */}
-            <Modal
+            <DSModal
                 isOpen={modalOpen}
                 onClose={closeModal}
                 title={editingRole ? 'Editar Rol' : 'Nuevo Rol'}
-                wide={true}
+                size="xl"
                 footer={
                     <>
-                        <button className="accesos-btn" onClick={closeModal} disabled={saving}>
+                        <DSButton onClick={closeModal} disabled={saving}>
                             Cancelar
-                        </button>
-                        <button
-                            className="accesos-btn accesos-btn--primary"
+                        </DSButton>
+                        <DSButton
+                            variant="primary"
                             onClick={handleSave}
                             disabled={saving}
+                            loading={saving}
+                            icon={!saving && <Save size={16} />}
                         >
-                            {saving ? <Loader2 size={16} className="spin" /> : <Save size={16} />}
-                            <span>{saving ? 'Guardando...' : 'Guardar'}</span>
-                        </button>
+                            {saving ? 'Guardando...' : 'Guardar'}
+                        </DSButton>
                     </>
                 }
             >
-                <Alert type="error" message={formError} onDismiss={() => setFormError(null)} />
+                {formError && (
+                    <DSAlert variant="error" dismissible onDismiss={() => setFormError(null)} className="accesos-alert-margin">
+                        {formError}
+                    </DSAlert>
+                )}
 
-                <div className="accesos-form-grid">
+                <DSModalGrid>
                     {/* Columna izquierda: Datos del rol */}
-                    <div className="accesos-form-col">
-                        <h3 className="accesos-form-section">Información del Rol</h3>
-
-                        <form className="accesos-form" onSubmit={e => e.preventDefault()}>
-                            <FormField
-                                label="Nombre del Rol"
-                                required
-                                help="Nombre descriptivo del rol. Ej: Administrador, Vendedor, Soporte."
-                            >
-                                <input
-                                    type="text"
-                                    className="accesos-input"
-                                    value={form.name}
-                                    onChange={handleNameChange}
-                                    placeholder="Ej: Administrador"
-                                />
-                            </FormField>
-
-                            <FormField
-                                label="Identificador (slug)"
-                                required
-                                help="Código único para uso interno. Se genera automáticamente. No se puede cambiar después de crear."
-                            >
-                                <input
-                                    type="text"
-                                    className="accesos-input"
-                                    value={form.slug}
-                                    onChange={handleChange('slug')}
-                                    placeholder="admin"
-                                    disabled={!!editingRole}
-                                />
-                            </FormField>
-
-                            <FormField
-                                label="Descripción"
-                                help="Breve explicación del propósito del rol y sus responsabilidades."
-                            >
-                                <textarea
-                                    className="accesos-input accesos-textarea"
-                                    value={form.description}
-                                    onChange={handleChange('description')}
-                                    placeholder="Descripción del rol..."
-                                    rows={3}
-                                />
-                            </FormField>
-
-                            <FormField
-                                label="Estado"
-                                help="Los roles inactivos no se pueden asignar a nuevos usuarios."
-                            >
-                                <label className="accesos-checkbox">
+                    <div>
+                        <DSModalSection title="Información del Rol">
+                            <form className="accesos-form" onSubmit={e => e.preventDefault()}>
+                                <FormField
+                                    label="Nombre del Rol"
+                                    required
+                                    help="Nombre descriptivo del rol. Ej: Administrador, Vendedor, Soporte."
+                                >
                                     <input
-                                        type="checkbox"
-                                        checked={form.is_active}
-                                        onChange={handleChange('is_active')}
+                                        type="text"
+                                        className="ds-field__control"
+                                        value={form.name}
+                                        onChange={handleNameChange}
+                                        placeholder="Ej: Administrador"
                                     />
-                                    <span>Rol Activo</span>
-                                </label>
-                            </FormField>
-                        </form>
+                                </FormField>
+
+                                <FormField
+                                    label="Identificador (slug)"
+                                    required
+                                    help="Código único para uso interno. Se genera automáticamente."
+                                >
+                                    <input
+                                        type="text"
+                                        className="ds-field__control"
+                                        value={form.slug}
+                                        onChange={handleChange('slug')}
+                                        placeholder="admin"
+                                        disabled={!!editingRole}
+                                    />
+                                </FormField>
+
+                                <FormField
+                                    label="Descripción"
+                                    help="Breve explicación del propósito del rol."
+                                >
+                                    <textarea
+                                        className="ds-field__control accesos-textarea"
+                                        value={form.description}
+                                        onChange={handleChange('description')}
+                                        placeholder="Descripción del rol..."
+                                        rows={3}
+                                    />
+                                </FormField>
+
+                                <FormField
+                                    label="Estado"
+                                    help="Los roles inactivos no se pueden asignar."
+                                >
+                                    <label className="accesos-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={form.is_active}
+                                            onChange={handleChange('is_active')}
+                                        />
+                                        <span>Rol Activo</span>
+                                    </label>
+                                </FormField>
+                            </form>
+                        </DSModalSection>
                     </div>
 
                     {/* Columna derecha: Menús */}
-                    <div className="accesos-form-col">
-                        <h3 className="accesos-form-section">
-                            <MenuIcon size={16} /> Menús Asignados
-                        </h3>
-                        <div className="accesos-form-section-help">
-                            Selecciona los menús que este rol podrá visualizar:
-                        </div>
-                        <MenuTree
-                            menus={menus}
-                            selectedIds={form.menu_ids}
-                            onChange={(ids) => setForm(prev => ({ ...prev, menu_ids: ids }))}
-                        />
+                    <div>
+                        <DSModalSection
+                            title="Menús Asignados"
+                            icon={<MenuIcon size={16} />}
+                            help="Selecciona los menús que este rol podrá visualizar:"
+                        >
+                            <MenuTree
+                                menus={menus}
+                                selectedIds={form.menu_ids}
+                                onChange={(ids) => setForm(prev => ({ ...prev, menu_ids: ids }))}
+                            />
+                        </DSModalSection>
                     </div>
-                </div>
-            </Modal>
-        </div>
+                </DSModalGrid>
+            </DSModal>
+        </DSPage>
     );
 }
 

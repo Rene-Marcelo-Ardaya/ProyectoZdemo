@@ -1,221 +1,47 @@
 /**
  * ConfiguracionPage Styles
- * Diseño visual con preview del login - Usa variables de tema
+ * Estilos ESPECÍFICOS de esta página - Los generales vienen de ds-components
  */
 
 /* ============================================
-   PAGE LAYOUT
+   ESTILOS ESPECÍFICOS DE CAMPOS CON SAVE INLINE
    ============================================ */
-.config-page {
-    padding: 16px 20px;
-    min-height: 100%;
-    background: var(--ds-primaryBg);
-}
-
-.config-page__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--ds-surfaceBorder);
-}
-
-.config-page__title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--ds-primaryText);
-}
-
-.config-page__title h1 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-    font-family: Tahoma, Arial, sans-serif;
-}
-
-/* ============================================
-   CONTENT LAYOUT
-   ============================================ */
-.config-content {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-/* ============================================
-   BRANDING SECTION LAYOUT (Formularios + Preview)
-   ============================================ */
-/* ============================================
-   IFRAME PREVIEW
-   ============================================ */
-.config-iframe-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
-    height: 600px;
-    background: var(--ds-surfaceBg);
-    border: 1px solid var(--ds-fieldBorder);
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: var(--ds-shadowMd);
-}
-
-.config-iframe-preview {
-    width: 100%;
-    height: 100%;
-    border: none;
-    display: block;
-}
-
-/* Bloquea interacciones */
-.config-iframe-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    z-index: 10;
-}
-
-.config-section {
-    background: var(--ds-panelBg);
-    border: 1px solid var(--ds-panelBorder);
-    box-shadow: var(--ds-shadowSm);
-}
-
-.config-section__header {
-    background: linear-gradient(to bottom, var(--ds-headerGradTop) 0%, var(--ds-headerGradBottom) 100%);
-    border-bottom: 1px solid var(--ds-panelBorder);
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--ds-panelHeaderText);
-}
-
-.config-section__header h2 {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 600;
-    font-family: Tahoma, Arial, sans-serif;
-}
-
-.config-section__body {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.config-subsection {
-    border-top: 1px dashed var(--ds-surfaceBorder);
-    padding-top: 16px;
-    margin-top: 4px;
-}
-
-.config-subsection h4 {
-    margin: 0 0 8px 0;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--ds-secondaryText);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.config-hint {
-    margin: 0 0 12px 0;
-    font-size: 11px;
-    color: var(--ds-secondaryText);
-    font-style: italic;
-}
-
-/* ============================================
-   GRIDS
-   ============================================ */
-.config-grid-2 {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-}
-
-.config-images-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-}
-
-/* ============================================
-   FIELDS
-   ============================================ */
-.config-field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.config-field__label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--ds-primaryText);
-    font-family: Tahoma, Arial, sans-serif;
-}
-
-.config-field__help {
-    color: var(--ds-secondaryText);
-    cursor: help;
-    margin-left: 2px;
-}
-
 .config-field__row {
     display: flex;
     gap: 6px;
+    align-items: center;
 }
 
-/* ============================================
-   INPUTS
-   ============================================ */
-.config-input {
-    flex: 1;
-    padding: 8px 10px;
-    font-size: 12px;
-    font-family: Tahoma, Arial, sans-serif;
-    border: 1px solid var(--ds-fieldBorder);
-    background: var(--ds-fieldBg);
-    color: var(--ds-fieldText);
+.config-field__icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: var(--ds-surfaceBg, #f5f7fb);
+    border: 1px solid var(--ds-fieldBorder, #b8c8e0);
     border-radius: 2px;
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    color: var(--ds-secondaryText, #5a6a85);
+    flex-shrink: 0;
 }
 
-.config-input:focus {
-    border-color: var(--ds-fieldBorderFocus);
-    box-shadow: 0 0 0 2px rgba(126, 173, 217, 0.25);
-}
-
-.config-input--color {
-    width: 90px;
-    flex: none;
-    font-family: 'Consolas', monospace;
-    font-size: 11px;
+.config-field__input {
+    flex: 1;
+    min-width: 250px;
+    border-radius: 2px !important;
 }
 
 /* ============================================
-   COLOR PICKER
+   COLOR PICKER ESPECÍFICO
    ============================================ */
 .config-color-picker {
     width: 36px;
     height: 34px;
     padding: 2px;
-    border: 1px solid var(--ds-fieldBorder);
+    border: 1px solid var(--ds-fieldBorder, #b8c8e0);
     border-radius: 2px;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .config-color-picker::-webkit-color-swatch-wrapper {
@@ -227,13 +53,25 @@
     border-radius: 1px;
 }
 
+.config-color-input {
+    width: 90px !important;
+    flex: none !important;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
 /* ============================================
-   IMAGE FIELD
+   ESTILOS ESPECÍFICOS DE IMAGEN
    ============================================ */
 .config-image-field {
     display: flex;
     flex-direction: column;
     gap: 6px;
+}
+
+.config-image-field--small .config-image-preview {
+    max-height: 50px;
 }
 
 .config-image-box {
@@ -242,8 +80,8 @@
     align-items: center;
     gap: 10px;
     padding: 16px;
-    background: var(--ds-surfaceBg);
-    border: 1px dashed var(--ds-surfaceBorder);
+    background: var(--ds-surfaceBg, #f5f7fb);
+    border: 1px dashed var(--ds-surfaceBorder, #cfd8eb);
     border-radius: 4px;
 }
 
@@ -251,13 +89,9 @@
     max-width: 100%;
     max-height: 80px;
     object-fit: contain;
-    border: 1px solid var(--ds-surfaceBorder);
-    background: var(--ds-panelBg);
+    border: 1px solid var(--ds-surfaceBorder, #cfd8eb);
+    background: var(--ds-panelBg, #ffffff);
     padding: 4px;
-}
-
-.config-image-field--small .config-image-preview {
-    max-height: 50px;
 }
 
 .config-image-placeholder {
@@ -266,54 +100,9 @@
     align-items: center;
     justify-content: center;
     gap: 4px;
-    color: var(--ds-secondaryText);
+    color: var(--ds-secondaryText, #5a6a85);
     font-size: 11px;
     padding: 10px;
-}
-
-/* ============================================
-   BUTTONS
-   ============================================ */
-.config-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    padding: 8px 12px;
-    font-size: 11px;
-    font-family: Tahoma, Arial, sans-serif;
-    font-weight: 500;
-    border: 1px solid var(--ds-fieldBorder);
-    border-radius: 2px;
-    background: linear-gradient(to bottom, var(--ds-panelBg) 0%, var(--ds-surfaceBg) 100%);
-    color: var(--ds-primaryText);
-    cursor: pointer;
-    transition: all 0.1s;
-}
-
-.config-btn:hover {
-    background: linear-gradient(to bottom, var(--ds-hoverBg) 0%, var(--ds-surfaceBg) 100%);
-    border-color: var(--ds-fieldBorderHover);
-}
-
-.config-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.config-btn--save {
-    background: linear-gradient(to bottom, var(--ds-panelHeaderBg) 0%, var(--ds-toolbarBg) 100%);
-    border-color: var(--ds-toolbarBorder);
-    color: var(--ds-panelHeaderText);
-    padding: 8px 10px;
-}
-
-.config-btn--save:hover {
-    filter: brightness(1.05);
-}
-
-.config-btn--upload {
-    flex: 1;
 }
 
 .config-image-actions {
@@ -322,235 +111,21 @@
     width: 100%;
 }
 
-.config-btn--delete {
-    background: linear-gradient(to bottom, var(--ds-errorBg) 0%, #ffe6e6 100%);
-    border-color: var(--ds-errorText);
-    color: var(--ds-errorText);
-    padding: 8px 10px;
-    flex: none;
-}
-
-.config-btn--delete:hover {
-    filter: brightness(0.95);
-}
-
 /* ============================================
-   LOGIN PREVIEW
+   HINT TEXT
    ============================================ */
-.login-preview {
-    background: var(--ds-panelBg);
-    border: 1px solid var(--ds-panelBorder);
-    box-shadow: var(--ds-shadowMd);
-    overflow: hidden;
-}
-
-.login-preview__header {
-    background: linear-gradient(to bottom, #2c3e50 0%, #1a252f 100%);
-    padding: 10px 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #fff;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.login-preview__container {
-    display: flex;
-    height: 380px;
-}
-
-.login-preview__left {
-    flex: 0 0 40%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.login-preview__secondary-logo {
-    max-width: 90%;
-    max-height: 100px;
-    object-fit: contain;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-}
-
-.login-preview__brand-text {
-    color: #fff;
-    font-size: 18px;
-    font-weight: 700;
-    text-align: center;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.login-preview__right {
-    flex: 0 0 60%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    background: var(--ds-panelBg);
-}
-
-.login-preview__logo {
-    max-width: 140px;
-    max-height: 50px;
-    object-fit: contain;
-    margin-bottom: 16px;
-}
-
-.login-preview__title {
-    margin: 0 0 4px 0;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--ds-primaryText);
-}
-
-.login-preview__subtitle {
-    margin: 0 0 20px 0;
+.config-hint {
+    margin: 0 0 12px 0;
     font-size: 11px;
-    color: var(--ds-secondaryText);
-}
-
-.login-preview__form {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.login-preview__input {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 12px;
-    background: var(--ds-surfaceBg);
-    border: 1px solid var(--ds-fieldBorder);
-    border-radius: 4px;
-    font-size: 11px;
-    color: var(--ds-secondaryText);
-}
-
-.login-preview__button {
-    padding: 12px;
-    border: none;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: default;
-    margin-top: 6px;
+    color: var(--ds-secondaryText, #5a6a85);
+    font-style: italic;
 }
 
 /* ============================================
-   LOADING
+   ALERTA MARGIN
    ============================================ */
-.config-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 80px;
-    color: var(--ds-secondaryText);
-    font-size: 14px;
-}
-
-.spin {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* ============================================
-   ALERT
-   ============================================ */
-.config-alert {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
+.config-alert-margin {
     margin-bottom: 16px;
-    font-size: 12px;
-    border: 1px solid;
-    border-radius: 2px;
-}
-
-.config-alert--error {
-    background: var(--ds-errorBg);
-    border-color: var(--ds-errorText);
-    color: var(--ds-errorText);
-}
-
-.config-alert--success {
-    background: var(--ds-successBg);
-    border-color: var(--ds-successText);
-    color: var(--ds-successText);
-}
-
-.config-alert__dismiss {
-    margin-left: auto;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: inherit;
-    opacity: 0.7;
-    padding: 0;
-    display: flex;
-}
-
-.config-alert__dismiss:hover {
-    opacity: 1;
-}
-
-/* ============================================
-   RESPONSIVE
-   ============================================ */
-@media (max-width: 1100px) {
-    .config-branding-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .config-branding-preview {
-        position: static;
-        order: -1;
-    }
-
-    .login-preview__container {
-        height: 320px;
-    }
-}
-
-@media (max-width: 700px) {
-
-    .config-grid-2,
-    .config-images-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .login-preview__container {
-        flex-direction: column;
-        height: auto;
-    }
-
-    .login-preview__left,
-    .login-preview__right {
-        flex: none;
-        width: 100%;
-    }
-
-    .login-preview__left {
-        padding: 30px;
-    }
 }
 
 /* ============================================
@@ -560,8 +135,8 @@
     position: relative;
     width: 100%;
     height: 700px;
-    background: var(--ds-surfaceBg);
-    border: 1px solid var(--ds-fieldBorder);
+    background: var(--ds-surfaceBg, #f5f7fb);
+    border: 1px solid var(--ds-fieldBorder, #b8c8e0);
     border-radius: 4px;
     overflow: hidden;
 }
@@ -582,4 +157,18 @@
     height: 100%;
     background: transparent;
     z-index: 10;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    .config-field__row {
+        flex-wrap: wrap;
+    }
+
+    .config-color-input {
+        flex: 1 !important;
+        width: auto !important;
+    }
 }

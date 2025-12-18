@@ -1,0 +1,265 @@
+/**
+ * DSSection Styles
+ * Componente de sección/panel con header reutilizable
+ */
+
+/* ============================================
+   BASE SECTION
+   ============================================ */
+.ds-section {
+    background: var(--ds-panelBg, #ffffff);
+    border: 1px solid var(--ds-panelBorder, #c2d3ef);
+    border-radius: 3px;
+    box-shadow: var(--ds-shadowSm, 0 1px 2px rgba(0, 0, 0, 0.06));
+    overflow: hidden;
+}
+
+/* ============================================
+   SECTION HEADER
+   ============================================ */
+.ds-section__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: linear-gradient(to bottom, var(--ds-headerGradTop, #eef3fb) 0%, var(--ds-headerGradBottom, #dde6f4) 100%);
+    border-bottom: 1px solid var(--ds-panelBorder, #c2d3ef);
+    min-height: 38px;
+}
+
+.ds-section__header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-panelHeaderText, #2c4a70);
+    flex-shrink: 0;
+}
+
+.ds-section__title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: Tahoma, Arial, sans-serif;
+    color: var(--ds-panelHeaderText, #2c4a70);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ds-section__subtitle {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--ds-secondaryText, #5a6a85);
+    margin-left: 8px;
+}
+
+.ds-section__actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+/* ============================================
+   SECTION BODY
+   ============================================ */
+.ds-section__body {
+    padding: 16px;
+}
+
+.ds-section__body--flush {
+    padding: 0;
+}
+
+.ds-section__body--sm {
+    padding: 12px;
+}
+
+.ds-section__body--lg {
+    padding: 20px 24px;
+}
+
+/* ============================================
+   SECTION FOOTER
+   ============================================ */
+.ds-section__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--ds-surfaceBg, #f5f7fb);
+    border-top: 1px solid var(--ds-panelBorder, #c2d3ef);
+}
+
+.ds-section__footer--left {
+    justify-content: flex-start;
+}
+
+.ds-section__footer--center {
+    justify-content: center;
+}
+
+.ds-section__footer--space-between {
+    justify-content: space-between;
+}
+
+/* ============================================
+   SIZE VARIANTS
+   ============================================ */
+.ds-section--compact .ds-section__header {
+    padding: 8px 12px;
+    min-height: 32px;
+}
+
+.ds-section--compact .ds-section__title {
+    font-size: 12px;
+}
+
+.ds-section--compact .ds-section__body {
+    padding: 12px;
+}
+
+/* ============================================
+   STYLE VARIANTS
+   ============================================ */
+
+/* Flat - Sin gradiente en header */
+.ds-section--flat .ds-section__header {
+    background: var(--ds-surfaceBg, #f5f7fb);
+}
+
+/* Borderless */
+.ds-section--borderless {
+    border: none;
+    box-shadow: none;
+}
+
+/* Elevated */
+.ds-section--elevated {
+    box-shadow: var(--ds-shadowMd, 0 3px 8px rgba(0, 0, 0, 0.12));
+}
+
+/* No header border */
+.ds-section--seamless .ds-section__header {
+    border-bottom: none;
+}
+
+/* ============================================
+   COLOR VARIANTS
+   ============================================ */
+.ds-section--primary .ds-section__header {
+    background: linear-gradient(to bottom, var(--ds-toolbarGradTop, #dbe6f7) 0%, var(--ds-toolbarGradBottom, #c3d6f0) 100%);
+}
+
+.ds-section--success .ds-section__header {
+    background: linear-gradient(to bottom, #dcfce7 0%, #bbf7d0 100%);
+    border-bottom-color: #86efac;
+}
+
+.ds-section--success .ds-section__title,
+.ds-section--success .ds-section__header-icon {
+    color: #166534;
+}
+
+.ds-section--warning .ds-section__header {
+    background: linear-gradient(to bottom, #fef3c7 0%, #fde68a 100%);
+    border-bottom-color: #fcd34d;
+}
+
+.ds-section--warning .ds-section__title,
+.ds-section--warning .ds-section__header-icon {
+    color: #92400e;
+}
+
+.ds-section--danger .ds-section__header {
+    background: linear-gradient(to bottom, #fee2e2 0%, #fecaca 100%);
+    border-bottom-color: #fca5a5;
+}
+
+.ds-section--danger .ds-section__title,
+.ds-section--danger .ds-section__header-icon {
+    color: #991b1b;
+}
+
+.ds-section--info .ds-section__header {
+    background: linear-gradient(to bottom, #dbeafe 0%, #bfdbfe 100%);
+    border-bottom-color: #93c5fd;
+}
+
+.ds-section--info .ds-section__title,
+.ds-section--info .ds-section__header-icon {
+    color: #1e40af;
+}
+
+/* ============================================
+   COLLAPSIBLE
+   ============================================ */
+.ds-section--collapsible .ds-section__header {
+    cursor: pointer;
+    user-select: none;
+}
+
+.ds-section--collapsible .ds-section__header:hover {
+    filter: brightness(0.98);
+}
+
+.ds-section__collapse-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    margin-left: auto;
+}
+
+.ds-section--collapsed .ds-section__collapse-icon {
+    transform: rotate(-90deg);
+}
+
+.ds-section--collapsed .ds-section__body {
+    display: none;
+}
+
+.ds-section--collapsed .ds-section__footer {
+    display: none;
+}
+
+/* ============================================
+   SUBSECTION
+   ============================================ */
+.ds-subsection {
+    border-top: 1px dashed var(--ds-surfaceBorder, #cfd8eb);
+    padding-top: 16px;
+    margin-top: 16px;
+}
+
+.ds-subsection:first-child {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+.ds-subsection__title {
+    margin: 0 0 12px 0;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ds-secondaryText, #5a6a85);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   DIVIDER
+   ============================================ */
+.ds-section__divider {
+    height: 1px;
+    background: var(--ds-surfaceBorder, #cfd8eb);
+    margin: 16px 0;
+}
+
+.ds-section__divider--dashed {
+    background: transparent;
+    border-top: 1px dashed var(--ds-surfaceBorder, #cfd8eb);
+}

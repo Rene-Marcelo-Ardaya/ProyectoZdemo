@@ -1,0 +1,248 @@
+/**
+ * DSAlert Styles
+ * Componente de alertas/notificaciones reutilizable
+ */
+
+/* ============================================
+   BASE ALERT
+   ============================================ */
+.ds-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    font-size: 12px;
+    font-family: Tahoma, Arial, sans-serif;
+    border: 1px solid;
+    border-radius: 3px;
+    line-height: 1.5;
+}
+
+.ds-alert__icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+}
+
+.ds-alert__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.ds-alert__title {
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    font-size: 13px;
+}
+
+.ds-alert__message {
+    margin: 0;
+}
+
+.ds-alert__dismiss {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.6;
+    padding: 0;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.15s;
+}
+
+.ds-alert__dismiss:hover {
+    opacity: 1;
+}
+
+/* ============================================
+   COLOR VARIANTS
+   ============================================ */
+
+/* Success */
+.ds-alert--success {
+    background: var(--ds-successBg, #dcfce7);
+    border-color: var(--ds-successBorder, #86efac);
+    color: var(--ds-successText, #166534);
+}
+
+.ds-alert--success .ds-alert__icon {
+    color: #22c55e;
+}
+
+/* Error/Danger */
+.ds-alert--error,
+.ds-alert--danger {
+    background: var(--ds-errorBg, #fee2e2);
+    border-color: var(--ds-errorBorder, #fca5a5);
+    color: var(--ds-errorText, #991b1b);
+}
+
+.ds-alert--error .ds-alert__icon,
+.ds-alert--danger .ds-alert__icon {
+    color: #ef4444;
+}
+
+/* Warning */
+.ds-alert--warning {
+    background: var(--ds-warningBg, #fef3c7);
+    border-color: var(--ds-warningBorder, #fcd34d);
+    color: var(--ds-warningText, #92400e);
+}
+
+.ds-alert--warning .ds-alert__icon {
+    color: #f59e0b;
+}
+
+/* Info */
+.ds-alert--info {
+    background: var(--ds-infoBg, #dbeafe);
+    border-color: var(--ds-infoBorder, #93c5fd);
+    color: var(--ds-infoText, #1e40af);
+}
+
+.ds-alert--info .ds-alert__icon {
+    color: #3b82f6;
+}
+
+/* Neutral */
+.ds-alert--neutral {
+    background: var(--ds-surfaceBg, #f5f7fb);
+    border-color: var(--ds-surfaceBorder, #cfd8eb);
+    color: var(--ds-primaryText, #1f2d3d);
+}
+
+.ds-alert--neutral .ds-alert__icon {
+    color: var(--ds-secondaryText, #5a6a85);
+}
+
+/* ============================================
+   SIZE VARIANTS
+   ============================================ */
+.ds-alert--sm {
+    padding: 8px 10px;
+    font-size: 11px;
+    gap: 8px;
+}
+
+.ds-alert--sm .ds-alert__title {
+    font-size: 12px;
+}
+
+.ds-alert--lg {
+    padding: 16px 18px;
+    font-size: 14px;
+    gap: 12px;
+}
+
+.ds-alert--lg .ds-alert__title {
+    font-size: 15px;
+}
+
+/* ============================================
+   STYLE VARIANTS
+   ============================================ */
+
+/* Filled - Fondo sólido */
+.ds-alert--filled.ds-alert--success {
+    background: #22c55e;
+    border-color: #22c55e;
+    color: #ffffff;
+}
+
+.ds-alert--filled.ds-alert--success .ds-alert__icon {
+    color: #ffffff;
+}
+
+.ds-alert--filled.ds-alert--error {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+}
+
+.ds-alert--filled.ds-alert--error .ds-alert__icon {
+    color: #ffffff;
+}
+
+.ds-alert--filled.ds-alert--warning {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    color: #1f2d3d;
+}
+
+.ds-alert--filled.ds-alert--warning .ds-alert__icon {
+    color: #1f2d3d;
+}
+
+.ds-alert--filled.ds-alert--info {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: #ffffff;
+}
+
+.ds-alert--filled.ds-alert--info .ds-alert__icon {
+    color: #ffffff;
+}
+
+/* Outline - Solo borde */
+.ds-alert--outline {
+    background: transparent;
+}
+
+/* ============================================
+   INLINE VARIANT (Para mensajes de formulario)
+   ============================================ */
+.ds-alert--inline {
+    padding: 6px 10px;
+    border-radius: 2px;
+    font-size: 11px;
+}
+
+/* ============================================
+   BANNER VARIANT (Ancho completo)
+   ============================================ */
+.ds-alert--banner {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+}
+
+/* ============================================
+   ANIMATION
+   ============================================ */
+.ds-alert--animate-in {
+    animation: ds-alert-slide-in 0.25s ease-out;
+}
+
+.ds-alert--animate-out {
+    animation: ds-alert-slide-out 0.2s ease-in forwards;
+}
+
+@keyframes ds-alert-slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ds-alert-slide-out {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+}

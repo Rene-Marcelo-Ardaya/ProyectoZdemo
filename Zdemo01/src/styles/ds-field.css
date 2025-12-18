@@ -1,0 +1,337 @@
+/**
+ * DSField Styles
+ * Componente wrapper para campos de formulario
+ */
+
+/* ============================================
+   BASE FIELD
+   ============================================ */
+.ds-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* ============================================
+   FIELD LABEL
+   ============================================ */
+.ds-field__label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: Tahoma, Arial, sans-serif;
+    color: var(--ds-primaryText, #1f2d3d);
+}
+
+.ds-field__label-text {
+    flex: 1;
+}
+
+.ds-field__required {
+    color: var(--ds-errorText, #dc2626);
+    font-weight: 700;
+}
+
+.ds-field__optional {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--ds-secondaryText, #5a6a85);
+    font-style: italic;
+}
+
+.ds-field__tooltip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-secondaryText, #5a6a85);
+    cursor: help;
+}
+
+.ds-field__tooltip:hover {
+    color: var(--ds-primaryText, #1f2d3d);
+}
+
+/* ============================================
+   FIELD CONTROL (Input wrapper)
+   ============================================ */
+.ds-field__control-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ds-field__control {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 12px;
+    font-family: Tahoma, Arial, sans-serif;
+    border: 1px solid var(--ds-fieldBorder, #b8c8e0);
+    background: var(--ds-fieldBg, #ffffff);
+    color: var(--ds-fieldText, #1f2d3d);
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    width: 100%;
+}
+
+.ds-field__control:focus {
+    border-color: var(--ds-fieldBorderFocus, #3a6ea5);
+    box-shadow: 0 0 0 2px rgba(58, 110, 165, 0.2);
+}
+
+.ds-field__control:disabled {
+    background: var(--ds-fieldDisabledBg, #e3eaf5);
+    color: var(--ds-disabledText, #94a3b8);
+    cursor: not-allowed;
+}
+
+.ds-field__control::placeholder {
+    color: var(--ds-secondaryText, #5a6a85);
+    opacity: 0.7;
+}
+
+/* ============================================
+   FIELD WITH ICON
+   ============================================ */
+.ds-field__icon {
+    position: absolute;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-secondaryText, #5a6a85);
+    pointer-events: none;
+}
+
+.ds-field__control--with-icon-left {
+    padding-left: 32px;
+}
+
+.ds-field__icon--right {
+    left: auto;
+    right: 10px;
+}
+
+.ds-field__control--with-icon-right {
+    padding-right: 32px;
+}
+
+/* ============================================
+   FIELD WITH ADDON (Prefix/Suffix)
+   ============================================ */
+.ds-field__addon {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    font-size: 12px;
+    background: var(--ds-surfaceBg, #f5f7fb);
+    border: 1px solid var(--ds-fieldBorder, #b8c8e0);
+    color: var(--ds-secondaryText, #5a6a85);
+}
+
+.ds-field__addon--prefix {
+    border-right: none;
+    border-radius: 2px 0 0 2px;
+}
+
+.ds-field__addon--suffix {
+    border-left: none;
+    border-radius: 0 2px 2px 0;
+}
+
+.ds-field__control-wrapper--with-prefix .ds-field__control {
+    border-radius: 0 2px 2px 0;
+}
+
+.ds-field__control-wrapper--with-suffix .ds-field__control {
+    border-radius: 2px 0 0 2px;
+}
+
+.ds-field__control-wrapper--with-prefix.ds-field__control-wrapper--with-suffix .ds-field__control {
+    border-radius: 0;
+}
+
+/* ============================================
+   HELP TEXT
+   ============================================ */
+.ds-field__help {
+    font-size: 11px;
+    color: var(--ds-secondaryText, #5a6a85);
+    margin-top: 2px;
+}
+
+/* ============================================
+   ERROR STATE
+   ============================================ */
+.ds-field--error .ds-field__control {
+    border-color: var(--ds-errorText, #dc2626);
+}
+
+.ds-field--error .ds-field__control:focus {
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+}
+
+.ds-field__error {
+    font-size: 11px;
+    color: var(--ds-errorText, #dc2626);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ============================================
+   SUCCESS STATE
+   ============================================ */
+.ds-field--success .ds-field__control {
+    border-color: var(--ds-successText, #16a34a);
+}
+
+.ds-field--success .ds-field__control:focus {
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+}
+
+.ds-field__success {
+    font-size: 11px;
+    color: var(--ds-successText, #16a34a);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ============================================
+   SIZE VARIANTS
+   ============================================ */
+.ds-field--sm .ds-field__label {
+    font-size: 11px;
+}
+
+.ds-field--sm .ds-field__control {
+    padding: 6px 8px;
+    font-size: 11px;
+}
+
+.ds-field--lg .ds-field__label {
+    font-size: 13px;
+}
+
+.ds-field--lg .ds-field__control {
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+/* ============================================
+   HORIZONTAL LAYOUT
+   ============================================ */
+.ds-field--horizontal {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+
+.ds-field--horizontal .ds-field__label {
+    flex: 0 0 120px;
+    justify-content: flex-end;
+    text-align: right;
+}
+
+.ds-field--horizontal .ds-field__control-wrapper {
+    flex: 1;
+}
+
+.ds-field--horizontal .ds-field__help,
+.ds-field--horizontal .ds-field__error {
+    margin-left: 132px;
+}
+
+/* ============================================
+   INLINE LAYOUT
+   ============================================ */
+.ds-field--inline {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.ds-field--inline .ds-field__control-wrapper {
+    flex: 1;
+}
+
+/* ============================================
+   GRID LAYOUTS
+   ============================================ */
+.ds-fields-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.ds-fields-grid--2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.ds-fields-grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.ds-fields-grid--4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 768px) {
+
+    .ds-fields-grid--2,
+    .ds-fields-grid--3,
+    .ds-fields-grid--4 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================
+   ROW LAYOUT
+   ============================================ */
+.ds-fields-row {
+    display: flex;
+    gap: 12px;
+}
+
+.ds-fields-row .ds-field {
+    flex: 1;
+}
+
+@media (max-width: 600px) {
+    .ds-fields-row {
+        flex-direction: column;
+    }
+}
+
+/* ============================================
+   COLOR FIELD
+   ============================================ */
+.ds-field__color-picker {
+    width: 36px;
+    height: 34px;
+    padding: 2px;
+    border: 1px solid var(--ds-fieldBorder, #b8c8e0);
+    border-radius: 2px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.ds-field__color-picker::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.ds-field__color-picker::-webkit-color-swatch {
+    border: none;
+    border-radius: 1px;
+}
+
+.ds-field__color-input {
+    flex: 1;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+}

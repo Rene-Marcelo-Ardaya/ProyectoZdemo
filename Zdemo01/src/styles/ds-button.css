@@ -1,0 +1,313 @@
+/**
+ * DSButton Styles
+ * Componente de botón reutilizable con variantes
+ */
+
+/* ============================================
+   BASE BUTTON
+   ============================================ */
+.ds-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-family: Tahoma, Arial, sans-serif;
+    font-weight: 600;
+    border: 1px solid var(--ds-fieldBorder, #b8c8e0);
+    border-radius: 3px;
+    background: linear-gradient(to bottom, var(--ds-panelBg, #ffffff) 0%, var(--ds-surfaceBg, #f5f7fb) 100%);
+    color: var(--ds-primaryText, #1f2d3d);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    white-space: nowrap;
+    outline: none;
+}
+
+.ds-button:hover:not(:disabled) {
+    background: linear-gradient(to bottom, var(--ds-hoverBg, #e4ebf7) 0%, var(--ds-surfaceBg, #f5f7fb) 100%);
+    border-color: var(--ds-fieldBorderHover, #9ab6dc);
+}
+
+.ds-button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.ds-button:focus-visible {
+    box-shadow: 0 0 0 2px rgba(126, 173, 217, 0.4);
+}
+
+.ds-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ============================================
+   SIZE VARIANTS
+   ============================================ */
+.ds-button--xs {
+    padding: 4px 8px;
+    font-size: 10px;
+    gap: 4px;
+}
+
+.ds-button--sm {
+    padding: 6px 10px;
+    font-size: 11px;
+}
+
+.ds-button--lg {
+    padding: 10px 18px;
+    font-size: 14px;
+}
+
+.ds-button--xl {
+    padding: 12px 24px;
+    font-size: 15px;
+}
+
+/* ============================================
+   COLOR VARIANTS
+   ============================================ */
+
+/* Primary - Toolbar style */
+.ds-button--primary {
+    background: linear-gradient(to bottom, var(--ds-toolbarGradTop, #dbe6f7) 0%, var(--ds-toolbarGradBottom, #c3d6f0) 100%);
+    border-color: var(--ds-toolbarBorder, #9ab6dc);
+    color: var(--ds-panelHeaderText, #0f1f33);
+}
+
+.ds-button--primary:hover:not(:disabled) {
+    filter: brightness(1.05);
+}
+
+/* Success - Verde */
+.ds-button--success {
+    background: linear-gradient(to bottom, #4ade80 0%, #22c55e 100%);
+    border-color: #16a34a;
+    color: #ffffff;
+}
+
+.ds-button--success:hover:not(:disabled) {
+    background: linear-gradient(to bottom, #22c55e 0%, #16a34a 100%);
+}
+
+/* Danger - Rojo */
+.ds-button--danger {
+    background: linear-gradient(to bottom, #f87171 0%, #ef4444 100%);
+    border-color: #dc2626;
+    color: #ffffff;
+}
+
+.ds-button--danger:hover:not(:disabled) {
+    background: linear-gradient(to bottom, #ef4444 0%, #dc2626 100%);
+}
+
+/* Warning - Amarillo/Naranja */
+.ds-button--warning {
+    background: linear-gradient(to bottom, #fbbf24 0%, #f59e0b 100%);
+    border-color: #d97706;
+    color: #1f2d3d;
+}
+
+.ds-button--warning:hover:not(:disabled) {
+    background: linear-gradient(to bottom, #f59e0b 0%, #d97706 100%);
+}
+
+/* Info - Azul */
+.ds-button--info {
+    background: linear-gradient(to bottom, #60a5fa 0%, #3b82f6 100%);
+    border-color: #2563eb;
+    color: #ffffff;
+}
+
+.ds-button--info:hover:not(:disabled) {
+    background: linear-gradient(to bottom, #3b82f6 0%, #2563eb 100%);
+}
+
+/* Ghost - Transparente */
+.ds-button--ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--ds-primaryText, #1f2d3d);
+}
+
+.ds-button--ghost:hover:not(:disabled) {
+    background: var(--ds-hoverBg, #e4ebf7);
+    border-color: var(--ds-surfaceBorder, #cfd8eb);
+}
+
+/* Link - Solo texto */
+.ds-button--link {
+    background: transparent;
+    border-color: transparent;
+    color: var(--ds-linkColor, #3a6ea5);
+    text-decoration: underline;
+    padding: 4px 8px;
+}
+
+.ds-button--link:hover:not(:disabled) {
+    color: var(--ds-linkHover, #2d5a8a);
+}
+
+/* Outline variants */
+.ds-button--outline-primary {
+    background: transparent;
+    border-color: var(--ds-toolbarBorder, #9ab6dc);
+    color: var(--ds-panelHeaderText, #0f1f33);
+}
+
+.ds-button--outline-primary:hover:not(:disabled) {
+    background: var(--ds-toolbarGradTop, #dbe6f7);
+}
+
+.ds-button--outline-success {
+    background: transparent;
+    border-color: #22c55e;
+    color: #16a34a;
+}
+
+.ds-button--outline-success:hover:not(:disabled) {
+    background: #dcfce7;
+}
+
+.ds-button--outline-danger {
+    background: transparent;
+    border-color: #ef4444;
+    color: #dc2626;
+}
+
+.ds-button--outline-danger:hover:not(:disabled) {
+    background: #fee2e2;
+}
+
+/* ============================================
+   SHAPE VARIANTS
+   ============================================ */
+.ds-button--rounded {
+    border-radius: 9999px;
+}
+
+.ds-button--square {
+    border-radius: 0;
+}
+
+/* ============================================
+   ICON VARIANTS
+   ============================================ */
+.ds-button--icon-only {
+    padding: 8px;
+    min-width: 34px;
+    min-height: 34px;
+}
+
+.ds-button--icon-only.ds-button--xs {
+    padding: 4px;
+    min-width: 24px;
+    min-height: 24px;
+}
+
+.ds-button--icon-only.ds-button--sm {
+    padding: 6px;
+    min-width: 28px;
+    min-height: 28px;
+}
+
+.ds-button--icon-only.ds-button--lg {
+    padding: 10px;
+    min-width: 40px;
+    min-height: 40px;
+}
+
+/* ============================================
+   WIDTH VARIANTS
+   ============================================ */
+.ds-button--block {
+    width: 100%;
+}
+
+.ds-button--auto {
+    width: auto;
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+.ds-button--loading {
+    position: relative;
+    pointer-events: none;
+    color: transparent !important;
+}
+
+.ds-button--loading::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: ds-button-spin 0.7s linear infinite;
+}
+
+.ds-button--loading.ds-button--primary::after,
+.ds-button--loading::after {
+    border-color: var(--ds-primaryText, #1f2d3d);
+    border-top-color: transparent;
+}
+
+.ds-button--loading.ds-button--success::after,
+.ds-button--loading.ds-button--danger::after,
+.ds-button--loading.ds-button--info::after {
+    border-color: #ffffff;
+    border-top-color: transparent;
+}
+
+@keyframes ds-button-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================
+   BUTTON GROUP
+   ============================================ */
+.ds-button-group {
+    display: inline-flex;
+}
+
+.ds-button-group .ds-button {
+    border-radius: 0;
+}
+
+.ds-button-group .ds-button:first-child {
+    border-radius: 3px 0 0 3px;
+}
+
+.ds-button-group .ds-button:last-child {
+    border-radius: 0 3px 3px 0;
+}
+
+.ds-button-group .ds-button:not(:last-child) {
+    border-right: none;
+}
+
+.ds-button-group--vertical {
+    flex-direction: column;
+}
+
+.ds-button-group--vertical .ds-button:first-child {
+    border-radius: 3px 3px 0 0;
+}
+
+.ds-button-group--vertical .ds-button:last-child {
+    border-radius: 0 0 3px 3px;
+}
+
+.ds-button-group--vertical .ds-button:not(:last-child) {
+    border-right: 1px solid var(--ds-fieldBorder);
+    border-bottom: none;
+}

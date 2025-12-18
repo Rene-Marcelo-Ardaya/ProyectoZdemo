@@ -1,0 +1,336 @@
+/**
+ * DSImageUpload Styles
+ * Componente de carga de imágenes reutilizable
+ */
+
+/* ============================================
+   BASE IMAGE UPLOAD
+   ============================================ */
+.ds-image-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ds-image-upload__label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: Tahoma, Arial, sans-serif;
+    color: var(--ds-primaryText, #1f2d3d);
+}
+
+/* ============================================
+   DROP ZONE
+   ============================================ */
+.ds-image-upload__dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px 16px;
+    background: var(--ds-surfaceBg, #f5f7fb);
+    border: 2px dashed var(--ds-surfaceBorder, #cfd8eb);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 120px;
+}
+
+.ds-image-upload__dropzone:hover {
+    border-color: var(--ds-fieldBorderFocus, #3a6ea5);
+    background: var(--ds-hoverBg, #e4ebf7);
+}
+
+.ds-image-upload__dropzone--dragging {
+    border-color: var(--ds-fieldBorderFocus, #3a6ea5);
+    background: rgba(58, 110, 165, 0.08);
+    border-style: solid;
+}
+
+.ds-image-upload__dropzone--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.ds-image-upload__dropzone-icon {
+    color: var(--ds-secondaryText, #5a6a85);
+    opacity: 0.6;
+}
+
+.ds-image-upload__dropzone-text {
+    text-align: center;
+    color: var(--ds-secondaryText, #5a6a85);
+    font-size: 12px;
+}
+
+.ds-image-upload__dropzone-text strong {
+    color: var(--ds-linkColor, #3a6ea5);
+    font-weight: 600;
+}
+
+.ds-image-upload__dropzone-hint {
+    font-size: 10px;
+    color: var(--ds-secondaryText, #5a6a85);
+    opacity: 0.8;
+}
+
+/* ============================================
+   PREVIEW
+   ============================================ */
+.ds-image-upload__preview-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 16px;
+    background: var(--ds-surfaceBg, #f5f7fb);
+    border: 1px solid var(--ds-surfaceBorder, #cfd8eb);
+    border-radius: 4px;
+}
+
+.ds-image-upload__preview {
+    max-width: 100%;
+    max-height: 120px;
+    object-fit: contain;
+    border: 1px solid var(--ds-surfaceBorder, #cfd8eb);
+    background: var(--ds-panelBg, #ffffff);
+    padding: 4px;
+    border-radius: 2px;
+}
+
+.ds-image-upload__preview--small {
+    max-height: 60px;
+}
+
+.ds-image-upload__preview--medium {
+    max-height: 100px;
+}
+
+.ds-image-upload__preview--large {
+    max-height: 160px;
+}
+
+/* ============================================
+   PLACEHOLDER (Sin imagen)
+   ============================================ */
+.ds-image-upload__placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: var(--ds-secondaryText, #5a6a85);
+    font-size: 11px;
+    padding: 16px;
+}
+
+.ds-image-upload__placeholder-icon {
+    opacity: 0.5;
+}
+
+/* ============================================
+   ACTIONS
+   ============================================ */
+.ds-image-upload__actions {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+}
+
+.ds-image-upload__btn-upload {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-family: Tahoma, Arial, sans-serif;
+    font-weight: 500;
+    border: 1px solid var(--ds-fieldBorder, #b8c8e0);
+    border-radius: 2px;
+    background: linear-gradient(to bottom, var(--ds-panelBg, #ffffff) 0%, var(--ds-surfaceBg, #f5f7fb) 100%);
+    color: var(--ds-primaryText, #1f2d3d);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.ds-image-upload__btn-upload:hover {
+    background: linear-gradient(to bottom, var(--ds-hoverBg, #e4ebf7) 0%, var(--ds-surfaceBg, #f5f7fb) 100%);
+    border-color: var(--ds-fieldBorderHover, #9ab6dc);
+}
+
+.ds-image-upload__btn-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 10px;
+    font-size: 11px;
+    font-family: Tahoma, Arial, sans-serif;
+    font-weight: 500;
+    border: 1px solid var(--ds-errorText, #dc2626);
+    border-radius: 2px;
+    background: linear-gradient(to bottom, var(--ds-errorBg, #fee2e2) 0%, #ffe6e6 100%);
+    color: var(--ds-errorText, #dc2626);
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+
+.ds-image-upload__btn-delete:hover {
+    filter: brightness(0.95);
+}
+
+.ds-image-upload__btn-delete:disabled,
+.ds-image-upload__btn-upload:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ============================================
+   FILE INFO
+   ============================================ */
+.ds-image-upload__file-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--ds-secondaryText, #5a6a85);
+    width: 100%;
+}
+
+.ds-image-upload__file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ds-image-upload__file-size {
+    flex-shrink: 0;
+    opacity: 0.8;
+}
+
+/* ============================================
+   ERROR STATE
+   ============================================ */
+.ds-image-upload--error .ds-image-upload__dropzone {
+    border-color: var(--ds-errorText, #dc2626);
+}
+
+.ds-image-upload__error {
+    font-size: 11px;
+    color: var(--ds-errorText, #dc2626);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+.ds-image-upload--loading .ds-image-upload__preview-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ds-image-upload__loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--ds-surfaceBorder, #cfd8eb);
+    border-top-color: var(--ds-fieldBorderFocus, #3a6ea5);
+    border-radius: 50%;
+    animation: ds-image-upload-spin 0.8s linear infinite;
+}
+
+@keyframes ds-image-upload-spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* ============================================
+   COMPACT VARIANT
+   ============================================ */
+.ds-image-upload--compact .ds-image-upload__dropzone {
+    padding: 12px;
+    min-height: 80px;
+}
+
+.ds-image-upload--compact .ds-image-upload__preview-container {
+    padding: 10px;
+}
+
+.ds-image-upload--compact .ds-image-upload__preview {
+    max-height: 60px;
+}
+
+/* ============================================
+   HORIZONTAL VARIANT
+   ============================================ */
+.ds-image-upload--horizontal .ds-image-upload__preview-container {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.ds-image-upload--horizontal .ds-image-upload__actions {
+    width: auto;
+    flex-direction: column;
+}
+
+/* ============================================
+   AVATAR VARIANT (Circular)
+   ============================================ */
+.ds-image-upload--avatar .ds-image-upload__dropzone {
+    width: 100px;
+    height: 100px;
+    min-height: unset;
+    border-radius: 50%;
+    padding: 8px;
+}
+
+.ds-image-upload--avatar .ds-image-upload__preview-container {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    padding: 4px;
+}
+
+.ds-image-upload--avatar .ds-image-upload__preview {
+    width: 100%;
+    height: 100%;
+    max-height: unset;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* ============================================
+   IMAGES GRID
+   ============================================ */
+.ds-images-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 600px) {
+    .ds-images-grid {
+        grid-template-columns: 1fr;
+    }
+}

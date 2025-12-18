@@ -1,0 +1,213 @@
+/**
+ * DSPage Styles
+ * Estilos para layouts de página comunes
+ */
+
+/* ============================================
+   PAGE CONTAINER
+   ============================================ */
+.ds-page {
+    padding: 16px 20px;
+    min-height: 100%;
+    background: var(--ds-primaryBg, #f5f8fc);
+}
+
+.ds-page--flush {
+    padding: 0;
+}
+
+.ds-page--compact {
+    padding: 12px 16px;
+}
+
+.ds-page--centered {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ============================================
+   PAGE HEADER
+   ============================================ */
+.ds-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--ds-surfaceBorder, #cfd8eb);
+}
+
+.ds-page-header--no-border {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.ds-page-header__left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ds-page-header__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ds-panelHeaderText, #2c4a70);
+}
+
+.ds-page-header__title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    font-family: Tahoma, Arial, sans-serif;
+    color: var(--ds-primaryText, #1f2d3d);
+}
+
+.ds-page-header__subtitle {
+    margin: 4px 0 0 0;
+    font-size: 12px;
+    color: var(--ds-secondaryText, #5a6a85);
+}
+
+.ds-page-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ============================================
+   PAGE CONTENT
+   ============================================ */
+.ds-page-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ds-page-content--compact {
+    gap: 16px;
+}
+
+.ds-page-content--relaxed {
+    gap: 24px;
+}
+
+/* ============================================
+   PAGE SECTIONS LAYOUT
+   ============================================ */
+.ds-page-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.ds-page-grid--2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.ds-page-grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.ds-page-grid--sidebar-left {
+    grid-template-columns: 280px 1fr;
+}
+
+.ds-page-grid--sidebar-right {
+    grid-template-columns: 1fr 280px;
+}
+
+@media (max-width: 1024px) {
+
+    .ds-page-grid--2,
+    .ds-page-grid--3,
+    .ds-page-grid--sidebar-left,
+    .ds-page-grid--sidebar-right {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================
+   BREADCRUMBS
+   ============================================ */
+.ds-breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    margin-bottom: 12px;
+}
+
+.ds-breadcrumb {
+    color: var(--ds-secondaryText, #5a6a85);
+    text-decoration: none;
+}
+
+.ds-breadcrumb:hover {
+    color: var(--ds-linkColor, #3a6ea5);
+    text-decoration: underline;
+}
+
+.ds-breadcrumb--current {
+    color: var(--ds-primaryText, #1f2d3d);
+    font-weight: 600;
+}
+
+.ds-breadcrumb-separator {
+    color: var(--ds-secondaryText, #5a6a85);
+    opacity: 0.5;
+}
+
+/* ============================================
+   TOOLBAR
+   ============================================ */
+.ds-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: linear-gradient(to bottom, var(--ds-toolbarGradTop, #dbe6f7) 0%, var(--ds-toolbarGradBottom, #c3d6f0) 100%);
+    border: 1px solid var(--ds-toolbarBorder, #9ab6dc);
+    border-radius: 3px;
+}
+
+.ds-toolbar--flat {
+    background: var(--ds-surfaceBg, #f5f7fb);
+    border-color: var(--ds-surfaceBorder, #cfd8eb);
+}
+
+.ds-toolbar__group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ds-toolbar__separator {
+    width: 1px;
+    height: 24px;
+    background: var(--ds-surfaceBorder, #cfd8eb);
+    margin: 0 4px;
+}
+
+.ds-toolbar__spacer {
+    flex: 1;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    .ds-page {
+        padding: 12px;
+    }
+
+    .ds-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .ds-page-header__actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}

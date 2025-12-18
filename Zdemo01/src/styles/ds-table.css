@@ -1,0 +1,133 @@
+/**
+ * DSTable Styles
+ * Estilos para tablas reutilizables
+ */
+
+/* ============================================
+   TABLE WRAPPER
+   ============================================ */
+.ds-table-wrapper {
+    overflow-x: auto;
+    background: var(--ds-panelBg, #ffffff);
+}
+
+/* ============================================
+   BASE TABLE
+   ============================================ */
+.ds-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-family: Tahoma, Arial, sans-serif;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.ds-table th {
+    background: linear-gradient(to bottom, var(--ds-surfaceBg, #f5f7fb) 0%, var(--ds-headerGradBottom, #dde6f4) 100%);
+    border: 1px solid var(--ds-surfaceBorder, #cfd8eb);
+    border-top: none;
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--ds-primaryText, #1f2d3d);
+    white-space: nowrap;
+}
+
+.ds-table th:first-child {
+    border-left: none;
+}
+
+.ds-table th:last-child {
+    border-right: none;
+}
+
+/* ============================================
+   CELLS
+   ============================================ */
+.ds-table td {
+    border: 1px solid var(--ds-surfaceBorder, #cfd8eb);
+    border-top: none;
+    padding: 7px 10px;
+    color: var(--ds-primaryText, #1f2d3d);
+    background: var(--ds-panelBg, #ffffff);
+    vertical-align: middle;
+}
+
+.ds-table td:first-child {
+    border-left: none;
+}
+
+.ds-table td:last-child {
+    border-right: none;
+}
+
+/* ============================================
+   STRIPED ROWS
+   ============================================ */
+.ds-table--striped tbody tr:nth-child(even) td {
+    background: var(--ds-surfaceBg, #f5f7fb);
+}
+
+/* ============================================
+   HOVER
+   ============================================ */
+.ds-table--hover tbody tr:hover td {
+    background: var(--ds-hoverBg, #e4ebf7);
+}
+
+/* ============================================
+   COMPACT
+   ============================================ */
+.ds-table--compact th,
+.ds-table--compact td {
+    padding: 5px 8px;
+    font-size: 11px;
+}
+
+/* ============================================
+   BORDERED
+   ============================================ */
+.ds-table--bordered {
+    border: 1px solid var(--ds-surfaceBorder, #cfd8eb);
+}
+
+.ds-table--bordered th:first-child,
+.ds-table--bordered td:first-child {
+    border-left: 1px solid var(--ds-surfaceBorder, #cfd8eb);
+}
+
+.ds-table--bordered th:last-child,
+.ds-table--bordered td:last-child {
+    border-right: 1px solid var(--ds-surfaceBorder, #cfd8eb);
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.ds-table__empty {
+    text-align: center;
+    color: var(--ds-secondaryText, #5a6a85);
+    font-style: italic;
+    padding: 30px !important;
+}
+
+/* ============================================
+   CELL ALIGNMENTS
+   ============================================ */
+.ds-table__center {
+    text-align: center;
+}
+
+.ds-table__right {
+    text-align: right;
+}
+
+/* ============================================
+   ACTIONS CELL
+   ============================================ */
+.ds-table__actions {
+    display: flex;
+    gap: 4px;
+}

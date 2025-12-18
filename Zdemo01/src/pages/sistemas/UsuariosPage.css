@@ -1,63 +1,18 @@
 /**
  * UsuariosPage Styles
- * Diseño clásico tipo "enterprise/legacy" - Usa variables de tema
+ * Estilos ESPECÍFICOS de esta página - Los generales vienen de ds-components
  */
 
 /* ============================================
-   PAGE LAYOUT
+   ALERTA MARGIN
    ============================================ */
-.usuarios-page {
-    padding: 16px 20px;
-    min-height: 100%;
-    background: var(--ds-primaryBg);
-}
-
-.usuarios-page__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--ds-surfaceBorder);
-}
-
-.usuarios-page__title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--ds-primaryText);
-}
-
-.usuarios-page__title h1 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 600;
-    font-family: Tahoma, Arial, sans-serif;
+.usuarios-alert-margin {
+    margin-bottom: 12px;
 }
 
 /* ============================================
-   PANEL (Contenedor tipo Ext.Panel)
+   PANEL COUNT (específico de esta página)
    ============================================ */
-.usuarios-panel {
-    background: var(--ds-panelBg);
-    border: 1px solid var(--ds-panelBorder);
-    border-radius: 0;
-    box-shadow: var(--ds-shadowSm);
-}
-
-.usuarios-panel__header {
-    background: linear-gradient(to bottom, var(--ds-headerGradTop) 0%, var(--ds-headerGradBottom) 100%);
-    border-bottom: 1px solid var(--ds-panelBorder);
-    padding: 8px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--ds-panelHeaderText);
-    font-family: Tahoma, Arial, sans-serif;
-}
-
 .usuarios-panel__count {
     font-weight: 400;
     font-size: 11px;
@@ -68,269 +23,7 @@
 }
 
 /* ============================================
-   TABLE (Estilo clásico grid)
-   ============================================ */
-.usuarios-table-wrapper {
-    overflow-x: auto;
-}
-
-.usuarios-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-    font-family: Tahoma, Arial, sans-serif;
-}
-
-.usuarios-table th {
-    background: linear-gradient(to bottom, var(--ds-surfaceBg) 0%, var(--ds-headerGradBottom) 100%);
-    border: 1px solid var(--ds-surfaceBorder);
-    border-top: none;
-    padding: 8px 10px;
-    text-align: left;
-    font-weight: 600;
-    color: var(--ds-primaryText);
-    white-space: nowrap;
-    user-select: none;
-}
-
-.usuarios-table td {
-    border: 1px solid var(--ds-surfaceBorder);
-    border-top: none;
-    padding: 7px 10px;
-    color: var(--ds-primaryText);
-    background: var(--ds-panelBg);
-    vertical-align: middle;
-}
-
-.usuarios-table tbody tr:nth-child(even) td {
-    background: var(--ds-surfaceBg);
-}
-
-.usuarios-table tbody tr:hover td {
-    background: var(--ds-hoverBg);
-}
-
-.usuarios-table__empty {
-    text-align: center;
-    color: var(--ds-secondaryText);
-    font-style: italic;
-    padding: 30px !important;
-}
-
-/* ============================================
-   BADGE (Estado)
-   ============================================ */
-.usuarios-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 2px;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-.usuarios-badge.is-active {
-    background: var(--ds-successBg);
-    color: var(--ds-successText);
-    border: 1px solid var(--ds-successText);
-}
-
-.usuarios-badge.is-inactive {
-    background: var(--ds-errorBg);
-    color: var(--ds-errorText);
-    border: 1px solid var(--ds-errorText);
-}
-
-/* ============================================
-   ACTIONS
-   ============================================ */
-.usuarios-actions {
-    display: flex;
-    gap: 4px;
-}
-
-/* ============================================
-   BUTTONS (Estilo clásico tipo Ext)
-   ============================================ */
-.usuarios-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 5px 12px;
-    font-size: 12px;
-    font-family: Tahoma, Arial, sans-serif;
-    font-weight: 500;
-    border: 1px solid var(--ds-fieldBorder);
-    border-radius: 2px;
-    background: linear-gradient(to bottom, var(--ds-panelBg) 0%, var(--ds-surfaceBg) 100%);
-    color: var(--ds-primaryText);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.1s;
-}
-
-.usuarios-btn:hover {
-    background: linear-gradient(to bottom, var(--ds-hoverBg) 0%, var(--ds-surfaceBg) 100%);
-    border-color: var(--ds-fieldBorderHover);
-}
-
-.usuarios-btn:active {
-    background: var(--ds-activeBg);
-}
-
-.usuarios-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.usuarios-btn--primary {
-    background: linear-gradient(to bottom, var(--ds-panelHeaderBg) 0%, var(--ds-toolbarBg) 100%);
-    border-color: var(--ds-toolbarBorder);
-    color: var(--ds-panelHeaderText);
-}
-
-.usuarios-btn--primary:hover {
-    filter: brightness(1.05);
-}
-
-.usuarios-btn--icon {
-    padding: 4px 6px;
-    min-width: 26px;
-    min-height: 26px;
-}
-
-.usuarios-btn--danger {
-    color: var(--ds-errorText);
-}
-
-.usuarios-btn--danger:hover {
-    background: linear-gradient(to bottom, var(--ds-errorBg) 0%, #ffcdd2 100%);
-    border-color: var(--ds-errorText);
-}
-
-/* ============================================
-   LOADING
-   ============================================ */
-.usuarios-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 40px;
-    color: var(--ds-secondaryText);
-    font-size: 13px;
-}
-
-.spin {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* ============================================
-   MODAL (Ventana tipo Ext.Window)
-   ============================================ */
-.usuarios-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 8vh;
-    z-index: 1000;
-}
-
-.usuarios-modal {
-    background: var(--ds-panelBg);
-    border: 1px solid var(--ds-panelBorder);
-    box-shadow: var(--ds-shadowMd);
-    min-width: 420px;
-    max-width: 90vw;
-}
-
-.usuarios-modal__header {
-    background: linear-gradient(to bottom, var(--ds-headerGradTop) 0%, var(--ds-headerGradBottom) 100%);
-    border-bottom: 1px solid var(--ds-panelBorder);
-    padding: 8px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.usuarios-modal__title {
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--ds-panelHeaderText);
-    font-family: Tahoma, Arial, sans-serif;
-}
-
-.usuarios-modal__close {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: var(--ds-secondaryText);
-    padding: 2px;
-    display: flex;
-    align-items: center;
-}
-
-.usuarios-modal__close:hover {
-    color: var(--ds-errorText);
-}
-
-.usuarios-modal__body {
-    padding: 16px;
-    background: var(--ds-surfaceBg);
-}
-
-.usuarios-modal__footer {
-    padding: 10px 16px;
-    background: var(--ds-primaryBg);
-    border-top: 1px solid var(--ds-surfaceBorder);
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-}
-
-/* ============================================
-   FORM
-   ============================================ */
-.usuarios-form {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.usuarios-form__field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.usuarios-form__label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--ds-primaryText);
-    font-family: Tahoma, Arial, sans-serif;
-}
-
-.usuarios-form__required {
-    color: var(--ds-errorText);
-    margin-left: 2px;
-}
-
-/* ============================================
-   TOOLTIP (Ayuda contextual)
+   TOOLTIP (específico de esta página)
    ============================================ */
 .usuarios-tooltip {
     position: relative;
@@ -383,30 +76,15 @@
     visibility: visible;
 }
 
-.usuarios-input {
-    padding: 6px 8px;
-    font-size: 12px;
-    font-family: Tahoma, Arial, sans-serif;
-    border: 1px solid var(--ds-fieldBorder);
-    background: var(--ds-fieldBg);
-    color: var(--ds-fieldText);
-    border-radius: 0;
-    outline: none;
-    transition: border-color 0.15s;
-}
-
-.usuarios-input:focus {
-    border-color: var(--ds-fieldBorderFocus);
-    box-shadow: 0 0 0 2px rgba(126, 173, 217, 0.25);
-}
-
-.usuarios-select {
-    cursor: pointer;
-}
-
 /* ============================================
-   CHECKBOX (Estilo clásico)
+   FORM (específico del modal)
    ============================================ */
+.usuarios-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
 .usuarios-checkbox {
     display: inline-flex;
     align-items: center;
@@ -420,45 +98,4 @@
     width: 14px;
     height: 14px;
     cursor: pointer;
-}
-
-/* ============================================
-   ALERT
-   ============================================ */
-.usuarios-alert {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 12px;
-    margin-bottom: 12px;
-    font-size: 12px;
-    border: 1px solid;
-    border-radius: 2px;
-}
-
-.usuarios-alert--error {
-    background: var(--ds-errorBg);
-    border-color: var(--ds-errorText);
-    color: var(--ds-errorText);
-}
-
-.usuarios-alert--success {
-    background: var(--ds-successBg);
-    border-color: var(--ds-successText);
-    color: var(--ds-successText);
-}
-
-.usuarios-alert__dismiss {
-    margin-left: auto;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: inherit;
-    opacity: 0.7;
-    padding: 0;
-    display: flex;
-}
-
-.usuarios-alert__dismiss:hover {
-    opacity: 1;
 }

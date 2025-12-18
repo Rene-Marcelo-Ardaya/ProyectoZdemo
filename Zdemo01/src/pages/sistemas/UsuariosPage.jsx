@@ -1,6 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Users, UserPlus, Pencil, Trash2, X, Save, Loader2, AlertCircle, CheckCircle, HelpCircle } from 'lucide-react';
+import { Users, UserPlus, Pencil, Trash2, Save, HelpCircle } from 'lucide-react';
 import { getUsers, getRolesList, createUser, updateUser, deleteUser } from '../../services/userService';
+
+// Importar componentes DS
+import {
+    DSPage,
+    DSPageHeader,
+    DSSection,
+    DSAlert,
+    DSButton,
+    DSLoading,
+    DSBadge,
+    DSModal,
+} from '../../ds-components';
+
 import './UsuariosPage.css';
 
 // ============================================
@@ -34,34 +47,6 @@ function useUsuarios() {
 }
 
 // ============================================
-// COMPONENTE: Modal
-// ============================================
-function Modal({ isOpen, onClose, title, children, footer }) {
-    if (!isOpen) return null;
-
-    return (
-        <div className="usuarios-modal-overlay" onClick={onClose}>
-            <div className="usuarios-modal" onClick={e => e.stopPropagation()}>
-                <div className="usuarios-modal__header">
-                    <span className="usuarios-modal__title">{title}</span>
-                    <button className="usuarios-modal__close" onClick={onClose} type="button">
-                        <X size={18} />
-                    </button>
-                </div>
-                <div className="usuarios-modal__body">
-                    {children}
-                </div>
-                {footer && (
-                    <div className="usuarios-modal__footer">
-                        {footer}
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-}
-
-// ============================================
 // COMPONENTE: Tooltip
 // ============================================
 function Tooltip({ text }) {
@@ -78,33 +63,17 @@ function Tooltip({ text }) {
 // ============================================
 function FormField({ label, children, required, help }) {
     return (
-        <div className="usuarios-form__field">
-            <label className="usuarios-form__label">
-                {label}
-                {required && <span className="usuarios-form__required">*</span>}
-                {help && <Tooltip text={help} />}
+        <div className="ds-field">
+            <label className="ds-field__label">
+                <span className="ds-field__label-text">
+                    {label}
+                    {help && <Tooltip text={help} />}
+                </span>
+                {required && <span className="ds-field__required">*</span>}
             </label>
-            {children}
-        </div>
-    );
-}
-
-// ============================================
-// COMPONENTE: Alert
-// ============================================
-function Alert({ type = 'error', message, onDismiss }) {
-    if (!message) return null;
-    const Icon = type === 'error' ? AlertCircle : CheckCircle;
-
-    return (
-        <div className={`usuarios-alert usuarios-alert--${type}`}>
-            <Icon size={16} />
-            <span>{message}</span>
-            {onDismiss && (
-                <button onClick={onDismiss} className="usuarios-alert__dismiss">
-                    <X size={14} />
-                </button>
-            )}
+            <div className="ds-field__control-wrapper">
+                {children}
+            </div>
         </div>
     );
 }
@@ -242,38 +211,43 @@ export function UsuariosPage() {
         }
     };
 
+    const isUserActive = (user) => user.is_active == 1 || user.is_active === true || user.is_active === 'Activo';
+
     return (
-        <div className="usuarios-page">
+        <DSPage>
             {/* HEADER */}
-            <div className="usuarios-page__header">
-                <div className="usuarios-page__title">
-                    <Users size={22} />
-                    <h1>Gestión de Usuarios</h1>
-                </div>
-                <button className="usuarios-btn usuarios-btn--primary" onClick={openCreate}>
-                    <UserPlus size={16} />
-                    <span>Nuevo Usuario</span>
-                </button>
-            </div>
+            <DSPageHeader
+                title="Gestión de Usuarios"
+                icon={<Users size={22} />}
+                actions={
+                    <DSButton variant="primary" icon={<UserPlus size={16} />} onClick={openCreate}>
+                        Nuevo Usuario
+                    </DSButton>
+                }
+            />
 
             {/* ALERTAS */}
-            <Alert type="success" message={formSuccess} onDismiss={() => setFormSuccess(null)} />
-            <Alert type="error" message={loadError} />
+            {formSuccess && (
+                <DSAlert variant="success" dismissible onDismiss={() => setFormSuccess(null)} className="usuarios-alert-margin">
+                    {formSuccess}
+                </DSAlert>
+            )}
+            {loadError && (
+                <DSAlert variant="error" className="usuarios-alert-margin">
+                    {loadError}
+                </DSAlert>
+            )}
 
             {/* TABLA */}
-            <div className="usuarios-panel">
-                <div className="usuarios-panel__header">
-                    <span>Listado de Usuarios</span>
-                    <span className="usuarios-panel__count">{users.length} registros</span>
-                </div>
-                <div className="usuarios-table-wrapper">
+            <DSSection
+                title="Listado de Usuarios"
+                actions={<span className="usuarios-panel__count">{users.length} registros</span>}
+            >
+                <div className="ds-table-wrapper">
                     {loading ? (
-                        <div className="usuarios-loading">
-                            <Loader2 size={24} className="spin" />
-                            <span>Cargando...</span>
-                        </div>
+                        <DSLoading text="Cargando..." />
                     ) : (
-                        <table className="usuarios-table">
+                        <table className="ds-table ds-table--striped ds-table--hover">
                             <thead>
                                 <tr>
                                     <th style={{ width: '5%' }}>ID</th>
@@ -287,7 +261,7 @@ export function UsuariosPage() {
                             <tbody>
                                 {users.length === 0 ? (
                                     <tr>
-                                        <td colSpan="6" className="usuarios-table__empty">
+                                        <td colSpan="6" className="ds-table__empty">
                                             No hay usuarios registrados
                                         </td>
                                     </tr>
@@ -299,26 +273,27 @@ export function UsuariosPage() {
                                             <td>{user.email}</td>
                                             <td>{user.roles || '-'}</td>
                                             <td>
-                                                <span className={`usuarios-badge ${user.is_active == 1 || user.is_active === true || user.is_active === 'Activo' ? 'is-active' : 'is-inactive'}`}>
-                                                    {user.is_active == 1 || user.is_active === true || user.is_active === 'Activo' ? 'Activo' : 'Inactivo'}
-                                                </span>
+                                                <DSBadge variant={isUserActive(user) ? 'success' : 'error'}>
+                                                    {isUserActive(user) ? 'Activo' : 'Inactivo'}
+                                                </DSBadge>
                                             </td>
                                             <td>
-                                                <div className="usuarios-actions">
-                                                    <button
-                                                        className="usuarios-btn usuarios-btn--icon"
+                                                <div className="ds-table__actions">
+                                                    <DSButton
+                                                        size="sm"
+                                                        iconOnly
+                                                        icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(user)}
                                                         title="Editar"
-                                                    >
-                                                        <Pencil size={15} />
-                                                    </button>
-                                                    <button
-                                                        className="usuarios-btn usuarios-btn--icon usuarios-btn--danger"
+                                                    />
+                                                    <DSButton
+                                                        size="sm"
+                                                        variant="outline-danger"
+                                                        iconOnly
+                                                        icon={<Trash2 size={15} />}
                                                         onClick={() => handleDelete(user)}
                                                         title="Eliminar"
-                                                    >
-                                                        <Trash2 size={15} />
-                                                    </button>
+                                                    />
                                                 </div>
                                             </td>
                                         </tr>
@@ -328,30 +303,36 @@ export function UsuariosPage() {
                         </table>
                     )}
                 </div>
-            </div>
+            </DSSection>
 
             {/* MODAL */}
-            <Modal
+            <DSModal
                 isOpen={modalOpen}
                 onClose={closeModal}
                 title={editingUser ? 'Editar Usuario' : 'Nuevo Usuario'}
+                size="md"
                 footer={
                     <>
-                        <button className="usuarios-btn" onClick={closeModal} disabled={saving}>
+                        <DSButton onClick={closeModal} disabled={saving}>
                             Cancelar
-                        </button>
-                        <button
-                            className="usuarios-btn usuarios-btn--primary"
+                        </DSButton>
+                        <DSButton
+                            variant="primary"
                             onClick={handleSave}
                             disabled={saving}
+                            loading={saving}
+                            icon={!saving && <Save size={16} />}
                         >
-                            {saving ? <Loader2 size={16} className="spin" /> : <Save size={16} />}
-                            <span>{saving ? 'Guardando...' : 'Guardar'}</span>
-                        </button>
+                            {saving ? 'Guardando...' : 'Guardar'}
+                        </DSButton>
                     </>
                 }
             >
-                <Alert type="error" message={formError} onDismiss={() => setFormError(null)} />
+                {formError && (
+                    <DSAlert variant="error" dismissible onDismiss={() => setFormError(null)} className="usuarios-alert-margin">
+                        {formError}
+                    </DSAlert>
+                )}
 
                 <form className="usuarios-form" onSubmit={e => e.preventDefault()}>
                     <FormField
@@ -361,7 +342,7 @@ export function UsuariosPage() {
                     >
                         <input
                             type="text"
-                            className="usuarios-input"
+                            className="ds-field__control"
                             value={form.name}
                             onChange={handleChange('name')}
                             placeholder="Ej: Juan Pérez"
@@ -375,7 +356,7 @@ export function UsuariosPage() {
                     >
                         <input
                             type="email"
-                            className="usuarios-input"
+                            className="ds-field__control"
                             value={form.email}
                             onChange={handleChange('email')}
                             placeholder="correo@ejemplo.com"
@@ -389,7 +370,7 @@ export function UsuariosPage() {
                     >
                         <input
                             type="password"
-                            className="usuarios-input"
+                            className="ds-field__control"
                             value={form.password}
                             onChange={handleChange('password')}
                             placeholder={editingUser ? 'Dejar vacío para mantener' : '••••••••'}
@@ -402,7 +383,7 @@ export function UsuariosPage() {
                         help="Define los permisos y menús que el usuario podrá ver."
                     >
                         <select
-                            className="usuarios-input usuarios-select"
+                            className="ds-field__control"
                             value={form.role_id}
                             onChange={handleChange('role_id')}
                         >
@@ -425,13 +406,12 @@ export function UsuariosPage() {
                                 checked={form.is_active}
                                 onChange={handleChange('is_active')}
                             />
-                            <span className="usuarios-checkbox__mark"></span>
                             <span>Usuario Activo</span>
                         </label>
                     </FormField>
                 </form>
-            </Modal>
-        </div>
+            </DSModal>
+        </DSPage>
     );
 }
 

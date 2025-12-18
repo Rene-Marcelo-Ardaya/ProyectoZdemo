@@ -1,0 +1,215 @@
+/**
+ * DSModal Styles
+ * Componente de modal/diálogo reutilizable
+ */
+
+/* ============================================
+   OVERLAY
+   ============================================ */
+.ds-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 5vh;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+}
+
+.ds-modal-overlay--visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ============================================
+   MODAL CONTAINER
+   ============================================ */
+.ds-modal {
+    background: var(--ds-panelBg, #ffffff);
+    border: 1px solid var(--ds-panelBorder, #c2d3ef);
+    box-shadow: var(--ds-shadowMd, 0 3px 8px rgba(0, 0, 0, 0.12));
+    min-width: 400px;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.95);
+    opacity: 0;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.ds-modal-overlay--visible .ds-modal {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Size variants */
+.ds-modal--sm {
+    min-width: 320px;
+    max-width: 400px;
+}
+
+.ds-modal--md {
+    min-width: 480px;
+    max-width: 560px;
+}
+
+.ds-modal--lg {
+    min-width: 640px;
+    max-width: 720px;
+}
+
+.ds-modal--xl {
+    min-width: 800px;
+    max-width: 900px;
+}
+
+.ds-modal--full {
+    min-width: 90vw;
+    max-width: 95vw;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.ds-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    background: linear-gradient(to bottom, var(--ds-headerGradTop, #eef3fb) 0%, var(--ds-headerGradBottom, #dde6f4) 100%);
+    border-bottom: 1px solid var(--ds-panelBorder, #c2d3ef);
+    flex-shrink: 0;
+}
+
+.ds-modal__title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: Tahoma, Arial, sans-serif;
+    color: var(--ds-panelHeaderText, #2c4a70);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ds-modal__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--ds-secondaryText, #5a6a85);
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.ds-modal__close:hover {
+    color: var(--ds-errorText, #dc2626);
+}
+
+/* ============================================
+   BODY
+   ============================================ */
+.ds-modal__body {
+    flex: 1;
+    padding: 16px;
+    background: var(--ds-surfaceBg, #f5f7fb);
+    overflow-y: auto;
+}
+
+.ds-modal__body--flush {
+    padding: 0;
+}
+
+.ds-modal__body--white {
+    background: var(--ds-panelBg, #ffffff);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.ds-modal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--ds-primaryBg, #f5f8fc);
+    border-top: 1px solid var(--ds-surfaceBorder, #cfd8eb);
+    flex-shrink: 0;
+}
+
+.ds-modal__footer--left {
+    justify-content: flex-start;
+}
+
+.ds-modal__footer--center {
+    justify-content: center;
+}
+
+.ds-modal__footer--space-between {
+    justify-content: space-between;
+}
+
+/* ============================================
+   FORM SECTIONS IN MODAL
+   ============================================ */
+.ds-modal-section {
+    margin-bottom: 16px;
+}
+
+.ds-modal-section:last-child {
+    margin-bottom: 0;
+}
+
+.ds-modal-section__title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--ds-surfaceBorder, #cfd8eb);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ds-panelHeaderText, #2c4a70);
+    font-family: Tahoma, Arial, sans-serif;
+}
+
+.ds-modal-section__help {
+    font-size: 11px;
+    color: var(--ds-secondaryText, #5a6a85);
+    margin-bottom: 10px;
+}
+
+/* ============================================
+   GRID LAYOUT IN MODAL
+   ============================================ */
+.ds-modal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.ds-modal-grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 768px) {
+    .ds-modal {
+        min-width: 90vw;
+        max-height: 95vh;
+    }
+
+    .ds-modal-grid {
+        grid-template-columns: 1fr;
+    }
+}

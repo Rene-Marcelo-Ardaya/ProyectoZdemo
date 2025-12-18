@@ -1,0 +1,15 @@
+/**
+ * DS Components Styles
+ * Importa todos los estilos de los componentes reutilizables
+ */
+
+@import './ds-button.css';
+@import './ds-alert.css';
+@import './ds-section.css';
+@import './ds-field.css';
+@import './ds-image-upload.css';
+@import './ds-loading.css';
+@import './ds-page.css';
+@import './ds-badge.css';
+@import './ds-table.css';
+@import './ds-modal.css';
