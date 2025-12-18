@@ -1,0 +1,31 @@
+/* Estilos para el logo fallback (Solo Texto) */
+.brand-logo-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Color por defecto si no se pasa prop */
+    color: var(--ds-primaryText, #333);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 700;
+
+    /* Tamaño por defecto (sidebar) */
+    font-size: 16px;
+    line-height: 1.2;
+    text-align: center;
+}
+
+/* Variante grande para Login */
+.brand-logo-fallback--large {
+    font-size: 36px;
+    /* Tamaño título */
+    margin-bottom: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    max-width: 100%;
+    word-break: break-word;
+}
+
+/* Cuando se usa como imagen */
+.brand-logo-img {
+    object-fit: contain;
+    max-width: 100%;
+}

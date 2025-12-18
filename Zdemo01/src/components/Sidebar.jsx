@@ -12,11 +12,11 @@ import {
 } from 'lucide-react';
 
 // Logo estático como fallback
-import logoStatic from '../img/Final new hk no bc.png';
+import { BrandLogo } from './common/BrandLogo';
 
 /**
  * Sidebar con menús desplegables - RESPONSIVE y con TEMA
- * El logo se carga dinámicamente desde la configuración con fallback estático
+ * El logo se carga dinámicamente desde la configuración con fallback a inicial
  */
 export function Sidebar({ menus = [], activePage, onNavigate, user, onLogout, isCollapsed, onToggle, appConfig = {} }) {
     const [expandedMenus, setExpandedMenus] = useState({});
@@ -88,9 +88,9 @@ export function Sidebar({ menus = [], activePage, onNavigate, user, onLogout, is
                 {/* Header con logo */}
                 <div className="sidebar__header">
                     <div className="sidebar__logo">
-                        <img
-                            src={appConfig.logo_sidebar ? getImageUrl(appConfig.logo_sidebar) : logoStatic}
-                            alt={appConfig.app_name || "Logo"}
+                        <BrandLogo
+                            src={appConfig.logo_sidebar ? getImageUrl(appConfig.logo_sidebar) : null}
+                            alt={appConfig.app_name || "App"}
                             className="sidebar__logo-img"
                         />
                     </div>

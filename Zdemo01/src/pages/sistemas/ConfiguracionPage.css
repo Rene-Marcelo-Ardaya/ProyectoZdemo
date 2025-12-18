@@ -47,27 +47,40 @@
 /* ============================================
    BRANDING SECTION LAYOUT (Formularios + Preview)
    ============================================ */
-.config-branding-layout {
-    display: grid;
-    grid-template-columns: 1fr 360px;
-    gap: 24px;
-    align-items: start;
-}
-
-.config-branding-forms {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.config-branding-preview {
-    position: sticky;
-    top: 20px;
-}
-
 /* ============================================
-   SECCIONES
+   IFRAME PREVIEW
    ============================================ */
+.config-iframe-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    height: 600px;
+    background: var(--ds-surfaceBg);
+    border: 1px solid var(--ds-fieldBorder);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: var(--ds-shadowMd);
+}
+
+.config-iframe-preview {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+/* Bloquea interacciones */
+.config-iframe-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 10;
+}
+
 .config-section {
     background: var(--ds-panelBg);
     border: 1px solid var(--ds-panelBorder);
@@ -538,4 +551,35 @@
     .login-preview__left {
         padding: 30px;
     }
+}
+
+/* ============================================
+   IFRAME PREVIEW
+   ============================================ */
+.config-iframe-wrapper {
+    position: relative;
+    width: 100%;
+    height: 700px;
+    background: var(--ds-surfaceBg);
+    border: 1px solid var(--ds-fieldBorder);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.config-iframe-preview {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+/* Bloquea interacciones */
+.config-iframe-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 10;
 }

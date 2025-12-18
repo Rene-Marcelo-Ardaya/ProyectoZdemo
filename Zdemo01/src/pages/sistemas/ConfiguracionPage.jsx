@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Settings, Upload, Save, Loader2, AlertCircle, CheckCircle, X, Image, Type, Palette, Building2, HelpCircle, Eye, User, Lock } from 'lucide-react';
+import { Settings, Upload, Save, Loader2, AlertCircle, CheckCircle, X, Image, Type, Palette, Building2, HelpCircle, Eye, User, Lock, Monitor } from 'lucide-react';
 import { getAllSettings, updateSetting, uploadSettingImage, deleteSettingImage, getImageUrl } from '../../services/settingService';
+import { useTheme } from '../../theme';
 import './ConfiguracionPage.css';
 
 // ============================================
@@ -215,102 +216,22 @@ function ColorField({ label, value, onChange, onSave, saving }) {
     );
 }
 
-// ============================================
-// COMPONENTE: LoginPreview (Vista previa)
-// ============================================
-function LoginPreview({ config }) {
-    const logoUrl = config.logo_login ? getImageUrl(config.logo_login) : null;
-    const secondaryLogoUrl = config.logo_login_secondary ? getImageUrl(config.logo_login_secondary) : null;
-    const primaryColor = config.primary_color || '#15428b';
+import { BrandLogo } from '../../components/common/BrandLogo';
 
-    return (
-        <div className="login-preview">
-            <div className="login-preview__header">
-                <Eye size={16} />
-                <span>Vista Previa del Login</span>
-            </div>
-            <div className="login-preview__container">
-                {/* Lado izquierdo - Logo secundario */}
-                <div className="login-preview__left" style={{ background: `linear-gradient(135deg, ${primaryColor} 0%, ${config.secondary_color || '#4388cf'} 100%)` }}>
-                    {secondaryLogoUrl ? (
-                        <img src={secondaryLogoUrl} alt="Logo" className="login-preview__secondary-logo" />
-                    ) : (
-                        <div className="login-preview__brand-text">
-                            {config.app_name || 'Tu Empresa'}
-                        </div>
-                    )}
-                </div>
 
-                {/* Lado derecho - Formulario */}
-                <div className="login-preview__right">
-                    {logoUrl && (
-                        <img src={logoUrl} alt="Logo" className="login-preview__logo" />
-                    )}
-                    <h2 className="login-preview__title" style={{ color: primaryColor }}>
-                        {config.login_title || 'Bienvenido'}
-                    </h2>
-                    <p className="login-preview__subtitle">
-                        {config.login_subtitle || 'Inicia sesión para continuar'}
-                    </p>
-
-                    <div className="login-preview__form">
-                        <div className="login-preview__input">
-                            <User size={14} />
-                            <span>usuario@ejemplo.com</span>
-                        </div>
-                        <div className="login-preview__input">
-                            <Lock size={14} />
-                            <span>••••••••</span>
-                        </div>
-                        <button className="login-preview__button" style={{ background: primaryColor }}>
-                            Iniciar Sesión
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
 
 // ============================================
 // COMPONENTE PRINCIPAL: ConfiguracionPage
 // ============================================
 export function ConfiguracionPage() {
+    const { theme } = useTheme();
     const { settings, flatSettings, loading, error: loadError, refetch } = useSettings();
     const [success, setSuccess] = useState(null);
     const [error, setError] = useState(null);
     const [saving, setSaving] = useState({});
 
-    // Estado local para preview en tiempo real
-    const [previewConfig, setPreviewConfig] = useState({});
-
-    // Refs para evitar bucles infinitos
-    const lastFlatSettingsRef = useRef('');
-
-    // Inicializar preview solo cuando flatSettings realmente cambia
-    useEffect(() => {
-        if (loading) return;
-
-        // Crear una key única para detectar cambios reales
-        const settingsKey = JSON.stringify(
-            Object.fromEntries(
-                Object.entries(flatSettings).map(([k, v]) => [k, v?.value])
-            )
-        );
-
-        // Solo actualizar si realmente cambió
-        if (settingsKey === lastFlatSettingsRef.current) {
-            return;
-        }
-
-        lastFlatSettingsRef.current = settingsKey;
-
-        const initial = {};
-        Object.keys(flatSettings).forEach(key => {
-            initial[key] = flatSettings[key]?.value;
-        });
-        setPreviewConfig(initial);
-    }, [flatSettings, loading]);
+    // Key para recargar el iframe
+    const [iframeKey, setIframeKey] = useState(0);
 
     const handleSave = async (key, value) => {
         setSaving(prev => ({ ...prev, [key]: true }));
@@ -319,7 +240,7 @@ export function ConfiguracionPage() {
 
         if (result.success) {
             setSuccess('Configuración guardada');
-            setPreviewConfig(prev => ({ ...prev, [key]: value }));
+            setIframeKey(k => k + 1);
             refetch();
             setTimeout(() => setSuccess(null), 3000);
         } else {
@@ -335,7 +256,7 @@ export function ConfiguracionPage() {
 
         if (result.success) {
             setSuccess('Imagen actualizada');
-            setPreviewConfig(prev => ({ ...prev, [key]: result.data.path }));
+            setIframeKey(k => k + 1);
             refetch();
             setTimeout(() => setSuccess(null), 3000);
         } else {
@@ -351,17 +272,13 @@ export function ConfiguracionPage() {
 
         if (result.success) {
             setSuccess('Imagen eliminada');
-            setPreviewConfig(prev => ({ ...prev, [key]: null }));
+            setIframeKey(k => k + 1);
             refetch();
             setTimeout(() => setSuccess(null), 3000);
         } else {
             setError(result.error || 'Error eliminando imagen');
             setTimeout(() => setError(null), 5000);
         }
-    };
-
-    const handlePreviewChange = (key, value) => {
-        setPreviewConfig(prev => ({ ...prev, [key]: value }));
     };
 
     if (loading) {
@@ -441,114 +358,110 @@ export function ConfiguracionPage() {
                         <h2>Identidad Visual (Branding)</h2>
                     </div>
                     <div className="config-section__body">
-                        {/* Layout de 2 columnas: Formularios + Preview */}
-                        <div className="config-branding-layout">
-                            {/* Columna Izquierda: Formularios */}
-                            <div className="config-branding-forms">
-                                <div className="config-grid-2">
-                                    <TextField
-                                        label="Nombre de la Aplicación"
-                                        value={flatSettings.app_name?.value}
-                                        onChange={(v) => handlePreviewChange('app_name', v)}
-                                        onSave={(v) => handleSave('app_name', v)}
-                                        saving={saving.app_name}
-                                        help="Aparece en el título del navegador"
-                                    />
-                                    <TextField
-                                        label="Nombre Corto"
-                                        value={flatSettings.app_short_name?.value}
-                                        onSave={(v) => handleSave('app_short_name', v)}
-                                        saving={saving.app_short_name}
-                                        help="Para PWA y móviles"
-                                    />
-                                </div>
+                        <div className="config-grid-2">
+                            <TextField
+                                label="Nombre de la Aplicación"
+                                value={flatSettings.app_name?.value}
+                                onSave={(v) => handleSave('app_name', v)}
+                                saving={saving.app_name}
+                                help="Aparece en el título del navegador"
+                            />
+                            <TextField
+                                label="Nombre Corto"
+                                value={flatSettings.app_short_name?.value}
+                                onSave={(v) => handleSave('app_short_name', v)}
+                                saving={saving.app_short_name}
+                                help="Para PWA y móviles"
+                            />
+                        </div>
 
-                                <div className="config-subsection">
-                                    <h4>Textos del Login</h4>
-                                    <div className="config-grid-2">
-                                        <TextField
-                                            label="Título del Login"
-                                            value={flatSettings.login_title?.value}
-                                            onChange={(v) => handlePreviewChange('login_title', v)}
-                                            onSave={(v) => handleSave('login_title', v)}
-                                            saving={saving.login_title}
-                                        />
-                                        <TextField
-                                            label="Subtítulo del Login"
-                                            value={flatSettings.login_subtitle?.value}
-                                            onChange={(v) => handlePreviewChange('login_subtitle', v)}
-                                            onSave={(v) => handleSave('login_subtitle', v)}
-                                            saving={saving.login_subtitle}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="config-subsection">
-                                    <h4>Colores del Login</h4>
-                                    <p className="config-hint">
-                                        Estos colores se usan en la página de login (fondo degradado y acentos)
-                                    </p>
-                                    <div className="config-grid-2">
-                                        <ColorField
-                                            label="Color Primario (Login)"
-                                            value={flatSettings.primary_color?.value}
-                                            onChange={(v) => handlePreviewChange('primary_color', v)}
-                                            onSave={(v) => handleSave('primary_color', v)}
-                                            saving={saving.primary_color}
-                                        />
-                                        <ColorField
-                                            label="Color Secundario (Login)"
-                                            value={flatSettings.secondary_color?.value}
-                                            onChange={(v) => handlePreviewChange('secondary_color', v)}
-                                            onSave={(v) => handleSave('secondary_color', v)}
-                                            saving={saving.secondary_color}
-                                        />
-                                    </div>
-                                </div>
-
-
-
-                                <div className="config-subsection">
-                                    <h4>Logos e Imágenes</h4>
-                                    <div className="config-images-grid">
-                                        <ImageField
-                                            label="Logo del Login (Principal)"
-                                            value={flatSettings.logo_login?.value}
-                                            onUpload={(f) => handleUpload('logo_login', f)}
-                                            onDelete={() => handleDeleteImage('logo_login')}
-                                            help="Logo grande en la página de login"
-                                        />
-                                        <ImageField
-                                            label="Logo Lateral (Izquierda)"
-                                            value={flatSettings.logo_login_secondary?.value}
-                                            onUpload={(f) => handleUpload('logo_login_secondary', f)}
-                                            onDelete={() => handleDeleteImage('logo_login_secondary')}
-                                            help="Imagen o logo del lado izquierdo"
-                                        />
-                                        <ImageField
-                                            label="Logo del Sidebar"
-                                            value={flatSettings.logo_sidebar?.value}
-                                            onUpload={(f) => handleUpload('logo_sidebar', f)}
-                                            onDelete={() => handleDeleteImage('logo_sidebar')}
-                                            help="180x50px recomendado"
-                                            small
-                                        />
-                                        <ImageField
-                                            label="Favicon"
-                                            value={flatSettings.favicon?.value}
-                                            onUpload={(f) => handleUpload('favicon', f)}
-                                            onDelete={() => handleDeleteImage('favicon')}
-                                            help="Icono del navegador"
-                                            small
-                                        />
-                                    </div>
-                                </div>
+                        <div className="config-subsection">
+                            <h4>Textos del Login</h4>
+                            <div>
+                                <TextField
+                                    label="Título del Login"
+                                    value={flatSettings.login_title?.value}
+                                    onSave={(v) => handleSave('login_title', v)}
+                                    saving={saving.login_title}
+                                />
                             </div>
+                        </div>
 
-                            {/* Columna Derecha: Vista Previa */}
-                            <div className="config-branding-preview">
-                                <LoginPreview config={previewConfig} />
+                        <div className="config-subsection">
+                            <h4>Colores del Login</h4>
+                            <p className="config-hint">
+                                Estos colores se usan en la página de login (fondo degradado y acentos)
+                            </p>
+                            <div className="config-grid-2">
+                                <ColorField
+                                    label="Color Primario (Login)"
+                                    value={flatSettings.primary_color?.value}
+                                    onSave={(v) => handleSave('primary_color', v)}
+                                    saving={saving.primary_color}
+                                />
+                                <ColorField
+                                    label="Color Secundario (Login)"
+                                    value={flatSettings.secondary_color?.value}
+                                    onSave={(v) => handleSave('secondary_color', v)}
+                                    saving={saving.secondary_color}
+                                />
                             </div>
+                        </div>
+
+                        <div className="config-subsection">
+                            <h4>Logos e Imágenes</h4>
+                            <div className="config-images-grid">
+                                <ImageField
+                                    label="Logo del Login (Principal)"
+                                    value={flatSettings.logo_login?.value}
+                                    onUpload={(f) => handleUpload('logo_login', f)}
+                                    onDelete={() => handleDeleteImage('logo_login')}
+                                    help="Logo grande en la página de login"
+                                />
+                                <ImageField
+                                    label="Logo Lateral (Izquierda)"
+                                    value={flatSettings.logo_login_secondary?.value}
+                                    onUpload={(f) => handleUpload('logo_login_secondary', f)}
+                                    onDelete={() => handleDeleteImage('logo_login_secondary')}
+                                    help="Imagen o logo del lado izquierdo"
+                                />
+                                <ImageField
+                                    label="Logo del Sidebar"
+                                    value={flatSettings.logo_sidebar?.value}
+                                    onUpload={(f) => handleUpload('logo_sidebar', f)}
+                                    onDelete={() => handleDeleteImage('logo_sidebar')}
+                                    help="180x50px recomendado"
+                                    small
+                                />
+                                <ImageField
+                                    label="Favicon"
+                                    value={flatSettings.favicon?.value}
+                                    onUpload={(f) => handleUpload('favicon', f)}
+                                    onDelete={() => handleDeleteImage('favicon')}
+                                    help="Icono del navegador"
+                                    small
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* SECCIÓN: Vista Previa Real (Iframe) */}
+                <div className="config-section">
+                    <div className="config-section__header">
+                        <Monitor size={18} />
+                        <h2>Vista Previa del Login (Sitio Real)</h2>
+                    </div>
+                    <div className="config-section__body">
+                        <div className="config-iframe-wrapper">
+                            <iframe
+                                key={`${iframeKey}-${theme}`}
+                                src={`/?mode=preview&theme=${theme}`}
+                                title="Vista previa del login"
+                                className="config-iframe-preview"
+                            />
+                            {/* Overlay para bloquear interacción (solo ver) */}
+                            <div className="config-iframe-overlay"></div>
                         </div>
                     </div>
                 </div>

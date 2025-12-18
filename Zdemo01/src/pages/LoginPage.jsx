@@ -3,17 +3,14 @@ import { login } from '../services/authService';
 import { getPublicConfig, getImageUrl, applyConfigToDOM } from '../services/settingService';
 import { useTheme } from '../theme';
 import { DSFormPanel, DSTextField, DSPasswordField } from '../ds-forms';
+import { BrandLogo } from '../components/common/BrandLogo';
 import '../styles/helpers.css';
 import '../styles/login.css';
-
-// Logos estáticos como fallback
-import logoHKStatic from '../img/Final new hk no bc.png';
-import logoToretoStatic from '../img/Toreto Pet Company PNG.png';
 
 /**
  * Página de Login
  * Diseño visual atractivo con autenticación via API Laravel
- * Los logos se cargan dinámicamente desde la configuración con fallback estático
+ * Los logos se cargan dinámicamente desde la configuración con fallback a inicial
  */
 export function LoginPage({ onLoginSuccess }) {
     const { theme, setTheme, availableThemes, themeLabels } = useTheme();
@@ -42,10 +39,11 @@ export function LoginPage({ onLoginSuccess }) {
         loadConfig();
     }, []);
 
-    // Determinar logos (dinámico o fallback estático)
-    const logoHK = config.logo_login ? getImageUrl(config.logo_login) : logoHKStatic;
-    const logoToreto = config.logo_login_secondary ? getImageUrl(config.logo_login_secondary) : logoToretoStatic;
+    // Determinar logos (dinámico o null)
+    const logoHK = config.logo_login ? getImageUrl(config.logo_login) : null;
+    const logoToreto = config.logo_login_secondary ? getImageUrl(config.logo_login_secondary) : null;
     const loginTitle = config.login_title || 'Iniciar Sesión';
+    const appName = config.app_name || 'App';
 
     const handleSubmit = async (e) => {
         if (e && e.preventDefault) e.preventDefault();
@@ -58,35 +56,42 @@ export function LoginPage({ onLoginSuccess }) {
         }
 
         if (!password.trim()) {
-            setError('Por favor ingresa tu contraseña');
+            setError('Por favor ingresa tu clave');
             return;
         }
 
         setIsLoading(true);
 
         try {
-            const result = await login(nombre, password);
-
-            if (result.success) {
-                onLoginSuccess(result.data);
+            const loginExitoso = await login(nombre, password);
+            if (loginExitoso) {
+                if (onLoginSuccess) onLoginSuccess();
             } else {
-                setError(result.error || 'Error al iniciar sesión');
+                setError('Usuario o clave incorrectos');
             }
         } catch (err) {
-            setError('Error de conexión. Intenta nuevamente.');
+            setError('Error de conexión al intentar ingresar. Intente nuevamente.');
         } finally {
             setIsLoading(false);
         }
     };
 
+    // Estilo para el panel izquierdo
+    const leftPanelStyle = config.primary_color ? {
+        background: `linear-gradient(135deg, ${config.primary_color} 0%, ${config.secondary_color || '#2c3e50'} 100%)`
+    } : {};
+
     return (
         <div className="login-page">
             {/* Left Side: Toreto Logo - Full height */}
-            <div className="login-page__left">
-                <img
+            <div className="login-page__left" style={leftPanelStyle}>
+                <BrandLogo
                     src={logoToreto}
-                    alt="Toreto Pet Company"
+                    alt={appName}
                     className="login-page__logo-toreto"
+                    primaryColor={config.primary_color}
+                    secondaryColor={config.secondary_color}
+                    large
                 />
             </div>
 
@@ -95,10 +100,12 @@ export function LoginPage({ onLoginSuccess }) {
                 <div className="login-page__content">
                     {/* Logo HK arriba del form */}
                     <div className="login-page__logo-top">
-                        <img
+                        <BrandLogo
                             src={logoHK}
-                            alt="HK Logo"
+                            alt={loginTitle}
                             className="login-page__logo-hk"
+                            primaryColor={config.primary_color}
+                            secondaryColor={config.secondary_color}
                         />
                     </div>
 
@@ -106,7 +113,6 @@ export function LoginPage({ onLoginSuccess }) {
                     <div className="login-page__card">
                         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
                             <DSFormPanel
-                                title={loginTitle}
                                 footer={
                                     <div className="login-page__footer">
                                         {error && (

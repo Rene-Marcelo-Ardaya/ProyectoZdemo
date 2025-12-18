@@ -104,6 +104,17 @@ function App() {
     }
   }
 
+  // FORCE LOGIN PREVIEW (para iframe de configuración)
+  if (window.location.search.includes('mode=preview')) {
+    const params = new URLSearchParams(window.location.search);
+    const forcedTheme = params.get('theme');
+    // Sincronizar tema si se fuerza desde la URL
+    if (forcedTheme && theme !== forcedTheme && availableThemes.includes(forcedTheme)) {
+      setTheme(forcedTheme);
+    }
+    return <LoginPage />
+  }
+
   if (!isAuthed) {
     return <LoginPage onLoginSuccess={handleLoginSuccess} />
   }
