@@ -63,11 +63,11 @@ export function LoginPage({ onLoginSuccess }) {
         setIsLoading(true);
 
         try {
-            const loginExitoso = await login(nombre, password);
-            if (loginExitoso) {
-                if (onLoginSuccess) onLoginSuccess();
+            const result = await login(nombre, password);
+            if (result.success) {
+                if (onLoginSuccess) onLoginSuccess(result.data);
             } else {
-                setError('Usuario o clave incorrectos');
+                setError(result.error || 'Usuario o clave incorrectos');
             }
         } catch (err) {
             setError('Error de conexión al intentar ingresar. Intente nuevamente.');

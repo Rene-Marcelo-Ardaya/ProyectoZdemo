@@ -2,6 +2,7 @@ import React from 'react'
 import { DSPanel } from './DSPanel'
 import { DSTabs } from './DSTabs'
 import { DSAccordion } from './DSAccordion'
+import { DSBorderLayout } from './DSBorderLayout'
 import { DSPage, DSPageHeader, DSPageContent, DSPageGrid, DSBreadcrumbs, DSToolbar, DSToolbarGroup, DSToolbarSeparator, DSToolbarSpacer } from './DSPage'
 import { DSSection, DSSubsection, DSSectionDivider } from './DSSection'
 
