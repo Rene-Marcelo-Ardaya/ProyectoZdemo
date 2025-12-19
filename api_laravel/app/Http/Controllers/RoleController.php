@@ -26,7 +26,7 @@ class RoleController extends Controller
                     'menus_count' => $role->menus_count,
                     'permissions_count' => $role->permissions_count,
                     'users_count' => $role->users_count,
-                    'created_at' => $role->created_at->format('Y-m-d H:i')
+                    'created_at' => optional($role->created_at)->format('Y-m-d H:i')
                 ];
             });
 

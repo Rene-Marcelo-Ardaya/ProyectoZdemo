@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Super Admin',
                 'description' => 'Acceso total al sistema',
                 'is_active' => true,
+                'created_at' => now(),
                 'updated_at' => now(),
             ]
         );
@@ -34,6 +35,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Usuario',
                 'description' => 'Acceso limitado',
                 'is_active' => true,
+                'created_at' => now(),
                 'updated_at' => now(),
             ]
         );
