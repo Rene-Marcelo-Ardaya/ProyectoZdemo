@@ -13,34 +13,40 @@ return new class extends Migration
     public function up(): void
     {
         // Tabla de conversaciones (puede ser 1:1 o grupo)
-        Schema::create('conversations', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->nullable(); // Nombre del grupo (null para 1:1)
-            $table->boolean('is_group')->default(false);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('conversations')) {
+            Schema::create('conversations', function (Blueprint $table) {
+                $table->id();
+                $table->string('name')->nullable(); // Nombre del grupo (null para 1:1)
+                $table->boolean('is_group')->default(false);
+                $table->timestamps();
+            });
+        }
 
         // Tabla pivot: usuarios en conversaciones
-        Schema::create('conversation_user', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('conversation_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->timestamp('last_read_at')->nullable();
-            $table->timestamps();
+        if (!Schema::hasTable('conversation_user')) {
+            Schema::create('conversation_user', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('conversation_id')->constrained()->onDelete('cascade');
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->timestamp('last_read_at')->nullable();
+                $table->timestamps();
 
-            $table->unique(['conversation_id', 'user_id']);
-        });
+                $table->unique(['conversation_id', 'user_id']);
+            });
+        }
 
         // Tabla de mensajes
-        Schema::create('messages', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('conversation_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->text('body');
-            $table->timestamps();
+        if (!Schema::hasTable('messages')) {
+            Schema::create('messages', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('conversation_id')->constrained()->onDelete('cascade');
+                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->text('body');
+                $table->timestamps();
 
-            $table->index(['conversation_id', 'created_at']);
-        });
+                $table->index(['conversation_id', 'created_at']);
+            });
+        }
     }
 
     /**
@@ -53,3 +59,4 @@ return new class extends Migration
         Schema::dropIfExists('conversations');
     }
 };
+

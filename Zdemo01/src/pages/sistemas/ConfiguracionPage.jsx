@@ -22,6 +22,39 @@ import {
 import './ConfiguracionPage.css';
 
 // ============================================
+// COMPONENTE: Tooltip de Ayuda
+// ============================================
+function Tooltip({ text }) {
+    return (
+        <span className="config-tooltip">
+            <HelpCircle size={14} />
+            <span className="config-tooltip__text">{text}</span>
+        </span>
+    );
+}
+
+// ============================================
+// COMPONENTE: FormField con Tooltip
+// ============================================
+function FormField({ label, children, required, help, icon: Icon }) {
+    return (
+        <div className="ds-field">
+            <label className="ds-field__label">
+                <span className="ds-field__label-text">
+                    {Icon && <Icon size={14} className="ds-field__label-icon" />}
+                    {label}
+                    {help && <Tooltip text={help} />}
+                </span>
+                {required && <span className="ds-field__required">*</span>}
+            </label>
+            <div className="ds-field__control-wrapper">
+                {children}
+            </div>
+        </div>
+    );
+}
+
+// ============================================
 // CUSTOM HOOK: useSettings
 // ============================================
 function useSettings() {
@@ -110,7 +143,7 @@ function ConfigTextField({ label, value, onSave, saving, help, icon: Icon = Type
 // ============================================
 // COMPONENTE: ColorField con save inline
 // ============================================
-function ConfigColorField({ label, value, onSave, saving }) {
+function ConfigColorField({ label, value, onSave, saving, help }) {
     const [localValue, setLocalValue] = useState(value || '#15428b');
     const [dirty, setDirty] = useState(false);
 
@@ -125,7 +158,7 @@ function ConfigColorField({ label, value, onSave, saving }) {
     };
 
     return (
-        <DSField label={label}>
+        <DSField label={label} tooltip={help}>
             <div className="config-field__row">
                 <div className="config-field__icon-wrapper">
                     <Palette size={14} className="config-field__prefix-icon" />
@@ -354,24 +387,28 @@ export function ConfiguracionPage() {
                             onSave={(v) => handleSave('company_name', v)}
                             saving={saving.company_name}
                             icon={Building2}
+                            help="Nombre legal o comercial de tu empresa. Se mostrará en reportes y documentos."
                         />
                         <ConfigTextField
                             label="RIF / NIT"
                             value={flatSettings.company_rif?.value}
                             onSave={(v) => handleSave('company_rif', v)}
                             saving={saving.company_rif}
+                            help="Número de identificación fiscal de la empresa."
                         />
                         <ConfigTextField
                             label="Teléfono"
                             value={flatSettings.company_phone?.value}
                             onSave={(v) => handleSave('company_phone', v)}
                             saving={saving.company_phone}
+                            help="Número de teléfono principal de contacto."
                         />
                         <ConfigTextField
                             label="Correo Electrónico"
                             value={flatSettings.company_email?.value}
                             onSave={(v) => handleSave('company_email', v)}
                             saving={saving.company_email}
+                            help="Email corporativo para comunicaciones del sistema."
                         />
                     </DSFieldsGrid>
                     <ConfigTextField
@@ -379,6 +416,7 @@ export function ConfiguracionPage() {
                         value={flatSettings.company_address?.value}
                         onSave={(v) => handleSave('company_address', v)}
                         saving={saving.company_address}
+                        help="Dirección física de la empresa para documentos oficiales."
                     />
                 </DSSection>
 
@@ -410,6 +448,7 @@ export function ConfiguracionPage() {
                             value={flatSettings.login_title?.value}
                             onSave={(v) => handleSave('login_title', v)}
                             saving={saving.login_title}
+                            help="Texto de bienvenida que aparece en la página de inicio de sesión."
                         />
                     </DSSubsection>
 
@@ -423,12 +462,14 @@ export function ConfiguracionPage() {
                                 value={flatSettings.primary_color?.value}
                                 onSave={(v) => handleSave('primary_color', v)}
                                 saving={saving.primary_color}
+                                help="Color principal del fondo degradado en la página de login."
                             />
                             <ConfigColorField
                                 label="Color Secundario (Login)"
                                 value={flatSettings.secondary_color?.value}
                                 onSave={(v) => handleSave('secondary_color', v)}
                                 saving={saving.secondary_color}
+                                help="Color secundario del degradado y acentos en el login."
                             />
                         </DSFieldsGrid>
                     </DSSubsection>
