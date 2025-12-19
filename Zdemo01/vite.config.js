@@ -64,7 +64,12 @@ export default defineConfig({
   base: '/',
   server: {
     port: 5173,
+    host: '0.0.0.0', // Necesario para Docker
     // CORS permitido para desarrollo
-    cors: true
+    cors: true,
+    // Configuración para HMR en Docker
+    watch: {
+      usePolling: true
+    }
   },
 })

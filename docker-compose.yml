@@ -1,0 +1,266 @@
+version: '3.9'
+
+services:
+  # ============================================
+  # Base de Datos MySQL
+  # ============================================
+  mysql:
+    image: mysql:8.0
+    container_name: demoz01_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel_apichat
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - demoz01_network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # ============================================
+  # Redis (para cache y sessions)
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: demoz01_redis
+    restart: always
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - demoz01_network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # PostgreSQL para Evolution API
+  # ============================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: demoz01_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: evolution
+      POSTGRES_PASSWORD: evolution_password
+      POSTGRES_DB: evolution
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - demoz01_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U evolution -d evolution" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # Backend - Laravel API
+  # ============================================
+  api_laravel:
+    build:
+      context: ./api_laravel
+      dockerfile: Dockerfile
+    container_name: demoz01_api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      APP_NAME: DemoZ01
+      APP_ENV: local
+      APP_KEY: base64:docker-temp-key-will-be-generated
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+
+      # Database
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: laravel_apichat
+      DB_USERNAME: root
+      DB_PASSWORD: root
+
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: null
+
+      # Sessions & Cache (usando database para simplicidad)
+      SESSION_DRIVER: database
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+
+      # CORS & Sanctum
+      SANCTUM_STATEFUL_DOMAINS: localhost:5173,127.0.0.1:5173,frontend:5173
+      FRONTEND_URL: http://localhost:5173
+
+      # Pusher
+      BROADCAST_CONNECTION: pusher
+      PUSHER_APP_ID: 2092299
+      PUSHER_APP_KEY: 92e89cd6afe7b32940f3
+      PUSHER_APP_SECRET: 07ad98dc1bb8204b523a
+      PUSHER_APP_CLUSTER: sa1
+
+      # Evolution API URL (para integración)
+      EVOLUTION_API_URL: http://evolution_api:8080
+      EVOLUTION_API_KEY: your-evolution-api-key
+    volumes:
+      - ./api_laravel:/var/www/html
+      - /var/www/html/vendor
+      - ./docker/api_laravel.env:/var/www/html/.env:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - demoz01_network
+
+  # ============================================
+  # Frontend - React Vite
+  # ============================================
+  frontend:
+    build:
+      context: ./Zdemo01
+      dockerfile: Dockerfile
+    container_name: demoz01_frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:8000/api
+      VITE_EVOLUTION_API_URL: http://localhost:8080
+    volumes:
+      - ./Zdemo01:/app
+      - /app/node_modules
+      - ./docker/frontend.env:/app/.env.local:ro
+    depends_on:
+      - api_laravel
+    networks:
+      - demoz01_network
+
+  # ============================================
+  # Evolution API - WhatsApp Integration
+  # ============================================
+  evolution_api:
+    image: atendai/evolution-api:v2.1.1
+    container_name: demoz01_evolution_api
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      # Server
+      SERVER_URL: http://localhost:8080
+
+      # CORS
+      CORS_ORIGIN: "*"
+      CORS_METHODS: "GET,POST,PUT,DELETE"
+      CORS_CREDENTIALS: "true"
+
+      # Logs
+      LOG_LEVEL: "ERROR,WARN,DEBUG,INFO,LOG,VERBOSE,DARK,WEBHOOKS"
+      LOG_COLOR: "true"
+      LOG_BAILEYS: "error"
+
+      # Store - Archivos de sesiones
+      STORE_MESSAGES: "true"
+      STORE_MESSAGE_UP: "true"
+      STORE_CONTACTS: "true"
+      STORE_CHATS: "true"
+
+      # Clean Store (en minutos)
+      CLEAN_STORE_CLEANING_INTERVAL: 7200
+      CLEAN_STORE_MESSAGES: "true"
+      CLEAN_STORE_MESSAGE_UP: "true"
+      CLEAN_STORE_CONTACTS: "true"
+      CLEAN_STORE_CHATS: "true"
+
+      # Database - PostgreSQL
+      DATABASE_ENABLED: "true"
+      DATABASE_PROVIDER: "postgresql"
+      DATABASE_CONNECTION_URI: "postgresql://evolution:evolution_password@postgres:5432/evolution?schema=public"
+      DATABASE_CONNECTION_CLIENT_NAME: "evolution"
+
+      # Redis (para cache y sesiones)
+      CACHE_REDIS_ENABLED: "true"
+      CACHE_REDIS_URI: redis://redis:6379
+      CACHE_REDIS_PREFIX_KEY: evolution
+      CACHE_REDIS_SAVE_INSTANCES: "false"
+      CACHE_LOCAL_ENABLED: "false"
+
+      # RabbitMQ (opcional - para colas de mensajes)
+      RABBITMQ_ENABLED: "false"
+
+      # Webhooks
+      WEBHOOK_GLOBAL_ENABLED: "false"
+      WEBHOOK_GLOBAL_URL: ""
+      WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS: "false"
+
+      # Authentication
+      AUTHENTICATION_TYPE: apikey
+      AUTHENTICATION_API_KEY: your-evolution-api-key
+      AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES: "true"
+
+      # Qr Code
+      QRCODE_LIMIT: 30
+      QRCODE_COLOR: "#175197"
+
+      # Typebot (opcional)
+      TYPEBOT_ENABLED: "false"
+
+      # Chatwoot (opcional)
+      CHATWOOT_ENABLED: "false"
+
+      # OpenAI (opcional)
+      OPENAI_ENABLED: "false"
+
+      # Dify (opcional)
+      DIFY_ENABLED: "false"
+
+      # S3 Storage (opcional)
+      S3_ENABLED: "false"
+    volumes:
+      - evolution_instances:/evolution/instances
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - demoz01_network
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+  evolution_instances:
+    driver: local
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  demoz01_network:
+    driver: bridge
