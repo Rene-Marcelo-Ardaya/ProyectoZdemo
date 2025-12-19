@@ -190,6 +190,9 @@ export function getHeaderConfig(activePage) {
 
     if (key === 'dashboard') return { Icon: Home, title: 'Dashboard' };
     if (key === '/sistemas/usuarios') return { Icon: Users, title: 'Usuarios' };
+    if (key === '/sistemas/accesos') return { Icon: Shield, title: 'Control de Accesos' };
+    if (key === '/sistemas/configuracion') return { Icon: Settings, title: 'Configuración del Sistema' };
+    if (key === '/sistemas/menus') return { Icon: Folder, title: 'Administración de Menús' };
     if (key === '/sistemas/control-accesos') return { Icon: Shield, title: 'Control de Accesos' };
     if (key === '/tienda/marcas-producto') return { Icon: Tag, title: 'Marcas de Producto' };
     if (key === '/spa/seleccion-spa') return { Icon: Sparkles, title: 'Asignar Fichas SPA' };

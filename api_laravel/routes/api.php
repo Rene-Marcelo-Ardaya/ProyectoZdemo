@@ -8,6 +8,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\MenuController;
 
 // Rutas públicas (sin autenticación)
 Route::post('/login', [AuthController::class, 'login']);
@@ -36,6 +37,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Gestión de Roles y Accesos
     Route::get('/menus-list', [RoleController::class, 'getMenus']);
     Route::apiResource('roles', RoleController::class);
+
+    // Administración de Menús (Solo Superusuarios)
+    Route::get('/menus/icons', [MenuController::class, 'getAvailableIcons']);
+    Route::get('/menus/parents', [MenuController::class, 'getParentMenus']);
+    Route::apiResource('menus', MenuController::class);
 
     // Configuración del Sistema (Branding)
     Route::get('/settings', [SettingController::class, 'index']);

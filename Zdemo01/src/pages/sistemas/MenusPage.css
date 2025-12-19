@@ -1,0 +1,328 @@
+/**
+ * MenusPage Styles
+ * Estilos ESPECÍFICOS de esta página - Los generales vienen de ds-components
+ * Reutiliza estilos similares a ControlAccesosPage
+ */
+
+/* Modal más alto y overflow visible para tooltips */
+.menus-form {
+    min-height: 250px;
+}
+
+.ds-modal__content,
+.ds-modal__body {
+    overflow: visible !important;
+}
+
+/* Alert y count (igual que accesos) */
+.menus-alert-margin {
+    margin-bottom: 12px;
+}
+
+.menus-panel__count {
+    font-weight: 400;
+    font-size: 11px;
+    color: var(--ds-secondaryText);
+    background: var(--ds-panelBg);
+    padding: 2px 8px;
+    border: 1px solid var(--ds-surfaceBorder);
+}
+
+/* ============================================
+   TREE TABLE - Específico de esta página
+   ============================================ */
+.menus-tree-row__name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.menus-tree-row__toggle {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--ds-secondaryText);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    transition: all 0.15s ease;
+}
+
+.menus-tree-row__toggle:hover {
+    background: var(--ds-hoverBg);
+    color: var(--ds-primaryText);
+}
+
+.menus-tree-row__spacer {
+    width: 24px;
+}
+
+.menus-tree-row__icon {
+    color: var(--ds-accentColor);
+}
+
+.menus-tree-row__no-url {
+    color: var(--ds-secondaryText);
+    font-style: italic;
+}
+
+.menus-tree-row__icon-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--ds-secondaryText);
+}
+
+.menus-tree-row__icon-name svg {
+    color: var(--ds-accentColor);
+}
+
+.menus-tree-row--level-1 {
+    background: color-mix(in srgb, var(--ds-hoverBg) 40%, transparent);
+}
+
+.menus-tree-row--level-2 {
+    background: color-mix(in srgb, var(--ds-hoverBg) 60%, transparent);
+}
+
+/* ============================================
+   FORM LAYOUT
+   ============================================ */
+.menus-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.menus-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.menus-form__row--three {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+@media (max-width: 768px) {
+
+    .menus-form__row,
+    .menus-form__row--three {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Inputs con icono (URL y Order) */
+.menus-url-input,
+.menus-order-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--ds-fieldBg);
+    border: 1px solid var(--ds-fieldBorder);
+    border-radius: var(--ds-borderRadius);
+    padding-left: 10px;
+}
+
+.menus-url-input:focus-within,
+.menus-order-input:focus-within {
+    border-color: var(--ds-accentColor);
+}
+
+.menus-url-input svg,
+.menus-order-input svg {
+    color: var(--ds-secondaryText);
+}
+
+.menus-url-input input,
+.menus-order-input input {
+    border: none;
+    background: transparent;
+    flex: 1;
+    padding: 8px 10px 8px 0;
+}
+
+.menus-url-input input:focus,
+.menus-order-input input:focus {
+    outline: none;
+}
+
+/* Checkbox - igual que accesos */
+.menus-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: var(--ds-borderRadius);
+    border: 1px solid var(--ds-fieldBorder);
+    background: var(--ds-fieldBg);
+}
+
+.menus-checkbox:hover {
+    background: var(--ds-hoverBg);
+}
+
+.menus-checkbox input {
+    accent-color: var(--ds-accentColor);
+}
+
+.menus-checkbox span {
+    display: flex;
+    align-items: center;
+}
+
+/* ============================================
+   ICON PICKER - Componente único de esta página
+   ============================================ */
+.menus-icon-picker {
+    position: relative;
+}
+
+.menus-icon-picker__trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    width: 100%;
+    background: var(--ds-fieldBg);
+    border: 1px solid var(--ds-fieldBorder);
+    border-radius: var(--ds-borderRadius);
+    padding: 8px 12px;
+    color: var(--ds-fieldText);
+}
+
+.menus-icon-picker__trigger:hover {
+    border-color: var(--ds-accentColor);
+}
+
+.menus-icon-picker__trigger svg:first-child {
+    color: var(--ds-accentColor);
+}
+
+.menus-icon-picker__trigger svg:last-child {
+    margin-left: auto;
+    color: var(--ds-secondaryText);
+}
+
+.menus-icon-picker__dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--ds-panelBg);
+    border: 1px solid var(--ds-fieldBorder);
+    border-radius: var(--ds-borderRadius);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    margin-top: 4px;
+    max-height: 320px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.menus-icon-picker__search {
+    padding: 10px 12px;
+    border: none;
+    border-bottom: 1px solid var(--ds-fieldBorder);
+    background: var(--ds-fieldBg);
+    color: var(--ds-fieldText);
+    font-size: 13px;
+}
+
+.menus-icon-picker__search:focus {
+    outline: none;
+}
+
+.menus-icon-picker__grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 2px;
+    padding: 8px;
+    overflow-y: auto;
+    max-height: 240px;
+}
+
+.menus-icon-picker__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    color: var(--ds-secondaryText);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.menus-icon-picker__item:hover {
+    background: var(--ds-hoverBg);
+    color: var(--ds-accentColor);
+}
+
+.menus-icon-picker__item.is-selected {
+    background: var(--ds-accentColor);
+    color: white;
+}
+
+.menus-icon-picker__empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--ds-secondaryText);
+}
+
+/* ============================================
+   TOOLTIP - Igual que accesos pero a la derecha
+   ============================================ */
+.menus-tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    color: var(--ds-secondaryText);
+    cursor: help;
+}
+
+.menus-tooltip:hover {
+    color: var(--ds-panelHeaderText);
+}
+
+.menus-tooltip__text {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 10px;
+    padding: 8px 12px;
+    background: var(--ds-primaryText);
+    color: var(--ds-panelBg);
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.4;
+    min-width: 180px;
+    max-width: 280px;
+    white-space: normal;
+    border-radius: 3px;
+    box-shadow: var(--ds-shadowMd);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 9999;
+}
+
+.menus-tooltip__text::after {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 6px solid transparent;
+    border-right-color: var(--ds-primaryText);
+}
+
+.menus-tooltip:hover .menus-tooltip__text {
+    opacity: 1;
+    visibility: visible;
+}

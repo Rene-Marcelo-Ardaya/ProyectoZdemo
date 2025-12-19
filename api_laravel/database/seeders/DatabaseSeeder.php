@@ -100,6 +100,19 @@ class DatabaseSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        // Submenú: Administración de Menús (Solo Superusuarios)
+        $menuAdminId = \Illuminate\Support\Facades\DB::table('menus')->insertGetId([
+            'name' => 'Administración de Menús',
+            'url' => '/sistemas/menus',
+            'icon' => 'FolderTree',
+            'parent_id' => $sysMenuId,
+            'order' => 4,
+            'module' => 'Sistemas',
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
         
         // Módulo: Comunicación (Chat)
         $comMenuId = \Illuminate\Support\Facades\DB::table('menus')->insertGetId([
