@@ -147,6 +147,19 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ]
         );
+
+        // Submenú: Instancias WhatsApp
+        DB::table('menus')->updateOrInsert(
+            ['name' => 'Instancias WhatsApp', 'parent_id' => $comMenuId],
+            [
+                'url' => '/comunicacion/instancias',
+                'icon' => 'Smartphone',
+                'order' => 2,
+                'module' => 'Chat',
+                'is_active' => true,
+                'updated_at' => now(),
+            ]
+        );
         
         // Asignar menus al rol admin (Ver todo)
         $menus = DB::table('menus')->pluck('id');

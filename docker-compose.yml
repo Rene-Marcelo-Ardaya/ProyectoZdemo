@@ -159,7 +159,7 @@ services:
   # Evolution API - WhatsApp Integration
   # ============================================
   evolution_api:
-    image: atendai/evolution-api:v2.1.1
+    image: atendai/evolution-api:latest
     container_name: demoz01_evolution_api
     restart: always
     ports:
@@ -183,6 +183,11 @@ services:
       STORE_MESSAGE_UP: "true"
       STORE_CONTACTS: "true"
       STORE_CHATS: "true"
+
+      # Comportamiento de conexión
+      WA_ALWAYS_ONLINE: "true"
+      WA_READ_MESSAGES: "false"
+      WA_READ_STATUS: "false"
 
       # Clean Store (en minutos)
       CLEAN_STORE_CLEANING_INTERVAL: 7200
@@ -220,6 +225,11 @@ services:
       # Qr Code
       QRCODE_LIMIT: 30
       QRCODE_COLOR: "#175197"
+
+      # Versión de WhatsApp (CRÍTICO para QR)
+      CONFIG_SESSION_PHONE_VERSION: "2.3000.1031332979"
+      CONFIG_SESSION_PHONE_CLIENT: "Evolution API"
+      CONFIG_SESSION_PHONE_NAME: "Chrome"
 
       # Typebot (opcional)
       TYPEBOT_ENABLED: "false"
