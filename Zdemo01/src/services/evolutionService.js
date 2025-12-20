@@ -281,6 +281,44 @@ export function fileToBase64(file) {
     });
 }
 
+/**
+ * Obtener historial de mensajes con un contacto
+ * @param {string} instanceName - Nombre de la instancia
+ * @param {string} phoneNumber - Número completo con código de país
+ * @param {number} limit - Cantidad de mensajes a obtener
+ */
+export async function fetchMessages(instanceName, phoneNumber, limit = 50) {
+    // Formatear el JID de WhatsApp
+    const remoteJid = `${phoneNumber.replace(/\D/g, '')}@s.whatsapp.net`;
+    
+    return evolutionFetch(`/chat/findMessages/${instanceName}`, {
+        method: 'POST',
+        body: JSON.stringify({
+            where: {
+                key: {
+                    remoteJid: remoteJid
+                }
+            },
+            limit: limit
+        }),
+    });
+}
+
+/**
+ * Obtener la URL base para WebSocket
+ */
+export function getWebSocketUrl() {
+    // Convertir http a ws
+    return EVOLUTION_API_URL.replace('http://', 'ws://').replace('https://', 'wss://');
+}
+
+/**
+ * Obtener la API key para WebSocket
+ */
+export function getApiKey() {
+    return EVOLUTION_API_KEY;
+}
+
 export default {
     fetchInstances,
     createInstance,
@@ -297,4 +335,7 @@ export default {
     sendMediaMessage,
     fileToBase64,
     formatWhatsAppNumber,
+    fetchMessages,
+    getWebSocketUrl,
+    getApiKey,
 };

@@ -243,6 +243,10 @@ services:
       # Dify (opcional)
       DIFY_ENABLED: "false"
 
+      # WebSocket - Para mensajes en tiempo real
+      WEBSOCKET_ENABLED: "true"
+      WEBSOCKET_GLOBAL_EVENTS: "true"
+
       # S3 Storage (opcional)
       S3_ENABLED: "false"
     volumes:
