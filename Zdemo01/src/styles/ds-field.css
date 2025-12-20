@@ -318,7 +318,8 @@
    ============================================ */
 .ds-fields-grid {
     display: grid;
-    gap: 16px;
+    gap: 20px 16px;
+    /* row gap, column gap */
 }
 
 .ds-fields-grid--2 {

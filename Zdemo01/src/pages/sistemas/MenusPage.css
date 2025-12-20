@@ -4,14 +4,9 @@
  * Reutiliza estilos similares a ControlAccesosPage
  */
 
-/* Modal más alto y overflow visible para tooltips */
+/* Modal - Estilos específicos de esta página */
 .menus-form {
     min-height: 250px;
-}
-
-.ds-modal__content,
-.ds-modal__body {
-    overflow: visible !important;
 }
 
 /* Alert y count (igual que accesos) */

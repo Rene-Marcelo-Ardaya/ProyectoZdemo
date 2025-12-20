@@ -220,6 +220,24 @@ select.ds-field__control {
 .ds-date__cell.is-empty {
   border: none;
   background: transparent;
+  cursor: default;
+}
+
+.ds-date__cell.is-today {
+  border-color: var(--ds-primary, #3a6ea5);
+  font-weight: 700;
+}
+
+.ds-date__icon {
+  cursor: pointer;
+}
+
+.ds-date__footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--ds-surfaceBorder, #e5e7eb);
 }
 
 .ds-time {
@@ -288,7 +306,7 @@ select.ds-field__control {
   box-shadow: var(--ds-shadowSm, 0 1px 2px rgba(0, 0, 0, 0.08));
 }
 
-.ds-accordion__item + .ds-accordion__item {
+.ds-accordion__item+.ds-accordion__item {
   border-top: 1px solid var(--ds-surfaceBorder, #d6deeb);
 }
 

@@ -160,6 +160,34 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ]
         );
+
+        // ==========================================
+        // Módulo: RRHH (Recursos Humanos)
+        // ==========================================
+        DB::table('menus')->updateOrInsert(
+            ['name' => 'RRHH', 'parent_id' => null],
+            [
+                'icon' => 'Users',
+                'order' => 15,
+                'module' => 'RRHH',
+                'is_active' => true,
+                'updated_at' => now(),
+            ]
+        );
+        $rrhhMenuId = DB::table('menus')->where('name', 'RRHH')->whereNull('parent_id')->value('id');
+
+        // Submenú: Personal
+        DB::table('menus')->updateOrInsert(
+            ['name' => 'Personal', 'parent_id' => $rrhhMenuId],
+            [
+                'url' => '/rrhh/personal',
+                'icon' => 'UserCircle',
+                'order' => 1,
+                'module' => 'RRHH',
+                'is_active' => true,
+                'updated_at' => now(),
+            ]
+        );
         
         // Asignar menus al rol admin (Ver todo)
         $menus = DB::table('menus')->pluck('id');

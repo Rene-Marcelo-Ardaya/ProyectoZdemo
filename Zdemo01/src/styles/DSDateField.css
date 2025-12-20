@@ -1,0 +1,307 @@
+/* ============================================
+   DS DATE FIELD - Selector de Fecha Moderno
+   ============================================ */
+
+.ds-datefield {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+}
+
+/* Label */
+.ds-datefield__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ds-primaryText, #1f2d3d);
+}
+
+.ds-datefield__required {
+    color: var(--ds-error, #dc2626);
+    margin-left: 2px;
+}
+
+/* Input Wrapper */
+.ds-datefield__input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--ds-fieldBg, #fff);
+    border: 1px solid var(--ds-fieldBorder, #d1d5db);
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.ds-datefield__input-wrapper:hover:not(.is-disabled) {
+    border-color: var(--ds-fieldBorderHover, #9ca3af);
+}
+
+.ds-datefield__input-wrapper:focus-within:not(.is-disabled) {
+    border-color: var(--ds-primary, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.ds-datefield__input-wrapper.is-disabled {
+    background: var(--ds-fieldDisabledBg, #f3f4f6);
+    cursor: not-allowed;
+}
+
+.ds-datefield__input-wrapper.has-error {
+    border-color: var(--ds-error, #dc2626);
+}
+
+/* Input */
+.ds-datefield__input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--ds-fieldText, #1f2d3d);
+    outline: none;
+    cursor: pointer;
+    min-width: 0;
+}
+
+.ds-datefield__input:disabled {
+    cursor: not-allowed;
+    color: var(--ds-secondaryText, #6b7280);
+}
+
+.ds-datefield__input::placeholder {
+    color: var(--ds-placeholderText, #9ca3af);
+}
+
+/* Clear Button */
+.ds-datefield__clear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: var(--ds-secondaryText, #6b7280);
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-right: 2px;
+}
+
+.ds-datefield__clear:hover {
+    background: var(--ds-hoverBg, #f3f4f6);
+    color: var(--ds-primaryText, #1f2d3d);
+}
+
+/* Toggle Button */
+.ds-datefield__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 100%;
+    background: var(--ds-surfaceBg, #f9fafb);
+    border: none;
+    border-left: 1px solid var(--ds-fieldBorder, #d1d5db);
+    border-radius: 0 5px 5px 0;
+    color: var(--ds-secondaryText, #6b7280);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.ds-datefield__toggle:hover:not(:disabled) {
+    background: var(--ds-hoverBg, #e5e7eb);
+    color: var(--ds-primary, #3b82f6);
+}
+
+.ds-datefield__toggle:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Picker Dropdown */
+.ds-datefield__picker {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 1000;
+    background: var(--ds-cardBg, #fff);
+    border: 1px solid var(--ds-border, #e5e7eb);
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    padding: 12px;
+    min-width: 280px;
+    animation: ds-datefield-slide 0.15s ease;
+}
+
+@keyframes ds-datefield-slide {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header */
+.ds-datefield__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.ds-datefield__nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid var(--ds-border, #e5e7eb);
+    border-radius: 6px;
+    color: var(--ds-primaryText, #1f2d3d);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.ds-datefield__nav:hover {
+    background: var(--ds-hoverBg, #f3f4f6);
+    border-color: var(--ds-primary, #3b82f6);
+    color: var(--ds-primary, #3b82f6);
+}
+
+.ds-datefield__month-year {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--ds-primaryText, #1f2d3d);
+    text-transform: capitalize;
+}
+
+/* Weekdays */
+.ds-datefield__weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 6px;
+}
+
+.ds-datefield__weekday {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ds-secondaryText, #6b7280);
+    padding: 6px 0;
+    text-transform: uppercase;
+}
+
+/* Days Grid */
+.ds-datefield__days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.ds-datefield__day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 1;
+    min-width: 32px;
+    min-height: 32px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--ds-primaryText, #1f2d3d);
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.ds-datefield__day:hover:not(.is-empty):not(.is-disabled):not(.is-selected) {
+    background: var(--ds-hoverBg, #f3f4f6);
+    border-color: var(--ds-border, #e5e7eb);
+}
+
+.ds-datefield__day.is-today:not(.is-selected) {
+    border-color: var(--ds-primary, #3b82f6);
+    color: var(--ds-primary, #3b82f6);
+    font-weight: 700;
+}
+
+.ds-datefield__day.is-selected {
+    background: var(--ds-primary, #3b82f6);
+    color: #fff;
+    font-weight: 600;
+}
+
+.ds-datefield__day.is-empty {
+    visibility: hidden;
+    cursor: default;
+}
+
+.ds-datefield__day.is-disabled {
+    color: var(--ds-disabledText, #d1d5db);
+    cursor: not-allowed;
+}
+
+/* Footer */
+.ds-datefield__footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--ds-border, #e5e7eb);
+}
+
+.ds-datefield__today,
+.ds-datefield__close {
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    background: transparent;
+    border: 1px solid var(--ds-border, #e5e7eb);
+    border-radius: 6px;
+    color: var(--ds-primaryText, #1f2d3d);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.ds-datefield__today:hover {
+    background: var(--ds-primary, #3b82f6);
+    border-color: var(--ds-primary, #3b82f6);
+    color: #fff;
+}
+
+.ds-datefield__close:hover {
+    background: var(--ds-hoverBg, #f3f4f6);
+}
+
+/* Help/Error */
+.ds-datefield__help {
+    font-size: 12px;
+    color: var(--ds-secondaryText, #6b7280);
+}
+
+.ds-datefield__error {
+    font-size: 12px;
+    color: var(--ds-error, #dc2626);
+}
+
+/* Responsive */
+@media (max-width: 360px) {
+    .ds-datefield__picker {
+        min-width: 260px;
+        padding: 10px;
+    }
+
+    .ds-datefield__day {
+        min-width: 28px;
+        min-height: 28px;
+        font-size: 12px;
+    }
+}

@@ -57,4 +57,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/messages', [ChatController::class, 'store']);
     Route::post('/messages/read', [ChatController::class, 'markAsRead']);
     Route::post('/messages/typing', [ChatController::class, 'typing']);
+
+    // RRHH - Personal
+    Route::get('/personal/available-users', [\App\Http\Controllers\PersonalController::class, 'getAvailableUsers']);
+    Route::apiResource('personal', \App\Http\Controllers\PersonalController::class);
 });

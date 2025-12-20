@@ -71,4 +71,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Message::class);
     }
+
+    /**
+     * Personas asociadas a este usuario
+     */
+    public function personas(): BelongsToMany
+    {
+        return $this->belongsToMany(Persona::class, 'personal_user', 'user_id', 'personal_id')
+            ->withTimestamps();
+    }
 }
