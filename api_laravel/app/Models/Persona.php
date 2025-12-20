@@ -72,4 +72,12 @@ class Persona extends Model
         if (!$this->fecha_nacimiento) return null;
         return $this->fecha_nacimiento->age;
     }
+
+    /**
+     * Relación WhatsApp verification
+     */
+    public function whatsapp(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(PersonaWhatsapp::class, 'personal_id');
+    }
 }

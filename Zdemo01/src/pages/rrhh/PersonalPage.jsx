@@ -11,7 +11,10 @@ import {
     MapPin,
     Calendar,
     Save,
-    X
+    X,
+    CheckCircle2,
+    MessageCircle,
+    Loader2,
 } from 'lucide-react';
 import {
     fetchPersonal,
@@ -40,6 +43,8 @@ import {
     DSFieldsRow,
     DSEmpty,
 } from '../../ds-components';
+
+import WhatsappVerificationModal from '../../components/WhatsappVerificationModal';
 
 import './PersonalPage.css';
 
@@ -78,7 +83,7 @@ function usePersonal() {
 // ============================================
 // COMPONENTE: PersonalTable
 // ============================================
-function PersonalTable({ data, onEdit, onDelete, searchTerm }) {
+function PersonalTable({ data, onEdit, onDelete, onVerify, searchTerm }) {
     const filteredData = data.filter(p => {
         if (!searchTerm) return true;
         const term = searchTerm.toLowerCase();
@@ -132,7 +137,23 @@ function PersonalTable({ data, onEdit, onDelete, searchTerm }) {
                             <td>
                                 <div className="personal-contact">
                                     {p.celular_completo && (
-                                        <span><Phone size={12} /> {p.celular_completo}</span>
+                                        <span className="personal-phone-row">
+                                            <Phone size={12} />
+                                            {p.celular_completo}
+                                            {p.whatsapp?.status === 'verified' ? (
+                                                <span className="whatsapp-verified" title="WhatsApp verificado">
+                                                    <CheckCircle2 size={14} />
+                                                </span>
+                                            ) : p.celular && (
+                                                <button
+                                                    className="personal-verify-btn"
+                                                    onClick={() => onVerify(p)}
+                                                    title="Verificar WhatsApp"
+                                                >
+                                                    Verificar
+                                                </button>
+                                            )}
+                                        </span>
                                     )}
                                     {p.email_personal && (
                                         <span><Mail size={12} /> {p.email_personal}</span>
@@ -513,6 +534,10 @@ export function PersonalPage() {
     const [availableUsers, setAvailableUsers] = useState([]);
     const [alert, setAlert] = useState(null);
 
+    // WhatsApp Verification
+    const [verifyModalOpen, setVerifyModalOpen] = useState(false);
+    const [personaToVerify, setPersonaToVerify] = useState(null);
+
     // Cargar usuarios disponibles
     useEffect(() => {
         const loadUsers = async () => {
@@ -551,6 +576,11 @@ export function PersonalPage() {
     const handleSave = () => {
         setAlert({ type: 'success', message: editData ? 'Personal actualizado' : 'Personal creado' });
         refetch();
+    };
+
+    const handleVerify = (persona) => {
+        setPersonaToVerify(persona);
+        setVerifyModalOpen(true);
     };
 
     return (
@@ -608,6 +638,7 @@ export function PersonalPage() {
                         data={personal}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onVerify={handleVerify}
                         searchTerm={searchTerm}
                     />
                 )}
@@ -619,6 +650,16 @@ export function PersonalPage() {
                 onSave={handleSave}
                 editData={editData}
                 availableUsers={availableUsers}
+            />
+
+            <WhatsappVerificationModal
+                isOpen={verifyModalOpen}
+                onClose={() => setVerifyModalOpen(false)}
+                persona={personaToVerify}
+                onVerified={() => {
+                    refetch();
+                    setAlert({ type: 'success', message: 'WhatsApp verificado correctamente' });
+                }}
             />
         </DSPage>
     );

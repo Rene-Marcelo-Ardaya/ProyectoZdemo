@@ -61,4 +61,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // RRHH - Personal
     Route::get('/personal/available-users', [\App\Http\Controllers\PersonalController::class, 'getAvailableUsers']);
     Route::apiResource('personal', \App\Http\Controllers\PersonalController::class);
+
+    // WhatsApp Verification
+    Route::prefix('personal/{personalId}/whatsapp')->group(function () {
+        Route::get('/status', [\App\Http\Controllers\WhatsappVerificationController::class, 'status']);
+        Route::post('/send-code', [\App\Http\Controllers\WhatsappVerificationController::class, 'sendCode']);
+        Route::post('/verify', [\App\Http\Controllers\WhatsappVerificationController::class, 'verify']);
+        Route::delete('/reset', [\App\Http\Controllers\WhatsappVerificationController::class, 'reset']);
+    });
 });

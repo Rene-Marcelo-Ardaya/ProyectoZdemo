@@ -100,6 +100,28 @@
     color: var(--ds-secondaryText);
 }
 
+/* WhatsApp verification badge */
+.personal-phone-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.whatsapp-verified {
+    color: #25d366;
+    display: flex;
+    align-items: center;
+    cursor: help;
+}
+
+.whatsapp-unverified {
+    color: var(--ds-secondaryText);
+    opacity: 0.5;
+    display: flex;
+    align-items: center;
+    cursor: help;
+}
+
 .personal-city {
     display: flex;
     align-items: center;

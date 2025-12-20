@@ -1,0 +1,163 @@
+/* WhatsApp Verification Modal Styles */
+
+.whatsapp-verification-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 8px;
+}
+
+.verification-info {
+    color: var(--ds-primaryText);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.verification-instance-select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1px solid var(--ds-fieldBorder, #d1d5db);
+    border-radius: 6px;
+    background: var(--ds-fieldBg, #fff);
+    color: var(--ds-primaryText);
+}
+
+.verification-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.verification-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 32px;
+    color: var(--ds-primary, #3b82f6);
+}
+
+.verification-loading .spin {
+    animation: spin 1s linear infinite;
+}
+
+.verification-waiting {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+}
+
+.countdown-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.manual-verify {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--ds-border, #e5e7eb);
+}
+
+.manual-verify .text-small {
+    font-size: 13px;
+    color: var(--ds-secondaryText);
+    margin-bottom: 8px;
+}
+
+.manual-verify-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.manual-verify-row input {
+    max-width: 100px;
+    text-align: center;
+    font-size: 18px;
+    letter-spacing: 4px;
+}
+
+.verification-success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 32px;
+    color: #25d366;
+}
+
+.verification-success h3 {
+    color: var(--ds-primaryText);
+    margin: 0;
+}
+
+.verification-success p {
+    color: var(--ds-secondaryText);
+    margin: 0;
+}
+
+.verification-failed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px;
+    color: var(--ds-danger, #dc2626);
+}
+
+.verification-failed h4 {
+    color: var(--ds-primaryText);
+    margin: 0;
+}
+
+.verification-failed p {
+    color: var(--ds-secondaryText);
+    margin: 0;
+    text-align: center;
+}
+
+.text-muted {
+    color: var(--ds-secondaryText);
+    font-size: 13px;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Verify button in table */
+.personal-verify-btn {
+    padding: 2px 6px;
+    font-size: 11px;
+    border: 1px solid #25d366;
+    background: transparent;
+    color: #25d366;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-left: 4px;
+}
+
+.personal-verify-btn:hover {
+    background: #25d366;
+    color: white;
+}

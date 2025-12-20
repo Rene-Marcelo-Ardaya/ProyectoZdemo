@@ -79,7 +79,7 @@ function ContactSelector({ contacts, selectedContact, onSelect, loading }) {
             <div className="contact-selector__list">
                 {withPhone.length === 0 ? (
                     <div className="contact-selector__empty">
-                        No hay contactos con número de teléfono
+                        No hay contactos con número de teléfono verificado
                     </div>
                 ) : (
                     withPhone.map(contact => (
@@ -477,7 +477,11 @@ export function MensajeriaPage() {
             setLoadingContacts(true);
             const result = await fetchPersonal();
             if (result.success) {
-                setContacts(result.data || []);
+                // Solo mostrar contactos con WhatsApp verificado
+                const verifiedContacts = (result.data || []).filter(
+                    c => c.whatsapp?.status === 'verified'
+                );
+                setContacts(verifiedContacts);
             }
             setLoadingContacts(false);
         };
@@ -552,14 +556,21 @@ export function MensajeriaPage() {
 
             // Filtrar por contacto seleccionado
             if (selectedContact && messagesArray.length > 0) {
+                // Si el contacto tiene WhatsApp verificado, usar el JID exacto
+                const verifiedJid = selectedContact.whatsapp?.whatsapp_jid;
                 const contactPhone = `${selectedContact.codigo_pais}${selectedContact.celular}`;
 
                 const filteredMessages = messagesArray.filter(msg => {
                     const remoteJid = msg.key?.remoteJid || '';
-                    // Verificar si el remoteJid contiene el número del contacto
-                    // o si es un mensaje saliente (fromMe) hacia ese número
-                    const phoneFromJid = remoteJid.replace(/@.*$/, '');
-                    return phoneFromJid.includes(contactPhone) || contactPhone.includes(phoneFromJid);
+
+                    if (verifiedJid) {
+                        // Filtro exacto por JID verificado
+                        return remoteJid === verifiedJid;
+                    } else {
+                        // Fallback: coincidencia parcial por número de teléfono
+                        const phoneFromJid = remoteJid.replace(/@.*$/, '');
+                        return phoneFromJid.includes(contactPhone) || contactPhone.includes(phoneFromJid);
+                    }
                 });
 
                 if (filteredMessages.length > 0) {

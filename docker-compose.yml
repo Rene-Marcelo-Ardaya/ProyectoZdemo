@@ -119,7 +119,7 @@ services:
 
       # Evolution API URL (para integración)
       EVOLUTION_API_URL: http://evolution_api:8080
-      EVOLUTION_API_KEY: your-evolution-api-key
+      EVOLUTION_API_KEY: B6D711FCDE4D4FD5936544120E713976
     volumes:
       - ./api_laravel:/var/www/html
       - /var/www/html/vendor
@@ -219,7 +219,7 @@ services:
 
       # Authentication
       AUTHENTICATION_TYPE: apikey
-      AUTHENTICATION_API_KEY: your-evolution-api-key
+      AUTHENTICATION_API_KEY: B6D711FCDE4D4FD5936544120E713976
       AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES: "true"
 
       # Qr Code

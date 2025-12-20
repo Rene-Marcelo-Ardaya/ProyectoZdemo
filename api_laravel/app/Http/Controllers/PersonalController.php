@@ -14,7 +14,7 @@ class PersonalController extends Controller
      */
     public function index(): JsonResponse
     {
-        $personal = Persona::with('users:id,name,email')
+        $personal = Persona::with(['users:id,name,email', 'whatsapp'])
             ->orderBy('apellidos')
             ->orderBy('nombre')
             ->get()
@@ -40,6 +40,11 @@ class PersonalController extends Controller
                         'name' => $u->name,
                         'email' => $u->email,
                     ]),
+                    'whatsapp' => $p->whatsapp ? [
+                        'status' => $p->whatsapp->status,
+                        'verified_at' => $p->whatsapp->verified_at?->format('Y-m-d H:i'),
+                        'whatsapp_jid' => $p->whatsapp->whatsapp_jid,
+                    ] : null,
                     'created_at' => $p->created_at?->format('Y-m-d H:i'),
                 ];
             });

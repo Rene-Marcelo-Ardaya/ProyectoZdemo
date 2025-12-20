@@ -4,7 +4,7 @@
  */
 
 const EVOLUTION_API_URL = import.meta.env.VITE_EVOLUTION_API_URL || 'http://localhost:8080';
-const EVOLUTION_API_KEY = import.meta.env.VITE_EVOLUTION_API_KEY || 'your-evolution-api-key';
+const EVOLUTION_API_KEY = import.meta.env.VITE_EVOLUTION_API_KEY || 'B6D711FCDE4D4FD5936544120E713976';
 
 /**
  * Realizar petición a Evolution API
