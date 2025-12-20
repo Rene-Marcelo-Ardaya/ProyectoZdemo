@@ -26,7 +26,8 @@ async function evolutionFetch(endpoint, options = {}) {
         const data = await response.json();
         
         if (!response.ok) {
-            return { success: false, error: data.message || data.error || 'Error en Evolution API' };
+            console.error('Evolution API Error Response:', data);
+            return { success: false, error: data.message || data.error || JSON.stringify(data) };
         }
         
         return { success: true, data };
@@ -256,7 +257,8 @@ export async function sendMediaMessage(instanceName, number, mediaBase64, mimety
         body: JSON.stringify({
             number: number,
             mediatype: mediatype,
-            media: `data:${mimetype};base64,${mediaBase64}`, // Evolution API espera data URL
+            media: mediaBase64, // Solo base64 puro, sin prefijo data:
+            mimetype: mimetype,
             fileName: fileName,
             caption: caption || undefined,
         }),
