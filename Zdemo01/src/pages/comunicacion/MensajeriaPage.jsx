@@ -16,6 +16,8 @@ import {
     Wifi,
     WifiOff,
     Download,
+    Video,
+    Mic,
 } from 'lucide-react';
 import {
     getConnectedInstances,
@@ -170,18 +172,27 @@ function ChatMessage({ message, instanceName }) {
         content = '📎 Mensaje';
     }
 
-    // Función para descargar imagen en calidad completa
-    const handleDownloadImage = async () => {
+    // Función para descargar media (imagen, video, audio, documento)
+    const handleDownloadMedia = async (mediaType) => {
         if (!instanceName || !message.key) return;
         setDownloading(true);
-        console.log('Downloading media with key:', message.key, 'Instance:', instanceName);
         try {
-            const result = await getBase64FromMedia(instanceName, message.key);
+            // Para videos, solicitar conversión a mp4
+            const convertToMp4 = mediaType === 'video';
+            const result = await getBase64FromMedia(instanceName, message.key, convertToMp4);
             if (result.success && result.data?.base64) {
-                const mimetype = result.data.mimetype || 'image/jpeg';
+                const mimetype = result.data.mimetype || 'application/octet-stream';
+                // Para documentos, usar el nombre original si existe
+                let downloadName = `${mediaType}_${message.key.id}`;
+                if (mediaType === 'document' && fileName) {
+                    downloadName = fileName;
+                } else {
+                    const ext = mediaType === 'image' ? 'jpg' : mediaType === 'video' ? 'mp4' : mediaType === 'audio' ? 'mp3' : 'bin';
+                    downloadName = `${mediaType}_${message.key.id}.${ext}`;
+                }
                 const link = document.createElement('a');
                 link.href = `data:${mimetype};base64,${result.data.base64}`;
-                link.download = `imagen_${message.key.id}.jpg`;
+                link.download = downloadName;
                 link.click();
             }
         } catch (err) {
@@ -198,42 +209,43 @@ function ChatMessage({ message, instanceName }) {
                 {type === 'image' && mediaUrl && (
                     <div className="chat-message__media">
                         <img src={mediaUrl} alt="Imagen" className="chat-message__image" />
-                        <button className="chat-message__download" onClick={handleDownloadImage} disabled={downloading} title="Descargar imagen">
+                        <button className="chat-message__download" onClick={() => handleDownloadMedia('image')} disabled={downloading} title="Descargar imagen">
                             {downloading ? <Loader2 size={16} className="spin" /> : <Download size={16} />}
                         </button>
                     </div>
                 )}
 
-                {/* Video */}
-                {type === 'video' && mediaUrl && (
-                    <div className="chat-message__media">
-                        <video
-                            src={mediaUrl}
-                            controls
-                            className="chat-message__video"
-                        />
+                {/* Video - Solo botón de descarga */}
+                {type === 'video' && (
+                    <div className="chat-message__media-button">
+                        <Video size={20} />
+                        <span>Video</span>
+                        <button onClick={() => handleDownloadMedia('video')} disabled={downloading} title="Descargar video">
+                            {downloading ? <Loader2 size={16} className="spin" /> : <Download size={16} />}
+                        </button>
                     </div>
                 )}
 
-                {/* Audio */}
-                {type === 'audio' && mediaUrl && (
-                    <div className="chat-message__media">
-                        <audio src={mediaUrl} controls className="chat-message__audio" />
+                {/* Audio - Solo botón de descarga */}
+                {type === 'audio' && (
+                    <div className="chat-message__media-button">
+                        <Mic size={20} />
+                        <span>Audio</span>
+                        <button onClick={() => handleDownloadMedia('audio')} disabled={downloading} title="Descargar audio">
+                            {downloading ? <Loader2 size={16} className="spin" /> : <Download size={16} />}
+                        </button>
                     </div>
                 )}
 
-                {/* Documento */}
+                {/* Documento - Botón de descarga */}
                 {type === 'document' && (
-                    <a
-                        href={mediaUrl || '#'}
-                        download={fileName}
-                        className="chat-message__document"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <FileText size={24} />
-                        <span>{fileName}</span>
-                    </a>
+                    <div className="chat-message__media-button">
+                        <FileText size={20} />
+                        <span>{fileName || 'Documento'}</span>
+                        <button onClick={() => handleDownloadMedia('document')} disabled={downloading} title="Descargar documento">
+                            {downloading ? <Loader2 size={16} className="spin" /> : <Download size={16} />}
+                        </button>
+                    </div>
                 )}
 
                 {/* Icono para media sin URL */}
@@ -538,9 +550,21 @@ export function MensajeriaPage() {
                 };
             });
 
-            // Agregar mensajes entrantes
-            if (messagesArray.length > 0) {
-                setMessages(prev => [...prev, ...messagesArray]);
+            // Filtrar por contacto seleccionado
+            if (selectedContact && messagesArray.length > 0) {
+                const contactPhone = `${selectedContact.codigo_pais}${selectedContact.celular}`;
+
+                const filteredMessages = messagesArray.filter(msg => {
+                    const remoteJid = msg.key?.remoteJid || '';
+                    // Verificar si el remoteJid contiene el número del contacto
+                    // o si es un mensaje saliente (fromMe) hacia ese número
+                    const phoneFromJid = remoteJid.replace(/@.*$/, '');
+                    return phoneFromJid.includes(contactPhone) || contactPhone.includes(phoneFromJid);
+                });
+
+                if (filteredMessages.length > 0) {
+                    setMessages(prev => [...prev, ...filteredMessages]);
+                }
             }
         });
 

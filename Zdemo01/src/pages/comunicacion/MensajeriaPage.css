@@ -423,6 +423,50 @@
     flex-shrink: 0;
 }
 
+/* Media button (video, audio sin player) */
+.chat-message__media-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    color: #111;
+}
+
+.chat-message__media-button svg:first-child {
+    color: #128c7e;
+}
+
+.chat-message__media-button span {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.chat-message__media-button button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: #128c7e;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.chat-message__media-button button:hover:not(:disabled) {
+    background: #075e54;
+}
+
+.chat-message__media-button button:disabled {
+    background: #ccc;
+    cursor: wait;
+}
+
 /* ============================================
    MESSAGE COMPOSER
    ============================================ */
