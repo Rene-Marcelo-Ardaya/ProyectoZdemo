@@ -169,6 +169,116 @@ export async function reconnectInstance(instanceName) {
     };
 }
 
+// ============================================
+// MESSAGING FUNCTIONS
+// ============================================
+
+/**
+ * Obtener solo las instancias conectadas (estado "open")
+ */
+export async function getConnectedInstances() {
+    const result = await fetchInstances();
+    if (!result.success) return result;
+
+    const connected = (result.data || []).filter(instance => {
+        // El estado está directamente en connectionStatus
+        const state = instance.connectionStatus;
+        return state === 'open' || state === 'connected';
+    });
+
+    return { success: true, data: connected };
+}
+
+/**
+ * Formatear número de teléfono para WhatsApp
+ * @param {string} countryCode - Código de país sin +
+ * @param {string} phoneNumber - Número de teléfono
+ */
+function formatWhatsAppNumber(countryCode, phoneNumber) {
+    // Limpiar caracteres no numéricos
+    const cleanCode = (countryCode || '').replace(/\D/g, '');
+    const cleanNumber = (phoneNumber || '').replace(/\D/g, '');
+    return `${cleanCode}${cleanNumber}`;
+}
+
+/**
+ * Enviar mensaje de texto
+ * @param {string} instanceName - Nombre de la instancia
+ * @param {string} number - Número completo con código de país
+ * @param {string} text - Texto del mensaje
+ */
+export async function sendTextMessage(instanceName, number, text) {
+    return evolutionFetch(`/message/sendText/${instanceName}`, {
+        method: 'POST',
+        body: JSON.stringify({
+            number: number,
+            text: text,
+        }),
+    });
+}
+
+/**
+ * Enviar mensaje de audio
+ * @param {string} instanceName - Nombre de la instancia
+ * @param {string} number - Número completo con código de país
+ * @param {string} audioBase64 - Audio codificado en base64
+ */
+export async function sendAudioMessage(instanceName, number, audioBase64) {
+    return evolutionFetch(`/message/sendWhatsAppAudio/${instanceName}`, {
+        method: 'POST',
+        body: JSON.stringify({
+            number: number,
+            audio: audioBase64,
+            encoding: true, // Indica que es base64
+        }),
+    });
+}
+
+/**
+ * Enviar media (documento, imagen, video)
+ * Evolution API format: https://doc.evolution-api.com/
+ * @param {string} instanceName - Nombre de la instancia
+ * @param {string} number - Número completo con código de país
+ * @param {string} mediaBase64 - Media codificado en base64
+ * @param {string} mimetype - Tipo MIME del archivo
+ * @param {string} fileName - Nombre del archivo
+ * @param {string} caption - Caption opcional
+ */
+export async function sendMediaMessage(instanceName, number, mediaBase64, mimetype, fileName, caption = '') {
+    // Determinar el tipo de media basado en mimetype
+    let mediatype = 'document';
+    if (mimetype.startsWith('image/')) mediatype = 'image';
+    else if (mimetype.startsWith('video/')) mediatype = 'video';
+    else if (mimetype.startsWith('audio/')) mediatype = 'audio';
+
+    return evolutionFetch(`/message/sendMedia/${instanceName}`, {
+        method: 'POST',
+        body: JSON.stringify({
+            number: number,
+            mediatype: mediatype,
+            media: `data:${mimetype};base64,${mediaBase64}`, // Evolution API espera data URL
+            fileName: fileName,
+            caption: caption || undefined,
+        }),
+    });
+}
+
+/**
+ * Convertir File a Base64
+ */
+export function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            // Extraer solo la parte base64 (sin el prefijo data:...)
+            const base64 = reader.result.split(',')[1];
+            resolve(base64);
+        };
+        reader.onerror = error => reject(error);
+    });
+}
+
 export default {
     fetchInstances,
     createInstance,
@@ -178,4 +288,11 @@ export default {
     restartInstance,
     getConnectionState,
     reconnectInstance,
+    // Messaging
+    getConnectedInstances,
+    sendTextMessage,
+    sendAudioMessage,
+    sendMediaMessage,
+    fileToBase64,
+    formatWhatsAppNumber,
 };

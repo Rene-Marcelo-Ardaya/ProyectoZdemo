@@ -9,6 +9,7 @@ import { ControlAccesosPage } from './pages/sistemas/ControlAccesosPage';
 import { ConfiguracionPage } from './pages/sistemas/ConfiguracionPage';
 import { MenusPage } from './pages/sistemas/MenusPage';
 import { InstanciasPage } from './pages/comunicacion/InstanciasPage';
+import { MensajeriaPage } from './pages/comunicacion/MensajeriaPage';
 import { PersonalPage } from './pages/rrhh/PersonalPage';
 import { Sidebar } from './components/Sidebar'
 import { ChatWidget } from './components/ChatWidget'
@@ -25,6 +26,7 @@ const SUPPORTED_ROUTES = new Set([
   '/sistemas/configuracion',
   '/sistemas/menus',
   '/comunicacion/instancias',
+  '/comunicacion/mensajeria',
   '/rrhh/personal'
 ])
 
@@ -187,6 +189,7 @@ function App() {
           {activePage === '/sistemas/configuracion' && <ConfiguracionPage />}
           {activePage === '/sistemas/menus' && <MenusPage />}
           {activePage === '/comunicacion/instancias' && <InstanciasPage />}
+          {activePage === '/comunicacion/mensajeria' && <MensajeriaPage />}
           {activePage === '/rrhh/personal' && <PersonalPage />}
         </div>
       </div>

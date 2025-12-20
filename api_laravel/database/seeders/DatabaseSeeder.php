@@ -161,6 +161,19 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        // Submenú: Mensajería
+        DB::table('menus')->updateOrInsert(
+            ['name' => 'Mensajería', 'parent_id' => $comMenuId],
+            [
+                'url' => '/comunicacion/mensajeria',
+                'icon' => 'Send',
+                'order' => 3,
+                'module' => 'Chat',
+                'is_active' => true,
+                'updated_at' => now(),
+            ]
+        );
+
         // ==========================================
         // Módulo: RRHH (Recursos Humanos)
         // ==========================================

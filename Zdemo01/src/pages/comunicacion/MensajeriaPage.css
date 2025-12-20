@@ -1,0 +1,408 @@
+/* ============================================
+   MENSAJERIA PAGE - WhatsApp Messaging
+   ============================================ */
+
+.mb-3 {
+    margin-bottom: 16px;
+}
+
+/* Instance Select */
+.mensajeria-instance-select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1px solid var(--ds-fieldBorder, #d1d5db);
+    border-radius: 6px;
+    background: var(--ds-fieldBg, #fff);
+    color: var(--ds-primaryText);
+    cursor: pointer;
+}
+
+.mensajeria-instance-select:focus {
+    outline: none;
+    border-color: var(--ds-primary, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Layout */
+.mensajeria-layout {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 20px;
+    min-height: 500px;
+}
+
+@media (max-width: 900px) {
+    .mensajeria-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.mensajeria-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mensajeria-main {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================
+   CONTACT SELECTOR
+   ============================================ */
+.contact-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.contact-selector__search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: var(--ds-fieldBg, #fff);
+    border: 1px solid var(--ds-fieldBorder, #d1d5db);
+    border-radius: 6px;
+}
+
+.contact-selector__search input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 13px;
+    color: var(--ds-primaryText);
+}
+
+.contact-selector__search svg {
+    color: var(--ds-secondaryText);
+}
+
+.contact-selector__list {
+    max-height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border: 1px solid var(--ds-border, #e5e7eb);
+    border-radius: 8px;
+    padding: 6px;
+    background: var(--ds-surfaceBg, #fafafa);
+}
+
+.contact-selector__empty {
+    padding: 20px;
+    text-align: center;
+    color: var(--ds-secondaryText);
+    font-size: 13px;
+}
+
+.contact-selector__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: var(--ds-cardBg, #fff);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+}
+
+.contact-selector__item:hover {
+    border-color: var(--ds-primary, #3b82f6);
+    background: var(--ds-hoverBg, #f3f4f6);
+}
+
+.contact-selector__item.is-selected {
+    border-color: var(--ds-primary, #3b82f6);
+    background: var(--ds-primaryBg, #eff6ff);
+}
+
+.contact-selector__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: #fff;
+}
+
+.contact-selector__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.contact-selector__name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ds-primaryText);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.contact-selector__phone {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--ds-secondaryText);
+}
+
+.contact-selector__check {
+    color: var(--ds-success, #22c55e);
+}
+
+/* ============================================
+   COMPOSER AREA
+   ============================================ */
+.mensajeria-composer-area {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mensajeria-recipient {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+    color: #fff;
+    border-radius: 8px;
+}
+
+.mensajeria-recipient__label {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.mensajeria-recipient__name {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.mensajeria-recipient__phone {
+    margin-left: auto;
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+/* Message Log */
+.mensajeria-log {
+    background: var(--ds-surfaceBg, #f5f5f5);
+    border-radius: 8px;
+    padding: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.mensajeria-log h4 {
+    margin: 0 0 10px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ds-secondaryText);
+    text-transform: uppercase;
+}
+
+.mensajeria-log__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--ds-cardBg, #fff);
+    border-radius: 6px;
+    margin-bottom: 6px;
+}
+
+.mensajeria-log__item:last-child {
+    margin-bottom: 0;
+}
+
+.mensajeria-log__item svg {
+    color: var(--ds-success, #22c55e);
+    flex-shrink: 0;
+}
+
+.mensajeria-log__content {
+    flex: 1;
+    font-size: 13px;
+    color: var(--ds-primaryText);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mensajeria-log__time {
+    font-size: 11px;
+    color: var(--ds-secondaryText);
+}
+
+/* ============================================
+   MESSAGE COMPOSER
+   ============================================ */
+.message-composer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--ds-cardBg, #fff);
+    border: 1px solid var(--ds-border, #e5e7eb);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.message-composer__attachment {
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--ds-border, #e5e7eb);
+}
+
+.attachment-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--ds-surfaceBg, #f5f5f5);
+    border-radius: 6px;
+}
+
+.attachment-preview svg {
+    color: var(--ds-primary, #3b82f6);
+}
+
+.attachment-preview span {
+    flex: 1;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.attachment-preview button {
+    display: flex;
+    padding: 4px;
+    border: none;
+    background: transparent;
+    color: var(--ds-secondaryText);
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.attachment-preview button:hover {
+    background: var(--ds-hoverBg, #e5e7eb);
+    color: var(--ds-error, #dc2626);
+}
+
+.message-composer__row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.message-composer__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 8px;
+    background: var(--ds-surfaceBg, #f5f5f5);
+    color: var(--ds-secondaryText);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.message-composer__btn:hover:not(:disabled) {
+    background: var(--ds-hoverBg, #e5e7eb);
+    color: var(--ds-primary, #3b82f6);
+}
+
+.message-composer__btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.message-composer__input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--ds-fieldBorder, #d1d5db);
+    border-radius: 8px;
+    background: var(--ds-fieldBg, #fff);
+    color: var(--ds-primaryText);
+    font-size: 14px;
+    resize: none;
+    min-height: 40px;
+    max-height: 120px;
+    outline: none;
+}
+
+.message-composer__input:focus {
+    border-color: var(--ds-primary, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.message-composer__input:disabled {
+    background: var(--ds-fieldDisabledBg, #f3f4f6);
+}
+
+.message-composer__send {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+}
+
+.message-composer__send:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+}
+
+.message-composer__send:disabled {
+    background: var(--ds-secondaryText, #9ca3af);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .mensajeria-recipient {
+        flex-wrap: wrap;
+    }
+
+    .mensajeria-recipient__phone {
+        width: 100%;
+        margin-left: 0;
+    }
+}
