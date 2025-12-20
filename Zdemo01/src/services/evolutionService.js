@@ -319,6 +319,28 @@ export function getApiKey() {
     return EVOLUTION_API_KEY;
 }
 
+/**
+ * Obtener base64 de un media message (imagen, video, audio, documento)
+ * @param {string} instanceName - Nombre de la instancia
+ * @param {object} messageKey - Key del mensaje {remoteJid, fromMe, id}
+ * @param {string} convertToMp4 - Convertir a mp4 si es video (opcional)
+ */
+export async function getBase64FromMedia(instanceName, messageKey, convertToMp4 = false) {
+    return evolutionFetch(`/chat/getBase64FromMediaMessage/${instanceName}`, {
+        method: 'POST',
+        body: JSON.stringify({
+            message: {
+                key: {
+                    remoteJid: messageKey.remoteJid,
+                    fromMe: messageKey.fromMe,
+                    id: messageKey.id
+                }
+            },
+            convertToMp4: convertToMp4
+        }),
+    });
+}
+
 export default {
     fetchInstances,
     createInstance,
@@ -338,4 +360,5 @@ export default {
     fetchMessages,
     getWebSocketUrl,
     getApiKey,
+    getBase64FromMedia,
 };

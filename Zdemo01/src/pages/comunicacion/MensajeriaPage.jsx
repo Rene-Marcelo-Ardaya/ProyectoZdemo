@@ -15,6 +15,7 @@ import {
     RefreshCw,
     Wifi,
     WifiOff,
+    Download,
 } from 'lucide-react';
 import {
     getConnectedInstances,
@@ -25,6 +26,7 @@ import {
     fetchMessages,
     getWebSocketUrl,
     getApiKey,
+    getBase64FromMedia,
 } from '../../services/evolutionService';
 import { fetchPersonal } from '../../services/personalService';
 
@@ -105,11 +107,11 @@ function ContactSelector({ contacts, selectedContact, onSelect, loading }) {
         </div>
     );
 }
-
 // ============================================
 // COMPONENTE: ChatMessage
 // ============================================
-function ChatMessage({ message }) {
+function ChatMessage({ message, instanceName }) {
+    const [downloading, setDownloading] = useState(false);
     const isFromMe = message.key?.fromMe;
     const timestamp = message.messageTimestamp
         ? new Date(message.messageTimestamp * 1000).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })
@@ -118,37 +120,134 @@ function ChatMessage({ message }) {
     // Extraer contenido del mensaje
     let content = '';
     let type = 'text';
+    let mediaUrl = null;
+    let fileName = '';
 
-    if (message.message?.conversation) {
-        content = message.message.conversation;
-    } else if (message.message?.extendedTextMessage?.text) {
-        content = message.message.extendedTextMessage.text;
-    } else if (message.message?.imageMessage) {
-        content = message.message.imageMessage.caption || '📷 Imagen';
+    // Evolution API puede enviar las propiedades en el root O dentro de message
+    const msg = message.message || {};
+
+    // Detectar tipo de mensaje (primero en root, luego en message)
+    const imageMsg = message.imageMessage || msg.imageMessage;
+    const documentMsg = message.documentMessage || msg.documentMessage;
+    const audioMsg = message.audioMessage || msg.audioMessage;
+    const videoMsg = message.videoMessage || msg.videoMessage;
+    const stickerMsg = message.stickerMessage || msg.stickerMessage;
+    const textConversation = message.conversation || msg.conversation;
+    const extendedText = message.extendedTextMessage || msg.extendedTextMessage;
+
+    if (textConversation) {
+        content = textConversation;
+    } else if (extendedText?.text) {
+        content = extendedText.text;
+    } else if (imageMsg) {
         type = 'image';
-    } else if (message.message?.documentMessage) {
-        content = message.message.documentMessage.fileName || '📄 Documento';
+        content = imageMsg.caption || '';
+        // Usar thumbnail base64 si existe (las URLs están encriptadas)
+        if (imageMsg.jpegThumbnail) {
+            mediaUrl = `data:image/jpeg;base64,${imageMsg.jpegThumbnail}`;
+        }
+    } else if (documentMsg) {
         type = 'document';
-    } else if (message.message?.audioMessage) {
-        content = '🎤 Audio';
+        fileName = documentMsg.fileName || 'Documento';
+        content = fileName;
+        mediaUrl = documentMsg.url;
+    } else if (audioMsg) {
         type = 'audio';
-    } else if (message.message?.videoMessage) {
-        content = message.message.videoMessage.caption || '🎥 Video';
+        content = 'Audio';
+        mediaUrl = audioMsg.url;
+    } else if (videoMsg) {
         type = 'video';
+        content = videoMsg.caption || 'Video';
+        mediaUrl = videoMsg.url;
+    } else if (stickerMsg) {
+        type = 'image';
+        content = '🎨 Sticker';
+        mediaUrl = stickerMsg.url;
+    } else if (message.messageType) {
+        type = message.messageType;
+        content = `📎 ${type}`;
     } else {
         content = '📎 Mensaje';
     }
 
+    // Función para descargar imagen en calidad completa
+    const handleDownloadImage = async () => {
+        if (!instanceName || !message.key) return;
+        setDownloading(true);
+        console.log('Downloading media with key:', message.key, 'Instance:', instanceName);
+        try {
+            const result = await getBase64FromMedia(instanceName, message.key);
+            if (result.success && result.data?.base64) {
+                const mimetype = result.data.mimetype || 'image/jpeg';
+                const link = document.createElement('a');
+                link.href = `data:${mimetype};base64,${result.data.base64}`;
+                link.download = `imagen_${message.key.id}.jpg`;
+                link.click();
+            }
+        } catch (err) {
+            console.error('Download error:', err);
+        } finally {
+            setDownloading(false);
+        }
+    };
+
     return (
         <div className={`chat-message ${isFromMe ? 'chat-message--sent' : 'chat-message--received'}`}>
             <div className="chat-message__bubble">
-                {type !== 'text' && (
+                {/* Imagen */}
+                {type === 'image' && mediaUrl && (
+                    <div className="chat-message__media">
+                        <img src={mediaUrl} alt="Imagen" className="chat-message__image" />
+                        <button className="chat-message__download" onClick={handleDownloadImage} disabled={downloading} title="Descargar imagen">
+                            {downloading ? <Loader2 size={16} className="spin" /> : <Download size={16} />}
+                        </button>
+                    </div>
+                )}
+
+                {/* Video */}
+                {type === 'video' && mediaUrl && (
+                    <div className="chat-message__media">
+                        <video
+                            src={mediaUrl}
+                            controls
+                            className="chat-message__video"
+                        />
+                    </div>
+                )}
+
+                {/* Audio */}
+                {type === 'audio' && mediaUrl && (
+                    <div className="chat-message__media">
+                        <audio src={mediaUrl} controls className="chat-message__audio" />
+                    </div>
+                )}
+
+                {/* Documento */}
+                {type === 'document' && (
+                    <a
+                        href={mediaUrl || '#'}
+                        download={fileName}
+                        className="chat-message__document"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <FileText size={24} />
+                        <span>{fileName}</span>
+                    </a>
+                )}
+
+                {/* Icono para media sin URL */}
+                {type !== 'text' && !mediaUrl && type !== 'document' && (
                     <span className="chat-message__type">
-                        {type === 'image' && <Image size={14} />}
-                        {type === 'document' && <FileText size={14} />}
+                        {type === 'image' && <><Image size={14} /> 📷 Imagen</>}
+                        {type === 'audio' && <><FileText size={14} /> 🎤 Audio</>}
+                        {type === 'video' && <><FileText size={14} /> 🎥 Video</>}
                     </span>
                 )}
-                <span className="chat-message__text">{content}</span>
+
+                {/* Texto / Caption */}
+                {content && <span className="chat-message__text">{content}</span>}
+
                 <span className="chat-message__time">{timestamp}</span>
             </div>
         </div>
@@ -158,7 +257,7 @@ function ChatMessage({ message }) {
 // ============================================
 // COMPONENTE: ChatPanel
 // ============================================
-function ChatPanel({ messages, loading, onRefresh, wsConnected }) {
+function ChatPanel({ messages, loading, onRefresh, wsConnected, instanceName }) {
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
@@ -193,7 +292,7 @@ function ChatPanel({ messages, loading, onRefresh, wsConnected }) {
                 ) : (
                     <>
                         {messages.map((msg, idx) => (
-                            <ChatMessage key={msg.key?.id || idx} message={msg} />
+                            <ChatMessage key={msg.key?.id || idx} message={msg} instanceName={instanceName} />
                         ))}
                         <div ref={messagesEndRef} />
                     </>
@@ -414,23 +513,30 @@ export function MensajeriaPage() {
             let messagesArray = [];
             const senderJid = eventData?.sender;
 
+            // eventData.data contiene: key, message (con imageMessage, etc), messageTimestamp
+            // NO extraer solo eventData.data.message porque perdemos el key
             if (eventData?.data?.messages) {
                 messagesArray = eventData.data.messages;
-            } else if (eventData?.data?.message) {
-                messagesArray = [eventData.data.message];
             } else if (Array.isArray(eventData?.data)) {
                 messagesArray = eventData.data;
             } else if (eventData?.data) {
+                // Usar el objeto completo que incluye key, message, messageTimestamp
                 messagesArray = [eventData.data];
             }
 
-            // Agregar key si no existe (para mensajes que vienen sin estructura completa)
-            messagesArray = messagesArray.map(msg => ({
-                key: msg.key || { remoteJid: senderJid, fromMe: false, id: Date.now().toString() },
-                message: msg.message || { conversation: msg.conversation },
-                messageTimestamp: msg.messageTimestamp || Math.floor(Date.now() / 1000),
-                ...msg
-            }));
+            console.log('Full eventData.data:', JSON.stringify(eventData.data, null, 2));
+
+            // Preservar el mensaje original y solo agregar propiedades faltantes
+            messagesArray = messagesArray.map(msg => {
+                // Preservar el key original si existe
+                const originalKey = msg.key;
+                return {
+                    ...msg,
+                    key: originalKey || { remoteJid: senderJid, fromMe: false, id: Date.now().toString() },
+                    message: msg.message || { conversation: msg.conversation },
+                    messageTimestamp: msg.messageTimestamp || Math.floor(Date.now() / 1000),
+                };
+            });
 
             // Agregar mensajes entrantes
             if (messagesArray.length > 0) {
@@ -635,6 +741,7 @@ export function MensajeriaPage() {
                                     loading={loadingMessages}
                                     onRefresh={loadMessages}
                                     wsConnected={wsConnected}
+                                    instanceName={selectedInstanceName}
                                 />
 
                                 {/* Composer */}
