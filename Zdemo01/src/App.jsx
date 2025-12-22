@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect, useCallback } from 'react'
 import './App.css'
 import './styles/pages.css'
 import { useTheme } from './theme'
@@ -15,6 +15,7 @@ import { ChatWidget } from './components/ChatWidget'
 import { logout, getSession } from './services/authService'
 import { getStoredMenu, getHeaderConfig, staticMenus } from './services/menuService'
 import { getPublicConfig, applyConfigToDOM } from './services/settingService'
+import { useSessionTimeout } from './hooks/useSessionTimeout'
 
 const ACTIVE_PAGE_STORAGE_KEY = 'zdemo:lastActivePage'
 
@@ -45,6 +46,28 @@ function App() {
   const [userMenus, setUserMenus] = useState([])
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [appConfig, setAppConfig] = useState({})
+  const [sessionWarning, setSessionWarning] = useState(null)
+
+  // Callback cuando la sesión expira
+  const handleSessionExpire = useCallback(() => {
+    setIsAuthed(false)
+    setUserData(null)
+    setUserMenus([])
+    setSessionWarning(null)
+    alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.')
+  }, [])
+
+  // Callback para advertencia
+  const handleSessionWarning = useCallback((remainingMinutes) => {
+    setSessionWarning(remainingMinutes)
+  }, [])
+
+  // Hook de timeout de sesión (solo activo si está autenticado)
+  const { remainingMinutes } = useSessionTimeout(
+    isAuthed ? handleSessionExpire : null,
+    isAuthed ? handleSessionWarning : null,
+    5 // Advertir 5 minutos antes
+  )
 
   // Verificar sesión al cargar
   useEffect(() => {
@@ -179,6 +202,24 @@ function App() {
           </div>
         </div>
 
+        {/* Warning de sesión por expirar */}
+        {sessionWarning && sessionWarning <= 5 && (
+          <div style={{
+            background: '#fef3cd',
+            borderLeft: '4px solid #f59e0b',
+            color: '#92400e',
+            padding: '10px 16px',
+            margin: '0 24px 16px 24px',
+            borderRadius: '0 6px 6px 0',
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            ⏱️ Tu sesión expirará en <strong>{sessionWarning} minuto{sessionWarning !== 1 ? 's' : ''}</strong>. Guarda tu trabajo.
+          </div>
+        )}
+
         {/* Páginas */}
         <div className="main-content__body">
           {activePage === 'dashboard' && <DashboardPage user={userData} menus={userMenus} />}
@@ -198,3 +239,4 @@ function App() {
 }
 
 export default App
+

@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             'slug' => 'super-admin',
             'description' => 'Acceso total al sistema',
             'is_active' => true,
+            'session_timeout_minutes' => null, // Sin límite
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -30,6 +31,7 @@ class DatabaseSeeder extends Seeder
             'slug' => 'user',
             'description' => 'Acceso limitado',
             'is_active' => true,
+            'session_timeout_minutes' => 60, // 1 hora
             'created_at' => now(),
             'updated_at' => now(),
         ]);

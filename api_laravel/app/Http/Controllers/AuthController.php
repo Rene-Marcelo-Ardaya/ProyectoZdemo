@@ -74,6 +74,11 @@ class AuthController extends Controller
             ];
         });
 
+        // Obtener el timeout más restrictivo de los roles del usuario
+        $sessionTimeout = $user->roles()
+            ->whereNotNull('session_timeout_minutes')
+            ->min('session_timeout_minutes');
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -84,7 +89,8 @@ class AuthController extends Controller
                     'roles' => $roles,
                 ],
                 'token' => $token,
-                'menus' => $formattedMenus
+                'menus' => $formattedMenus,
+                'session_timeout_minutes' => $sessionTimeout, // null = sin límite
             ]
         ]);
     }
@@ -107,9 +113,19 @@ class AuthController extends Controller
      */
     public function me(Request $request)
     {
+        $user = $request->user();
+        
+        // Obtener el timeout más restrictivo
+        $sessionTimeout = $user->roles()
+            ->whereNotNull('session_timeout_minutes')
+            ->min('session_timeout_minutes');
+
         return response()->json([
             'success' => true,
-            'data' => $request->user()
+            'data' => [
+                'user' => $user,
+                'session_timeout_minutes' => $sessionTimeout,
+            ]
         ]);
     }
 

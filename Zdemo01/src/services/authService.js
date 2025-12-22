@@ -9,9 +9,11 @@ import { saveMenu } from './menuService';
 
 const API_BASE_URL = CONFIG.API_BASE_URL;
 
-// Clave para almacenar el token en localStorage
+// Claves para localStorage
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'userData';
+const SESSION_TIMEOUT_KEY = 'session_timeout_minutes';
+const LOGIN_TIME_KEY = 'login_time';
 
 /**
  * Realiza el login contra la API Laravel
@@ -48,6 +50,13 @@ export async function login(name, password) {
             if (result.data.menus) {
                 saveMenu(result.data.menus);
             }
+
+            // Guardar session timeout (si existe)
+            if (result.data.session_timeout_minutes !== undefined) {
+                localStorage.setItem(SESSION_TIMEOUT_KEY, result.data.session_timeout_minutes ?? '');
+            }
+            // Guardar tiempo de login
+            localStorage.setItem(LOGIN_TIME_KEY, Date.now().toString());
 
             return { success: true, data: userData, menus: result.data.menus };
         } else {
@@ -88,6 +97,8 @@ export async function logout() {
     // Limpiar localStorage
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(SESSION_TIMEOUT_KEY);
+    localStorage.removeItem(LOGIN_TIME_KEY);
 }
 
 /**
@@ -173,3 +184,48 @@ export async function authFetch(endpoint, options = {}) {
         headers,
     });
 }
+
+/**
+ * Obtener el timeout de sesión en minutos
+ * @returns {number|null} - Minutos, null = sin límite
+ */
+export function getSessionTimeout() {
+    const value = localStorage.getItem(SESSION_TIMEOUT_KEY);
+    if (value === null || value === '') return null;
+    const parsed = parseInt(value, 10);
+    return isNaN(parsed) ? null : parsed;
+}
+
+/**
+ * Obtener el timestamp de login
+ * @returns {number|null}
+ */
+export function getLoginTime() {
+    const value = localStorage.getItem(LOGIN_TIME_KEY);
+    if (!value) return null;
+    return parseInt(value, 10);
+}
+
+/**
+ * Verificar si la sesión ha expirado
+ * @returns {{ expired: boolean, remainingMinutes: number|null }}
+ */
+export function checkSessionExpired() {
+    const timeout = getSessionTimeout();
+    const loginTime = getLoginTime();
+    
+    // Sin límite de sesión
+    if (timeout === null || !loginTime) {
+        return { expired: false, remainingMinutes: null };
+    }
+    
+    const now = Date.now();
+    const elapsed = (now - loginTime) / 1000 / 60; // en minutos
+    const remaining = timeout - elapsed;
+    
+    return {
+        expired: remaining <= 0,
+        remainingMinutes: Math.max(0, Math.ceil(remaining))
+    };
+}
+

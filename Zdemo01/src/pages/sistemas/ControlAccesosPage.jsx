@@ -168,12 +168,13 @@ export function ControlAccesosPage() {
         slug: '',
         description: '',
         is_active: true,
-        menu_ids: []
+        menu_ids: [],
+        session_timeout_minutes: ''
     });
 
     // Reset form
     const resetForm = useCallback(() => {
-        setForm({ name: '', slug: '', description: '', is_active: true, menu_ids: [] });
+        setForm({ name: '', slug: '', description: '', is_active: true, menu_ids: [], session_timeout_minutes: '' });
         setEditingRole(null);
         setFormError(null);
     }, []);
@@ -194,7 +195,8 @@ export function ControlAccesosPage() {
                 slug: roleDetail.slug,
                 description: roleDetail.description || '',
                 is_active: roleDetail.is_active == 1 || roleDetail.is_active === true,
-                menu_ids: roleDetail.menu_ids || []
+                menu_ids: roleDetail.menu_ids || [],
+                session_timeout_minutes: roleDetail.session_timeout_minutes ?? ''
             });
             setFormError(null);
             setModalOpen(true);
@@ -248,7 +250,8 @@ export function ControlAccesosPage() {
                 slug: form.slug,
                 description: form.description,
                 is_active: form.is_active,
-                menu_ids: form.menu_ids
+                menu_ids: form.menu_ids,
+                session_timeout_minutes: form.session_timeout_minutes === '' ? null : parseInt(form.session_timeout_minutes)
             };
 
             let result;
@@ -482,6 +485,20 @@ export function ControlAccesosPage() {
                                         />
                                         <span>Rol Activo</span>
                                     </label>
+                                </FormField>
+
+                                <FormField
+                                    label="Tiempo de Sesión (minutos)"
+                                    help="Tiempo máximo que un usuario puede estar logueado. Vacío = sin límite."
+                                >
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        className="ds-field__control"
+                                        value={form.session_timeout_minutes}
+                                        onChange={handleChange('session_timeout_minutes')}
+                                        placeholder="Ej: 60 (1 hora), 480 (8 horas)"
+                                    />
                                 </FormField>
                             </form>
                         </DSModalSection>

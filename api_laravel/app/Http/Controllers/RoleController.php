@@ -51,6 +51,7 @@ class RoleController extends Controller
                 'slug' => $role->slug,
                 'description' => $role->description,
                 'is_active' => $role->is_active,
+                'session_timeout_minutes' => $role->session_timeout_minutes,
                 'menu_ids' => $role->menus->pluck('id'),
                 'permission_ids' => $role->permissions->pluck('id')
             ]
@@ -68,7 +69,8 @@ class RoleController extends Controller
             'description' => 'nullable|string',
             'is_active' => 'boolean',
             'menu_ids' => 'array',
-            'menu_ids.*' => 'exists:menus,id'
+            'menu_ids.*' => 'exists:menus,id',
+            'session_timeout_minutes' => 'nullable|integer|min:0'
         ]);
 
         $role = Role::create([
@@ -76,6 +78,7 @@ class RoleController extends Controller
             'slug' => $validated['slug'],
             'description' => $validated['description'] ?? null,
             'is_active' => $validated['is_active'] ?? true,
+            'session_timeout_minutes' => $validated['session_timeout_minutes'] ?? null,
         ]);
 
         // Asignar menús
@@ -103,7 +106,8 @@ class RoleController extends Controller
             'description' => 'nullable|string',
             'is_active' => 'boolean',
             'menu_ids' => 'array',
-            'menu_ids.*' => 'exists:menus,id'
+            'menu_ids.*' => 'exists:menus,id',
+            'session_timeout_minutes' => 'nullable|integer|min:0'
         ]);
 
         $role->update([
@@ -111,6 +115,7 @@ class RoleController extends Controller
             'slug' => $validated['slug'],
             'description' => $validated['description'] ?? null,
             'is_active' => $validated['is_active'] ?? true,
+            'session_timeout_minutes' => $validated['session_timeout_minutes'] ?? null,
         ]);
 
         // Sincronizar menús
