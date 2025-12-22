@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { UserCircle, Plus, Pencil, Trash2, Save, HelpCircle, Briefcase, Phone, Mail, Calendar } from 'lucide-react';
+import { UserCircle, Plus, Pencil, Trash2, Save, HelpCircle, Briefcase, Phone, Lock } from 'lucide-react';
 import { getPersonal, getEmpleado, createEmpleado, updateEmpleado, deleteEmpleado } from '../../services/personalService';
 import { getCargosActivos } from '../../services/cargoService';
 
@@ -11,7 +11,6 @@ import {
     DSAlert,
     DSButton,
     DSLoading,
-    DSBadge,
     DSModal,
     DSModalSection,
     DSModalGrid,
@@ -90,27 +89,6 @@ function FormField({ label, children, required, help }) {
 }
 
 // ============================================
-// COMPONENTE: EstadoBadge
-// ============================================
-function EstadoBadge({ estado }) {
-    const variants = {
-        activo: 'success',
-        inactivo: 'error',
-        licencia: 'warning',
-        vacaciones: 'info',
-        baja_medica: 'warning'
-    };
-    const labels = {
-        activo: 'Activo',
-        inactivo: 'Inactivo',
-        licencia: 'Licencia',
-        vacaciones: 'Vacaciones',
-        baja_medica: 'Baja Médica'
-    };
-    return <DSBadge variant={variants[estado] || 'default'}>{labels[estado] || estado}</DSBadge>;
-}
-
-// ============================================
 // COMPONENTE PRINCIPAL: PersonalPage
 // ============================================
 export function PersonalPage() {
@@ -122,13 +100,15 @@ export function PersonalPage() {
     const [formError, setFormError] = useState(null);
     const [formSuccess, setFormSuccess] = useState(null);
     const [editingEmpleado, setEditingEmpleado] = useState(null);
+    const [pinError, setPinError] = useState(null);
 
     const emptyForm = {
-        codigo_empleado: '',
         nombre: '',
         apellido_paterno: '',
         apellido_materno: '',
         ci: '',
+        pin: '',
+        pin_confirmation: '',
         fecha_nacimiento: '',
         genero: '',
         direccion: '',
@@ -139,7 +119,6 @@ export function PersonalPage() {
         fecha_salida: '',
         salario: '',
         tipo_contrato: '',
-        estado: 'activo',
         observaciones: ''
     };
 
@@ -150,14 +129,12 @@ export function PersonalPage() {
         setForm(emptyForm);
         setEditingEmpleado(null);
         setFormError(null);
+        setPinError(null);
     }, []);
 
     // Abrir modal para crear
     const openCreate = () => {
         resetForm();
-        // Generar código automático
-        const nextCode = `EMP-${String(personal.length + 1).padStart(4, '0')}`;
-        setForm(prev => ({ ...prev, codigo_empleado: nextCode }));
         setModalOpen(true);
     };
 
@@ -167,11 +144,12 @@ export function PersonalPage() {
         if (empleadoDetail) {
             setEditingEmpleado(empleado);
             setForm({
-                codigo_empleado: empleadoDetail.codigo_empleado || '',
                 nombre: empleadoDetail.nombre || '',
                 apellido_paterno: empleadoDetail.apellido_paterno || '',
                 apellido_materno: empleadoDetail.apellido_materno || '',
                 ci: empleadoDetail.ci || '',
+                pin: '', // No mostrar PIN actual
+                pin_confirmation: '',
                 fecha_nacimiento: empleadoDetail.fecha_nacimiento || '',
                 genero: empleadoDetail.genero || '',
                 direccion: empleadoDetail.direccion || '',
@@ -182,7 +160,6 @@ export function PersonalPage() {
                 fecha_salida: empleadoDetail.fecha_salida || '',
                 salario: empleadoDetail.salario || '',
                 tipo_contrato: empleadoDetail.tipo_contrato || '',
-                estado: empleadoDetail.estado || 'activo',
                 observaciones: empleadoDetail.observaciones || ''
             });
             setFormError(null);
@@ -204,12 +181,23 @@ export function PersonalPage() {
 
     // Validar formulario
     const validateForm = () => {
-        if (!form.codigo_empleado.trim()) return 'El código de empleado es requerido';
         if (!form.nombre.trim()) return 'El nombre es requerido';
         if (!form.apellido_paterno.trim()) return 'El apellido paterno es requerido';
         if (!form.ci.trim()) return 'El CI es requerido';
         if (!form.cargo_id) return 'El cargo es requerido';
         if (!form.fecha_ingreso) return 'La fecha de ingreso es requerida';
+
+        // PIN requerido solo al crear
+        if (!editingEmpleado) {
+            if (!form.pin) return 'El PIN es requerido';
+            if (form.pin.length !== 4) return 'El PIN debe tener exactamente 4 caracteres';
+            if (form.pin !== form.pin_confirmation) return 'Los PINs no coinciden';
+        } else {
+            // Si se llena PIN en editar, debe coincidir
+            if (form.pin && form.pin !== form.pin_confirmation) return 'Los PINs no coinciden';
+            if (form.pin && form.pin.length !== 4) return 'El PIN debe tener exactamente 4 caracteres';
+        }
+
         return null;
     };
 
@@ -240,6 +228,12 @@ export function PersonalPage() {
                 observaciones: form.observaciones || null,
             };
 
+            // No enviar PIN vacío en edición
+            if (editingEmpleado && !form.pin) {
+                delete payload.pin;
+                delete payload.pin_confirmation;
+            }
+
             let result;
             if (editingEmpleado) {
                 result = await updateEmpleado(editingEmpleado.id, payload);
@@ -262,18 +256,18 @@ export function PersonalPage() {
         }
     };
 
-    // Eliminar empleado
+    // Desactivar empleado
     const handleDelete = async (empleado) => {
-        if (!window.confirm(`¿Eliminar empleado "${empleado.nombre_completo}"?`)) return;
+        if (!window.confirm(`¿Desactivar empleado "${empleado.nombre_completo}"? Dejará de aparecer en el sistema.`)) return;
 
         try {
             const result = await deleteEmpleado(empleado.id);
             if (result.success) {
-                setFormSuccess('Empleado eliminado');
+                setFormSuccess('Empleado desactivado');
                 refetch();
                 setTimeout(() => setFormSuccess(null), 3000);
             } else {
-                alert(result.error || 'Error eliminando');
+                alert(result.error || 'Error desactivando');
             }
         } catch (err) {
             alert('Error de conexión');
@@ -308,7 +302,7 @@ export function PersonalPage() {
             {/* TABLA */}
             <DSSection
                 title="Listado de Personal"
-                actions={<span className="personal-panel__count">{personal.length} empleados</span>}
+                actions={<span className="personal-panel__count">{personal.length} empleados activos</span>}
             >
                 <div className="ds-table-wrapper">
                     {loading ? (
@@ -317,27 +311,24 @@ export function PersonalPage() {
                         <table className="ds-table ds-table--striped ds-table--hover">
                             <thead>
                                 <tr>
-                                    <th style={{ width: '8%' }}>Código</th>
-                                    <th style={{ width: '22%' }}>Nombre Completo</th>
-                                    <th style={{ width: '10%' }}>CI</th>
-                                    <th style={{ width: '15%' }}>Cargo</th>
-                                    <th style={{ width: '12%' }}>Teléfono</th>
-                                    <th style={{ width: '10%' }}>Ingreso</th>
-                                    <th style={{ width: '10%' }}>Estado</th>
-                                    <th style={{ width: '13%' }}>Acciones</th>
+                                    <th style={{ width: '25%' }}>Nombre Completo</th>
+                                    <th style={{ width: '12%' }}>CI</th>
+                                    <th style={{ width: '18%' }}>Cargo</th>
+                                    <th style={{ width: '15%' }}>Teléfono</th>
+                                    <th style={{ width: '12%' }}>Ingreso</th>
+                                    <th style={{ width: '18%' }}>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {personal.length === 0 ? (
                                     <tr>
-                                        <td colSpan="8" className="ds-table__empty">
+                                        <td colSpan="6" className="ds-table__empty">
                                             No hay personal registrado
                                         </td>
                                     </tr>
                                 ) : (
                                     personal.map(emp => (
                                         <tr key={emp.id}>
-                                            <td><code>{emp.codigo_empleado}</code></td>
                                             <td><strong>{emp.nombre_completo}</strong></td>
                                             <td>{emp.ci}</td>
                                             <td>
@@ -355,7 +346,6 @@ export function PersonalPage() {
                                                 )}
                                             </td>
                                             <td>{emp.fecha_ingreso}</td>
-                                            <td><EstadoBadge estado={emp.estado} /></td>
                                             <td>
                                                 <div className="ds-table__actions">
                                                     <DSButton
@@ -371,7 +361,7 @@ export function PersonalPage() {
                                                         iconOnly
                                                         icon={<Trash2 size={15} />}
                                                         onClick={() => handleDelete(emp)}
-                                                        title="Eliminar"
+                                                        title="Desactivar"
                                                     />
                                                 </div>
                                             </td>
@@ -419,15 +409,6 @@ export function PersonalPage() {
                         <DSModalSection title="Datos Personales">
                             <form className="personal-form" onSubmit={e => e.preventDefault()}>
                                 <div className="personal-form__row">
-                                    <FormField label="Código Empleado" required help="Identificador único del empleado en el sistema">
-                                        <input
-                                            type="text"
-                                            className="ds-field__control"
-                                            value={form.codigo_empleado}
-                                            onChange={handleChange('codigo_empleado')}
-                                            placeholder="EMP-0001"
-                                        />
-                                    </FormField>
                                     <FormField label="CI" required help="Carnet de identidad del empleado">
                                         <input
                                             type="text"
@@ -581,20 +562,48 @@ export function PersonalPage() {
                                         />
                                     </FormField>
                                 </div>
+                            </form>
+                        </DSModalSection>
 
-                                <FormField label="Estado" help="Estado laboral actual del empleado">
-                                    <select
-                                        className="ds-field__control"
-                                        value={form.estado}
-                                        onChange={handleChange('estado')}
+                        <DSModalSection title="Seguridad" icon={<Lock size={16} />}>
+                            <form className="personal-form" onSubmit={e => e.preventDefault()}>
+                                <div className="personal-form__row">
+                                    <FormField
+                                        label="PIN"
+                                        required={!editingEmpleado}
+                                        help="Código de 4 dígitos para acceso"
                                     >
-                                        <option value="activo">Activo</option>
-                                        <option value="inactivo">Inactivo</option>
-                                        <option value="licencia">Licencia</option>
-                                        <option value="vacaciones">Vacaciones</option>
-                                        <option value="baja_medica">Baja Médica</option>
-                                    </select>
-                                </FormField>
+                                        <input
+                                            type="password"
+                                            maxLength={4}
+                                            className="ds-field__control"
+                                            value={form.pin}
+                                            onChange={handleChange('pin')}
+                                            placeholder={editingEmpleado ? "Dejar vacío para no cambiar" : "****"}
+                                        />
+                                    </FormField>
+                                    <FormField
+                                        label="Confirmar PIN"
+                                        required={!editingEmpleado || form.pin}
+                                    >
+                                        <input
+                                            type="password"
+                                            maxLength={4}
+                                            className={`ds-field__control ${pinError ? 'ds-field__control--error' : ''}`}
+                                            value={form.pin_confirmation}
+                                            onChange={handleChange('pin_confirmation')}
+                                            onBlur={() => {
+                                                if (form.pin && form.pin_confirmation && form.pin !== form.pin_confirmation) {
+                                                    setPinError('Los PINs no coinciden');
+                                                } else {
+                                                    setPinError(null);
+                                                }
+                                            }}
+                                            placeholder="****"
+                                        />
+                                        {pinError && <span className="ds-field__error">{pinError}</span>}
+                                    </FormField>
+                                </div>
 
                                 <FormField label="Observaciones">
                                     <textarea

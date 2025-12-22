@@ -13,11 +13,11 @@ class Personal extends Model
     protected $table = 'personal';
 
     protected $fillable = [
-        'codigo_empleado',
         'nombre',
         'apellido_paterno',
         'apellido_materno',
         'ci',
+        'pin',
         'fecha_nacimiento',
         'genero',
         'direccion',
@@ -32,6 +32,8 @@ class Personal extends Model
         'observaciones',
         'user_id',
     ];
+
+    protected $hidden = ['pin'];
 
     protected $casts = [
         'fecha_nacimiento' => 'date',
