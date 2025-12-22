@@ -1,0 +1,87 @@
+/* ============================================
+   CargosPage - Estilos específicos
+   ============================================ */
+
+.cargos-alert-margin {
+    margin-bottom: 16px;
+}
+
+.cargos-panel__count {
+    font-size: 13px;
+    color: var(--ds-secondaryText);
+    font-weight: 500;
+}
+
+/* Formulario */
+.cargos-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cargos-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.cargos-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--ds-primaryText);
+}
+
+.cargos-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--ds-accent);
+    cursor: pointer;
+}
+
+/* Tooltip */
+.cargos-tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    color: var(--ds-secondaryText);
+    cursor: help;
+}
+
+.cargos-tooltip__text {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(100% + 8px);
+    width: 220px;
+    padding: 8px 12px;
+    background: var(--ds-tooltipBg, #1a1a1a);
+    color: var(--ds-tooltipText, #fff);
+    font-size: 12px;
+    line-height: 1.4;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: opacity 0.2s, visibility 0.2s;
+    text-align: left;
+    font-weight: normal;
+}
+
+.cargos-tooltip__text::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--ds-tooltipBg, #1a1a1a);
+}
+
+.cargos-tooltip:hover .cargos-tooltip__text {
+    visibility: visible;
+    opacity: 1;
+}

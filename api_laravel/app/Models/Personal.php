@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Personal extends Model
+{
+    use HasFactory;
+
+    protected $table = 'personal';
+
+    protected $fillable = [
+        'codigo_empleado',
+        'nombre',
+        'apellido_paterno',
+        'apellido_materno',
+        'ci',
+        'fecha_nacimiento',
+        'genero',
+        'direccion',
+        'telefono',
+        'email',
+        'cargo_id',
+        'fecha_ingreso',
+        'fecha_salida',
+        'salario',
+        'tipo_contrato',
+        'estado',
+        'observaciones',
+        'user_id',
+    ];
+
+    protected $casts = [
+        'fecha_nacimiento' => 'date',
+        'fecha_ingreso' => 'date',
+        'fecha_salida' => 'date',
+        'salario' => 'decimal:2',
+    ];
+
+    /**
+     * Relación: El empleado pertenece a un cargo
+     */
+    public function cargo(): BelongsTo
+    {
+        return $this->belongsTo(Cargo::class);
+    }
+
+    /**
+     * Relación 1:1: El empleado puede tener un usuario asociado
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Nombre completo del empleado
+     */
+    public function getNombreCompletoAttribute(): string
+    {
+        return trim("{$this->nombre} {$this->apellido_paterno} {$this->apellido_materno}");
+    }
+}

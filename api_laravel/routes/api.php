@@ -9,6 +9,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\CargoController;
+use App\Http\Controllers\PersonalController;
 
 // Rutas públicas (sin autenticación)
 Route::post('/login', [AuthController::class, 'login']);
@@ -57,4 +59,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/messages', [ChatController::class, 'store']);
     Route::post('/messages/read', [ChatController::class, 'markAsRead']);
     Route::post('/messages/typing', [ChatController::class, 'typing']);
+
+    // RRHH - Cargos
+    Route::get('/cargos-list', [CargoController::class, 'listActive']); // Para combos
+    Route::apiResource('cargos', CargoController::class);
+
+    // RRHH - Personal
+    Route::get('/personal/stats', [PersonalController::class, 'stats']);
+    Route::apiResource('personal', PersonalController::class);
 });

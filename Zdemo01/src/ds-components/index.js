@@ -32,6 +32,7 @@ export {
   DSFormToolbar,
   DSHelpText,
   DSValidationMessage,
+  DSSearchSelect,
 } from '../ds-forms';
 
 // DS Layout
