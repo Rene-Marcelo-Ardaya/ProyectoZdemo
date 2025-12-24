@@ -43,17 +43,17 @@ export function hasAccessToChat(menus) {
     if (!menus || !Array.isArray(menus)) return false;
 
     for (const menu of menus) {
-        if (menu.codMenu?.toLowerCase().includes('chat') ||
-            menu.descripcion?.toLowerCase().includes('chat') ||
-            menu.descripcion?.toLowerCase().includes('comunicación')) {
+        if (String(menu.codMenu || '').toLowerCase().includes('chat') ||
+            String(menu.descripcion || '').toLowerCase().includes('chat') ||
+            String(menu.descripcion || '').toLowerCase().includes('comunicación')) {
             return true;
         }
 
         if (menu.submenus && Array.isArray(menu.submenus)) {
             for (const sub of menu.submenus) {
                 if (sub.rutaReact === '/chat' ||
-                    sub.codSubMenu?.toLowerCase().includes('chat') ||
-                    sub.descripcion?.toLowerCase().includes('chat')) {
+                    String(sub.codSubMenu || '').toLowerCase().includes('chat') ||
+                    String(sub.descripcion || '').toLowerCase().includes('chat')) {
                     return true;
                 }
             }
