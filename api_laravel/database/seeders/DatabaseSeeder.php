@@ -121,6 +121,19 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ]
         );
+
+        // Submenú: Niveles de Seguridad
+        DB::table('menus')->updateOrInsert(
+            ['name' => 'Niveles de Seguridad', 'parent_id' => $sysMenuId],
+            [
+                'url' => '/sistemas/niveles-seguridad',
+                'icon' => 'Shield',
+                'order' => 5,
+                'module' => 'Sistemas',
+                'is_active' => true,
+                'updated_at' => now(),
+            ]
+        );
         
         // Módulo: Comunicación (Chat)
         DB::table('menus')->updateOrInsert(
@@ -196,6 +209,19 @@ class DatabaseSeeder extends Seeder
                 'url' => '/rrhh/personal',
                 'icon' => 'UserCircle',
                 'order' => 1,
+                'module' => 'RRHH',
+                'is_active' => true,
+                'updated_at' => now(),
+            ]
+        );
+
+        // Submenú: Cargos
+        DB::table('menus')->updateOrInsert(
+            ['name' => 'Cargos', 'parent_id' => $rrhhMenuId],
+            [
+                'url' => '/rrhh/cargos',
+                'icon' => 'Briefcase',
+                'order' => 2,
                 'module' => 'RRHH',
                 'is_active' => true,
                 'updated_at' => now(),

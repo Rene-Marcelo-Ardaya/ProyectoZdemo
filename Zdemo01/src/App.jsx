@@ -2,6 +2,7 @@
 import './App.css'
 import './styles/pages.css'
 import { useTheme } from './theme'
+import { SecurityProvider } from './core/SecurityContext'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { UsuariosPage } from './pages/sistemas/UsuariosPage';
@@ -11,6 +12,8 @@ import { MenusPage } from './pages/sistemas/MenusPage';
 import { InstanciasPage } from './pages/comunicacion/InstanciasPage';
 import { MensajeriaPage } from './pages/comunicacion/MensajeriaPage';
 import { PersonalPage } from './pages/rrhh/PersonalPage';
+import { CargosPage } from './pages/rrhh/CargosPage';
+import { NivelesSeguridadPage } from './pages/sistemas/NivelesSeguridadPage';
 import { Sidebar } from './components/Sidebar'
 import { ChatWidget } from './components/ChatWidget'
 import { logout, getSession } from './services/authService'
@@ -25,9 +28,11 @@ const SUPPORTED_ROUTES = new Set([
   '/sistemas/accesos',
   '/sistemas/configuracion',
   '/sistemas/menus',
+  '/sistemas/niveles-seguridad',
   '/comunicacion/instancias',
   '/comunicacion/mensajeria',
-  '/rrhh/personal'
+  '/rrhh/personal',
+  '/rrhh/cargos'
 ])
 
 function getStoredActivePage() {
@@ -129,74 +134,78 @@ function App() {
   const { Icon: HeaderIcon, title: headerTitle } = getHeaderConfig(activePage)
 
   return (
-    <div className="app-with-sidebar">
-      {/* SIDEBAR con menús desplegables */}
-      <Sidebar
-        menus={userMenus}
-        activePage={activePage}
-        onNavigate={goToPage}
-        user={userData}
-        onLogout={handleLogout}
-        isCollapsed={isCollapsed}
-        onToggle={() => setIsCollapsed(!isCollapsed)}
-        appConfig={appConfig}
-      />
+    <SecurityProvider user={userData}>
+      <div className="app-with-sidebar">
+        {/* SIDEBAR con menús desplegables */}
+        <Sidebar
+          menus={userMenus}
+          activePage={activePage}
+          onNavigate={goToPage}
+          user={userData}
+          onLogout={handleLogout}
+          isCollapsed={isCollapsed}
+          onToggle={() => setIsCollapsed(!isCollapsed)}
+          appConfig={appConfig}
+        />
 
-      {/* Contenido principal */}
-      <div
-        className={`main-content ${isCollapsed ? 'is-collapsed' : ''}`}
-        style={{
-          minHeight: '100vh',
-          background: 'var(--ds-primaryBg)',
-          transition: 'background-color 0.2s'
-        }}
-      >
-        {/* Header */}
-        <div className="main-content__header">
-          <h1 className="main-content__title">
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
-              <HeaderIcon size={20} />
-              <span>{headerTitle}</span>
-            </span>
-          </h1>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <span style={{ fontSize: '12px', color: 'var(--ds-secondaryText)' }}>
-              {userData?.name || userData?.email}
-            </span>
-            <select
-              value={theme}
-              onChange={(e) => setTheme(e.target.value)}
-              style={{
-                padding: '4px 8px',
-                borderRadius: '4px',
-                border: '1px solid var(--ds-fieldBorder)',
-                background: 'var(--ds-fieldBg)',
-                color: 'var(--ds-fieldText)'
-              }}
-            >
-              {availableThemes?.map((t) => (
-                <option key={t} value={t}>{themeLabels?.[t] || t}</option>
-              ))}
-            </select>
+        {/* Contenido principal */}
+        <div
+          className={`main-content ${isCollapsed ? 'is-collapsed' : ''}`}
+          style={{
+            minHeight: '100vh',
+            background: 'var(--ds-primaryBg)',
+            transition: 'background-color 0.2s'
+          }}
+        >
+          {/* Header */}
+          <div className="main-content__header">
+            <h1 className="main-content__title">
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+                <HeaderIcon size={20} />
+                <span>{headerTitle}</span>
+              </span>
+            </h1>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <span style={{ fontSize: '12px', color: 'var(--ds-secondaryText)' }}>
+                {userData?.name || userData?.email}
+              </span>
+              <select
+                value={theme}
+                onChange={(e) => setTheme(e.target.value)}
+                style={{
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  border: '1px solid var(--ds-fieldBorder)',
+                  background: 'var(--ds-fieldBg)',
+                  color: 'var(--ds-fieldText)'
+                }}
+              >
+                {availableThemes?.map((t) => (
+                  <option key={t} value={t}>{themeLabels?.[t] || t}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Páginas */}
+          <div className="main-content__body">
+            {activePage === 'dashboard' && <DashboardPage user={userData} menus={userMenus} />}
+            {activePage === '/sistemas/usuarios' && <UsuariosPage />}
+            {activePage === '/sistemas/accesos' && <ControlAccesosPage />}
+            {activePage === '/sistemas/configuracion' && <ConfiguracionPage />}
+            {activePage === '/sistemas/menus' && <MenusPage />}
+            {activePage === '/comunicacion/instancias' && <InstanciasPage />}
+            {activePage === '/comunicacion/mensajeria' && <MensajeriaPage />}
+            {activePage === '/rrhh/personal' && <PersonalPage />}
+            {activePage === '/rrhh/cargos' && <CargosPage />}
+            {activePage === '/sistemas/niveles-seguridad' && <NivelesSeguridadPage />}
           </div>
         </div>
 
-        {/* Páginas */}
-        <div className="main-content__body">
-          {activePage === 'dashboard' && <DashboardPage user={userData} menus={userMenus} />}
-          {activePage === '/sistemas/usuarios' && <UsuariosPage />}
-          {activePage === '/sistemas/accesos' && <ControlAccesosPage />}
-          {activePage === '/sistemas/configuracion' && <ConfiguracionPage />}
-          {activePage === '/sistemas/menus' && <MenusPage />}
-          {activePage === '/comunicacion/instancias' && <InstanciasPage />}
-          {activePage === '/comunicacion/mensajeria' && <MensajeriaPage />}
-          {activePage === '/rrhh/personal' && <PersonalPage />}
-        </div>
+        {/* Chat Widget Flotante - Solo visible si el usuario tiene acceso al chat */}
+        <ChatWidget menus={userMenus} />
       </div>
-
-      {/* Chat Widget Flotante - Solo visible si el usuario tiene acceso al chat */}
-      <ChatWidget menus={userMenus} />
-    </div>
+    </SecurityProvider>
   )
 }
 

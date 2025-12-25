@@ -14,14 +14,18 @@ class PersonalController extends Controller
      */
     public function index(): JsonResponse
     {
-        $personal = Persona::with(['users:id,name,email', 'whatsapp'])
-            ->orderBy('apellidos')
+        $personal = Persona::with(['users:id,name,email', 'whatsapp', 'cargo'])
+            ->orderBy('apellido_paterno')
+            ->orderBy('apellido_materno')
             ->orderBy('nombre')
             ->get()
             ->map(function ($p) {
                 return [
                     'id' => $p->id,
+                    'codigo_empleado' => $p->codigo_empleado,
                     'nombre' => $p->nombre,
+                    'apellido_paterno' => $p->apellido_paterno,
+                    'apellido_materno' => $p->apellido_materno,
                     'apellidos' => $p->apellidos,
                     'nombre_completo' => $p->nombre_completo,
                     'ci' => $p->ci,
@@ -33,6 +37,19 @@ class PersonalController extends Controller
                     'email_personal' => $p->email_personal,
                     'direccion' => $p->direccion,
                     'ciudad' => $p->ciudad,
+                    // Datos laborales
+                    'cargo_id' => $p->cargo_id,
+                    'cargo' => $p->cargo ? [
+                        'id' => $p->cargo->id,
+                        'nombre' => $p->cargo->nombre,
+                    ] : null,
+                    'fecha_ingreso' => $p->fecha_ingreso?->format('Y-m-d'),
+                    'fecha_salida' => $p->fecha_salida?->format('Y-m-d'),
+                    'salario' => $p->salario,
+                    'tipo_contrato' => $p->tipo_contrato,
+                    'estado_laboral' => $p->estado_laboral,
+                    'antiguedad' => $p->antiguedad,
+                    // Estado
                     'is_active' => $p->is_active,
                     'notas' => $p->notas,
                     'users' => $p->users->map(fn($u) => [
@@ -41,7 +58,7 @@ class PersonalController extends Controller
                         'email' => $u->email,
                     ]),
                     'whatsapp' => $p->whatsapp ? [
-                        'status' => $p->whatsapp->status,
+                        'status' => $p->whatsapp->estatus,
                         'verified_at' => $p->whatsapp->verified_at?->format('Y-m-d H:i'),
                         'whatsapp_jid' => $p->whatsapp->whatsapp_jid,
                     ] : null,
@@ -60,14 +77,16 @@ class PersonalController extends Controller
      */
     public function show($id): JsonResponse
     {
-        $persona = Persona::with('users:id,name,email')->findOrFail($id);
+        $persona = Persona::with(['users:id,name,email', 'cargo'])->findOrFail($id);
 
         return response()->json([
             'success' => true,
             'data' => [
                 'id' => $persona->id,
+                'codigo_empleado' => $persona->codigo_empleado,
                 'nombre' => $persona->nombre,
-                'apellidos' => $persona->apellidos,
+                'apellido_paterno' => $persona->apellido_paterno,
+                'apellido_materno' => $persona->apellido_materno,
                 'ci' => $persona->ci,
                 'fecha_nacimiento' => $persona->fecha_nacimiento?->format('Y-m-d'),
                 'genero' => $persona->genero,
@@ -76,6 +95,14 @@ class PersonalController extends Controller
                 'email_personal' => $persona->email_personal,
                 'direccion' => $persona->direccion,
                 'ciudad' => $persona->ciudad,
+                // Datos laborales
+                'cargo_id' => $persona->cargo_id,
+                'fecha_ingreso' => $persona->fecha_ingreso?->format('Y-m-d'),
+                'fecha_salida' => $persona->fecha_salida?->format('Y-m-d'),
+                'salario' => $persona->salario,
+                'tipo_contrato' => $persona->tipo_contrato,
+                'estado_laboral' => $persona->estado_laboral,
+                // Estado
                 'is_active' => $persona->is_active,
                 'notas' => $persona->notas,
                 'user_ids' => $persona->users->pluck('id'),
@@ -89,8 +116,10 @@ class PersonalController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
+            'codigo_empleado' => 'nullable|string|max:20|unique:personal,codigo_empleado',
             'nombre' => 'required|string|max:100',
-            'apellidos' => 'required|string|max:150',
+            'apellido_paterno' => 'required|string|max:100',
+            'apellido_materno' => 'nullable|string|max:100',
             'ci' => 'nullable|string|max:20|unique:personal,ci',
             'fecha_nacimiento' => 'nullable|date',
             'genero' => 'nullable|in:M,F,O',
@@ -99,6 +128,14 @@ class PersonalController extends Controller
             'email_personal' => 'nullable|email|max:150',
             'direccion' => 'nullable|string',
             'ciudad' => 'nullable|string|max:100',
+            // Datos laborales
+            'cargo_id' => 'nullable|exists:cargos,id',
+            'fecha_ingreso' => 'nullable|date',
+            'fecha_salida' => 'nullable|date|after_or_equal:fecha_ingreso',
+            'salario' => 'nullable|numeric|min:0',
+            'tipo_contrato' => 'nullable|string|max:50',
+            'estado_laboral' => 'nullable|in:activo,inactivo',
+            // Estado
             'is_active' => 'boolean',
             'notas' => 'nullable|string',
             'user_ids' => 'array',
@@ -106,8 +143,10 @@ class PersonalController extends Controller
         ]);
 
         $persona = Persona::create([
+            'codigo_empleado' => $validated['codigo_empleado'] ?? null,
             'nombre' => $validated['nombre'],
-            'apellidos' => $validated['apellidos'],
+            'apellido_paterno' => $validated['apellido_paterno'],
+            'apellido_materno' => $validated['apellido_materno'] ?? null,
             'ci' => $validated['ci'] ?? null,
             'fecha_nacimiento' => $validated['fecha_nacimiento'] ?? null,
             'genero' => $validated['genero'] ?? null,
@@ -116,6 +155,14 @@ class PersonalController extends Controller
             'email_personal' => $validated['email_personal'] ?? null,
             'direccion' => $validated['direccion'] ?? null,
             'ciudad' => $validated['ciudad'] ?? null,
+            // Datos laborales
+            'cargo_id' => $validated['cargo_id'] ?? null,
+            'fecha_ingreso' => $validated['fecha_ingreso'] ?? null,
+            'fecha_salida' => $validated['fecha_salida'] ?? null,
+            'salario' => $validated['salario'] ?? null,
+            'tipo_contrato' => $validated['tipo_contrato'] ?? null,
+            'estado_laboral' => $validated['estado_laboral'] ?? 'activo',
+            // Estado
             'is_active' => $validated['is_active'] ?? true,
             'notas' => $validated['notas'] ?? null,
         ]);
@@ -128,7 +175,7 @@ class PersonalController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Personal creado correctamente',
-            'data' => $persona->load('users')
+            'data' => $persona->load(['users', 'cargo'])
         ], 201);
     }
 
@@ -140,8 +187,10 @@ class PersonalController extends Controller
         $persona = Persona::findOrFail($id);
 
         $validated = $request->validate([
+            'codigo_empleado' => 'nullable|string|max:20|unique:personal,codigo_empleado,' . $persona->id,
             'nombre' => 'required|string|max:100',
-            'apellidos' => 'required|string|max:150',
+            'apellido_paterno' => 'required|string|max:100',
+            'apellido_materno' => 'nullable|string|max:100',
             'ci' => 'nullable|string|max:20|unique:personal,ci,' . $persona->id,
             'fecha_nacimiento' => 'nullable|date',
             'genero' => 'nullable|in:M,F,O',
@@ -150,6 +199,14 @@ class PersonalController extends Controller
             'email_personal' => 'nullable|email|max:150',
             'direccion' => 'nullable|string',
             'ciudad' => 'nullable|string|max:100',
+            // Datos laborales
+            'cargo_id' => 'nullable|exists:cargos,id',
+            'fecha_ingreso' => 'nullable|date',
+            'fecha_salida' => 'nullable|date|after_or_equal:fecha_ingreso',
+            'salario' => 'nullable|numeric|min:0',
+            'tipo_contrato' => 'nullable|string|max:50',
+            'estado_laboral' => 'nullable|in:activo,inactivo',
+            // Estado
             'is_active' => 'boolean',
             'notas' => 'nullable|string',
             'user_ids' => 'array',
@@ -157,8 +214,10 @@ class PersonalController extends Controller
         ]);
 
         $persona->update([
+            'codigo_empleado' => $validated['codigo_empleado'] ?? null,
             'nombre' => $validated['nombre'],
-            'apellidos' => $validated['apellidos'],
+            'apellido_paterno' => $validated['apellido_paterno'],
+            'apellido_materno' => $validated['apellido_materno'] ?? null,
             'ci' => $validated['ci'] ?? null,
             'fecha_nacimiento' => $validated['fecha_nacimiento'] ?? null,
             'genero' => $validated['genero'] ?? null,
@@ -167,6 +226,14 @@ class PersonalController extends Controller
             'email_personal' => $validated['email_personal'] ?? null,
             'direccion' => $validated['direccion'] ?? null,
             'ciudad' => $validated['ciudad'] ?? null,
+            // Datos laborales
+            'cargo_id' => $validated['cargo_id'] ?? null,
+            'fecha_ingreso' => $validated['fecha_ingreso'] ?? null,
+            'fecha_salida' => $validated['fecha_salida'] ?? null,
+            'salario' => $validated['salario'] ?? null,
+            'tipo_contrato' => $validated['tipo_contrato'] ?? null,
+            'estado_laboral' => $validated['estado_laboral'] ?? 'activo',
+            // Estado
             'is_active' => $validated['is_active'] ?? true,
             'notas' => $validated['notas'] ?? null,
         ]);
@@ -183,7 +250,7 @@ class PersonalController extends Controller
     }
 
     /**
-     * Eliminar personal
+     * Eliminar personal (soft delete)
      */
     public function destroy($id): JsonResponse
     {
@@ -212,3 +279,4 @@ class PersonalController extends Controller
         ]);
     }
 }
+

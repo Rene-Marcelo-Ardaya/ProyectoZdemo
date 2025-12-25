@@ -58,6 +58,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/messages/read', [ChatController::class, 'markAsRead']);
     Route::post('/messages/typing', [ChatController::class, 'typing']);
 
+    // RRHH - Cargos
+    Route::get('/cargos/activos', [\App\Http\Controllers\CargoController::class, 'activos']);
+    Route::apiResource('cargos', \App\Http\Controllers\CargoController::class);
+
     // RRHH - Personal
     Route::get('/personal/available-users', [\App\Http\Controllers\PersonalController::class, 'getAvailableUsers']);
     Route::apiResource('personal', \App\Http\Controllers\PersonalController::class);
@@ -69,4 +73,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/verify', [\App\Http\Controllers\WhatsappVerificationController::class, 'verify']);
         Route::delete('/reset', [\App\Http\Controllers\WhatsappVerificationController::class, 'reset']);
     });
+
+    // Niveles de Seguridad
+    Route::get('/niveles-seguridad/activos', [\App\Http\Controllers\NivelSeguridadController::class, 'activos']);
+    Route::get('/niveles-seguridad/{id}/miembros', [\App\Http\Controllers\NivelSeguridadController::class, 'miembros']);
+    Route::get('/niveles-seguridad/{id}/empleados-disponibles', [\App\Http\Controllers\NivelSeguridadController::class, 'empleadosDisponibles']);
+    Route::post('/niveles-seguridad/{id}/miembros', [\App\Http\Controllers\NivelSeguridadController::class, 'addMiembro']);
+    Route::delete('/niveles-seguridad/{id}/miembros/{personaId}', [\App\Http\Controllers\NivelSeguridadController::class, 'removeMiembro']);
+    Route::apiResource('niveles-seguridad', \App\Http\Controllers\NivelSeguridadController::class);
+
+    // Componentes con Seguridad
+    Route::get('/componentes-seguridad', [\App\Http\Controllers\ComponenteSeguridadController::class, 'index']);
+    Route::post('/componentes-seguridad', [\App\Http\Controllers\ComponenteSeguridadController::class, 'upsert']);
+    Route::delete('/componentes-seguridad/{componenteId}', [\App\Http\Controllers\ComponenteSeguridadController::class, 'destroy']);
 });

@@ -32,6 +32,7 @@ export {
   DSFormToolbar,
   DSHelpText,
   DSValidationMessage,
+  SecuredButton,
 } from '../ds-forms';
 
 // DS Layout
@@ -90,6 +91,8 @@ export {
   DSEmpty,
   DSErrorState,
   DSToast,
+  DSTooltip,
+  DSHelpIcon,
 } from '../ds-overlays';
 
 // DS Navigation (exportaciones específicas para evitar conflictos)

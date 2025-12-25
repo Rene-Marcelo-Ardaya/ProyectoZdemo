@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
-import { Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { Calendar, ChevronLeft, ChevronRight, X, HelpCircle } from 'lucide-react'
 import '../styles/DSDateField.css'
 
 /**
@@ -20,6 +20,7 @@ export function DSDateField({
   onChange,
   placeholder = 'dd/mm/aaaa',
   help,
+  tooltip,
   error,
   disabled = false,
   required = false,
@@ -199,7 +200,14 @@ export function DSDateField({
       {/* Label */}
       {label && (
         <label className="ds-datefield__label" htmlFor={name}>
-          {label}
+          <span className="ds-datefield__label-text">
+            {label}
+            {tooltip && (
+              <span className="ds-datefield__tooltip-icon" title={tooltip}>
+                <HelpCircle size={14} />
+              </span>
+            )}
+          </span>
           {required && <span className="ds-datefield__required">*</span>}
         </label>
       )}

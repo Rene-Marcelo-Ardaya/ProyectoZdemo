@@ -1,4 +1,5 @@
 import React from 'react'
+import { HelpCircle } from 'lucide-react'
 
 // Campo multilinea inspirado en Ext.form.TextArea
 export function DSTextArea({
@@ -8,7 +9,9 @@ export function DSTextArea({
   onChange,
   placeholder,
   help,
+  tooltip,
   error,
+  required,
   disabled = false,
   rows = 3,
 }) {
@@ -16,7 +19,15 @@ export function DSTextArea({
     <div className="ds-field">
       {label ? (
         <label className="ds-field__label" htmlFor={name}>
-          {label}
+          <span className="ds-field__label-text">
+            {label}
+            {tooltip && (
+              <span className="ds-field__tooltip-icon" title={tooltip}>
+                <HelpCircle size={14} />
+              </span>
+            )}
+          </span>
+          {required && <span className="ds-field__required">*</span>}
         </label>
       ) : null}
       <textarea

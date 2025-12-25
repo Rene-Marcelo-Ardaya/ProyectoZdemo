@@ -13,8 +13,8 @@ import {
     Save,
     X,
     CheckCircle2,
-    MessageCircle,
-    Loader2,
+    Briefcase,
+    DollarSign,
 } from 'lucide-react';
 import {
     fetchPersonal,
@@ -23,8 +23,8 @@ import {
     deletePersonal,
     getAvailableUsers
 } from '../../services/personalService';
+import { fetchCargosActivos } from '../../services/cargoService';
 
-// Importar componentes DS
 import {
     DSPage,
     DSPageHeader,
@@ -38,10 +38,9 @@ import {
     DSTextArea,
     DSComboBox,
     DSDateField,
-    DSField,
     DSFieldsGrid,
-    DSFieldsRow,
     DSEmpty,
+    DSTooltip,
 } from '../../ds-components';
 
 import WhatsappVerificationModal from '../../components/WhatsappVerificationModal';
@@ -49,10 +48,31 @@ import WhatsappVerificationModal from '../../components/WhatsappVerificationModa
 import './PersonalPage.css';
 
 // ============================================
+// COMPONENTE: FormField con Tooltip
+// ============================================
+function FormField({ label, children, required, help }) {
+    return (
+        <div className="ds-field">
+            <label className="ds-field__label">
+                <span className="ds-field__label-text">
+                    {label}
+                    {help && <DSTooltip text={help} />}
+                </span>
+                {required && <span className="ds-field__required">*</span>}
+            </label>
+            <div className="ds-field__control-wrapper">
+                {children}
+            </div>
+        </div>
+    );
+}
+
+// ============================================
 // CUSTOM HOOK: usePersonal
 // ============================================
 function usePersonal() {
     const [personal, setPersonal] = useState([]);
+    const [cargos, setCargos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -60,11 +80,19 @@ function usePersonal() {
         setLoading(true);
         setError(null);
         try {
-            const result = await fetchPersonal();
-            if (result.success) {
-                setPersonal(result.data || []);
+            const [personalResult, cargosResult] = await Promise.all([
+                fetchPersonal(),
+                fetchCargosActivos()
+            ]);
+
+            if (personalResult.success) {
+                setPersonal(personalResult.data || []);
             } else {
-                setError(result.error || 'Error cargando personal');
+                setError(personalResult.error || 'Error cargando personal');
+            }
+
+            if (cargosResult.success) {
+                setCargos(cargosResult.data || []);
             }
         } catch (err) {
             setError('Error de conexión');
@@ -77,7 +105,7 @@ function usePersonal() {
         fetchData();
     }, [fetchData]);
 
-    return { personal, loading, error, refetch: fetchData };
+    return { personal, cargos, loading, error, refetch: fetchData };
 }
 
 // ============================================
@@ -91,7 +119,9 @@ function PersonalTable({ data, onEdit, onDelete, onVerify, searchTerm }) {
             p.nombre_completo?.toLowerCase().includes(term) ||
             p.ci?.toLowerCase().includes(term) ||
             p.celular?.includes(term) ||
-            p.email_personal?.toLowerCase().includes(term)
+            p.email_personal?.toLowerCase().includes(term) ||
+            p.codigo_empleado?.toLowerCase().includes(term) ||
+            p.cargo?.nombre?.toLowerCase().includes(term)
         );
     });
 
@@ -112,10 +142,10 @@ function PersonalTable({ data, onEdit, onDelete, onVerify, searchTerm }) {
                     <tr>
                         <th>Nombre Completo</th>
                         <th>CI</th>
+                        <th>Cargo</th>
                         <th>Contacto</th>
-                        <th>Ciudad</th>
+                        <th>Ingreso</th>
                         <th>Estado</th>
-                        <th>Usuarios</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -125,15 +155,24 @@ function PersonalTable({ data, onEdit, onDelete, onVerify, searchTerm }) {
                             <td>
                                 <div className="personal-name">
                                     <strong>{p.nombre_completo}</strong>
-                                    {p.fecha_nacimiento && (
-                                        <span className="personal-birth">
-                                            <Calendar size={12} />
-                                            {p.fecha_nacimiento}
+                                    {p.codigo_empleado && (
+                                        <span className="personal-code">
+                                            {p.codigo_empleado}
                                         </span>
                                     )}
                                 </div>
                             </td>
                             <td>{p.ci || '-'}</td>
+                            <td>
+                                {p.cargo ? (
+                                    <span className="personal-cargo-badge">
+                                        <Briefcase size={12} />
+                                        {p.cargo.nombre}
+                                    </span>
+                                ) : (
+                                    <span className="text-muted">Sin cargo</span>
+                                )}
+                            </td>
                             <td>
                                 <div className="personal-contact">
                                     {p.celular_completo && (
@@ -161,29 +200,17 @@ function PersonalTable({ data, onEdit, onDelete, onVerify, searchTerm }) {
                                 </div>
                             </td>
                             <td>
-                                {p.ciudad && (
-                                    <span className="personal-city">
-                                        <MapPin size={12} /> {p.ciudad}
+                                {p.fecha_ingreso ? (
+                                    <span className="personal-date">
+                                        <Calendar size={12} />
+                                        {p.fecha_ingreso}
                                     </span>
-                                )}
+                                ) : '-'}
                             </td>
                             <td>
-                                <DSBadge variant={p.is_active ? 'success' : 'warning'}>
-                                    {p.is_active ? 'Activo' : 'Inactivo'}
+                                <DSBadge variant={p.estado_laboral === 'activo' ? 'success' : 'warning'}>
+                                    {p.estado_laboral === 'activo' ? 'Activo' : 'Inactivo'}
                                 </DSBadge>
-                            </td>
-                            <td>
-                                {p.users?.length > 0 ? (
-                                    <div className="personal-users">
-                                        {p.users.map(u => (
-                                            <DSBadge key={u.id} variant="info" size="sm">
-                                                {u.name}
-                                            </DSBadge>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <span className="text-muted">Sin vincular</span>
-                                )}
                             </td>
                             <td>
                                 <div className="personal-actions">
@@ -200,7 +227,7 @@ function PersonalTable({ data, onEdit, onDelete, onVerify, searchTerm }) {
                                         iconOnly
                                         icon={<Trash2 size={14} />}
                                         onClick={() => onDelete(p)}
-                                        title="Eliminar"
+                                        title="Desactivar"
                                     />
                                 </div>
                             </td>
@@ -215,10 +242,12 @@ function PersonalTable({ data, onEdit, onDelete, onVerify, searchTerm }) {
 // ============================================
 // COMPONENTE: PersonalForm
 // ============================================
-function PersonalForm({ isOpen, onClose, onSave, editData, availableUsers }) {
+function PersonalForm({ isOpen, onClose, onSave, editData, availableUsers, cargos }) {
     const [form, setForm] = useState({
+        codigo_empleado: '',
         nombre: '',
-        apellidos: '',
+        apellido_paterno: '',
+        apellido_materno: '',
         ci: '',
         fecha_nacimiento: '',
         genero: '',
@@ -227,6 +256,14 @@ function PersonalForm({ isOpen, onClose, onSave, editData, availableUsers }) {
         email_personal: '',
         direccion: '',
         ciudad: '',
+        // Datos laborales
+        cargo_id: '',
+        fecha_ingreso: '',
+        fecha_salida: '',
+        salario: '',
+        tipo_contrato: '',
+        estado_laboral: 'activo',
+        // Estado
         is_active: true,
         notas: '',
         user_ids: [],
@@ -238,8 +275,10 @@ function PersonalForm({ isOpen, onClose, onSave, editData, availableUsers }) {
     useEffect(() => {
         if (editData) {
             setForm({
+                codigo_empleado: editData.codigo_empleado || '',
                 nombre: editData.nombre || '',
-                apellidos: editData.apellidos || '',
+                apellido_paterno: editData.apellido_paterno || '',
+                apellido_materno: editData.apellido_materno || '',
                 ci: editData.ci || '',
                 fecha_nacimiento: editData.fecha_nacimiento || '',
                 genero: editData.genero || '',
@@ -248,14 +287,24 @@ function PersonalForm({ isOpen, onClose, onSave, editData, availableUsers }) {
                 email_personal: editData.email_personal || '',
                 direccion: editData.direccion || '',
                 ciudad: editData.ciudad || '',
+                // Datos laborales
+                cargo_id: editData.cargo_id || '',
+                fecha_ingreso: editData.fecha_ingreso || '',
+                fecha_salida: editData.fecha_salida || '',
+                salario: editData.salario || '',
+                tipo_contrato: editData.tipo_contrato || '',
+                estado_laboral: editData.estado_laboral || 'activo',
+                // Estado
                 is_active: editData.is_active ?? true,
                 notas: editData.notas || '',
                 user_ids: editData.users?.map(u => u.id) || [],
             });
         } else {
             setForm({
+                codigo_empleado: '',
                 nombre: '',
-                apellidos: '',
+                apellido_paterno: '',
+                apellido_materno: '',
                 ci: '',
                 fecha_nacimiento: '',
                 genero: '',
@@ -264,6 +313,12 @@ function PersonalForm({ isOpen, onClose, onSave, editData, availableUsers }) {
                 email_personal: '',
                 direccion: '',
                 ciudad: '',
+                cargo_id: '',
+                fecha_ingreso: '',
+                fecha_salida: '',
+                salario: '',
+                tipo_contrato: '',
+                estado_laboral: 'activo',
                 is_active: true,
                 notas: '',
                 user_ids: [],
@@ -288,8 +343,8 @@ function PersonalForm({ isOpen, onClose, onSave, editData, availableUsers }) {
     };
 
     const handleSubmit = async () => {
-        if (!form.nombre.trim() || !form.apellidos.trim()) {
-            setError('Nombre y apellidos son requeridos');
+        if (!form.nombre.trim() || !form.apellido_paterno.trim()) {
+            setError('Nombre y apellido paterno son requeridos');
             return;
         }
 
@@ -297,9 +352,22 @@ function PersonalForm({ isOpen, onClose, onSave, editData, availableUsers }) {
         setError(null);
 
         try {
+            const payload = {
+                ...form,
+                cargo_id: form.cargo_id ? parseInt(form.cargo_id) : null,
+                salario: form.salario ? parseFloat(form.salario) : null,
+                fecha_nacimiento: form.fecha_nacimiento || null,
+                fecha_ingreso: form.fecha_ingreso || null,
+                fecha_salida: form.fecha_salida || null,
+                apellido_materno: form.apellido_materno || null,
+                genero: form.genero || null,
+                direccion: form.direccion || null,
+                tipo_contrato: form.tipo_contrato || null,
+            };
+
             const result = editData
-                ? await updatePersonal(editData.id, form)
-                : await createPersonal(form);
+                ? await updatePersonal(editData.id, payload)
+                : await createPersonal(payload);
 
             if (result.success) {
                 onSave();
@@ -336,12 +404,22 @@ function PersonalForm({ isOpen, onClose, onSave, editData, availableUsers }) {
         { value: '34', label: '+34 (España)' },
     ];
 
+    const estadoLaboralOptions = [
+        { value: 'activo', label: 'Activo' },
+        { value: 'inactivo', label: 'Inactivo' },
+    ];
+
+    const cargoOptions = [
+        { value: '', label: 'Seleccionar cargo...' },
+        ...cargos.map(c => ({ value: c.id.toString(), label: c.nombre }))
+    ];
+
     return (
         <DSModal
             isOpen={isOpen}
             onClose={onClose}
             title={editData ? 'Editar Personal' : 'Nuevo Personal'}
-            size="lg"
+            size="xl"
             footer={
                 <>
                     <DSButton onClick={onClose} disabled={saving}>
@@ -368,67 +446,61 @@ function PersonalForm({ isOpen, onClose, onSave, editData, availableUsers }) {
             <div className="personal-form">
                 {/* Datos Personales */}
                 <div className="form-section">
-                    <h4>Datos Personales</h4>
-                    <DSFieldsGrid columns={2}>
+                    <h4><Users size={16} /> Datos Personales</h4>
+
+                    <DSFieldsGrid columns={3}>
                         <DSTextField
                             label="Nombre"
                             value={form.nombre}
                             onChange={handleChange('nombre')}
                             required
                             placeholder="Nombre(s)"
+                            tooltip="Nombre(s) del empleado"
                         />
                         <DSTextField
-                            label="Apellidos"
-                            value={form.apellidos}
-                            onChange={handleChange('apellidos')}
+                            label="Apellido Paterno"
+                            value={form.apellido_paterno}
+                            onChange={handleChange('apellido_paterno')}
                             required
-                            placeholder="Apellido paterno y materno"
+                            placeholder="Apellido paterno"
+                            tooltip="Primer apellido del empleado"
+                        />
+                        <DSTextField
+                            label="Apellido Materno"
+                            value={form.apellido_materno}
+                            onChange={handleChange('apellido_materno')}
+                            placeholder="Apellido materno"
+                            tooltip="Segundo apellido (opcional)"
                         />
                     </DSFieldsGrid>
 
-                    <DSFieldsGrid columns={3}>
+                    <DSFieldsGrid columns={4}>
+                        <DSTextField
+                            label="Código Empleado"
+                            value={form.codigo_empleado}
+                            onChange={handleChange('codigo_empleado')}
+                            placeholder="EMP-001"
+                            tooltip="Código único de identificación interna"
+                        />
                         <DSTextField
                             label="CI"
                             value={form.ci}
                             onChange={handleChange('ci')}
                             placeholder="Carnet de identidad"
-                        />
-                        <DSDateField
-                            label="Fecha de Nacimiento"
-                            value={form.fecha_nacimiento}
-                            onChange={handleChange('fecha_nacimiento')}
+                            tooltip="Carnet de identidad con extensión"
                         />
                         <DSComboBox
                             label="Género"
                             value={form.genero}
                             onChange={handleChange('genero')}
                             options={generoOptions}
+                            tooltip="Género del empleado"
                         />
-                    </DSFieldsGrid>
-                </div>
-
-                {/* Contacto */}
-                <div className="form-section">
-                    <h4>Contacto</h4>
-                    <DSFieldsGrid columns={3}>
-                        <DSComboBox
-                            label="Código País"
-                            value={form.codigo_pais}
-                            onChange={handleChange('codigo_pais')}
-                            options={codigoPaisOptions}
-                        />
-                        <DSTextField
-                            label="Celular"
-                            value={form.celular}
-                            onChange={handleChange('celular')}
-                            placeholder="Número sin código de país"
-                        />
-                        <DSTextField
-                            label="Email Personal"
-                            value={form.email_personal}
-                            onChange={handleChange('email_personal')}
-                            type="email"
-                            placeholder="correo@ejemplo.com"
+                        <DSDateField
+                            label="Fecha Nacimiento"
+                            value={form.fecha_nacimiento}
+                            onChange={handleChange('fecha_nacimiento')}
+                            tooltip="Fecha de nacimiento para calcular edad"
                         />
                     </DSFieldsGrid>
 
@@ -438,6 +510,7 @@ function PersonalForm({ isOpen, onClose, onSave, editData, availableUsers }) {
                             value={form.ciudad}
                             onChange={handleChange('ciudad')}
                             placeholder="Ciudad de residencia"
+                            tooltip="Ciudad donde reside el empleado"
                         />
                         <DSTextArea
                             label="Dirección"
@@ -445,6 +518,91 @@ function PersonalForm({ isOpen, onClose, onSave, editData, availableUsers }) {
                             onChange={handleChange('direccion')}
                             placeholder="Dirección completa"
                             rows={2}
+                            tooltip="Dirección de domicilio completa"
+                        />
+                    </DSFieldsGrid>
+                </div>
+
+                {/* Contacto */}
+                <div className="form-section">
+                    <h4><Phone size={16} /> Contacto</h4>
+                    <DSFieldsGrid columns={3}>
+                        <DSComboBox
+                            label="Código País"
+                            value={form.codigo_pais}
+                            onChange={handleChange('codigo_pais')}
+                            options={codigoPaisOptions}
+                            tooltip="Código de país para WhatsApp"
+                        />
+                        <DSTextField
+                            label="Celular"
+                            value={form.celular}
+                            onChange={handleChange('celular')}
+                            placeholder="Número sin código de país"
+                            tooltip="Solo el número, sin código de país"
+                        />
+                        <DSTextField
+                            label="Email Personal"
+                            value={form.email_personal}
+                            onChange={handleChange('email_personal')}
+                            type="email"
+                            placeholder="correo@ejemplo.com"
+                            tooltip="Correo electrónico personal"
+                        />
+                    </DSFieldsGrid>
+                </div>
+
+                {/* Datos Laborales */}
+                <div className="form-section">
+                    <h4><Briefcase size={16} /> Datos Laborales</h4>
+                    <DSFieldsGrid columns={2}>
+                        <DSComboBox
+                            label="Cargo"
+                            value={form.cargo_id}
+                            onChange={handleChange('cargo_id')}
+                            options={cargoOptions}
+                            tooltip="Puesto de trabajo asignado"
+                        />
+                        <DSComboBox
+                            label="Estado Laboral"
+                            value={form.estado_laboral}
+                            onChange={handleChange('estado_laboral')}
+                            options={estadoLaboralOptions}
+                            tooltip="Estado actual del empleado en la empresa"
+                        />
+                    </DSFieldsGrid>
+
+                    <DSFieldsGrid columns={2}>
+                        <DSDateField
+                            label="Fecha de Ingreso"
+                            value={form.fecha_ingreso}
+                            onChange={handleChange('fecha_ingreso')}
+                            tooltip="Fecha en que ingresó a la empresa"
+                        />
+                        <DSDateField
+                            label="Fecha de Salida"
+                            value={form.fecha_salida}
+                            onChange={handleChange('fecha_salida')}
+                            tooltip="Fecha de baja (si aplica)"
+                        />
+                    </DSFieldsGrid>
+
+                    <DSFieldsGrid columns={2}>
+                        <DSTextField
+                            label="Salario"
+                            value={form.salario}
+                            onChange={handleChange('salario')}
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            tooltip="Salario mensual del empleado"
+                        />
+                        <DSTextField
+                            label="Tipo de Contrato"
+                            value={form.tipo_contrato}
+                            onChange={handleChange('tipo_contrato')}
+                            placeholder="Ej: Indefinido, Temporal..."
+                            tooltip="Tipo de contrato laboral"
                         />
                     </DSFieldsGrid>
                 </div>
@@ -526,7 +684,7 @@ function PersonalForm({ isOpen, onClose, onSave, editData, availableUsers }) {
 // COMPONENTE PRINCIPAL: PersonalPage
 // ============================================
 export function PersonalPage() {
-    const { personal, loading, error: loadError, refetch } = usePersonal();
+    const { personal, cargos, loading, error: loadError, refetch } = usePersonal();
 
     const [searchTerm, setSearchTerm] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
@@ -560,13 +718,13 @@ export function PersonalPage() {
     };
 
     const handleDelete = async (persona) => {
-        if (!window.confirm(`¿Eliminar a "${persona.nombre_completo}"? Esta acción no se puede deshacer.`)) {
+        if (!window.confirm(`¿Desactivar a "${persona.nombre_completo}"? Dejará de aparecer en el sistema.`)) {
             return;
         }
 
         const result = await deletePersonal(persona.id);
         if (result.success) {
-            setAlert({ type: 'success', message: 'Personal eliminado correctamente' });
+            setAlert({ type: 'success', message: 'Personal desactivado correctamente' });
             refetch();
         } else {
             setAlert({ type: 'error', message: result.error });
@@ -620,7 +778,7 @@ export function PersonalPage() {
                             <Search size={16} />
                             <input
                                 type="text"
-                                placeholder="Buscar por nombre, CI, celular..."
+                                placeholder="Buscar por nombre, CI, cargo, celular..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -650,6 +808,7 @@ export function PersonalPage() {
                 onSave={handleSave}
                 editData={editData}
                 availableUsers={availableUsers}
+                cargos={cargos}
             />
 
             <WhatsappVerificationModal

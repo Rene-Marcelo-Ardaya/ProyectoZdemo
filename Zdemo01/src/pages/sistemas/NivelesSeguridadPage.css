@@ -1,0 +1,439 @@
+/* ============================================
+   NivelesSeguridadPage Styles
+   ============================================ */
+
+/* Tooltip */
+.niveles-tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    cursor: help;
+    color: var(--ds-secondaryText);
+}
+
+.niveles-tooltip__text {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ds-primaryText);
+    color: var(--ds-primaryBg);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    z-index: 100;
+    max-width: 250px;
+    white-space: normal;
+    text-align: center;
+}
+
+.niveles-tooltip:hover .niveles-tooltip__text {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Table */
+.niveles-table {
+    overflow-x: auto;
+}
+
+.niveles-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.niveles-table th,
+.niveles-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--ds-border);
+}
+
+.niveles-table th {
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ds-secondaryText);
+    background: var(--ds-secondaryBg);
+}
+
+.niveles-table tbody tr:hover {
+    background: var(--ds-secondaryBg);
+}
+
+/* Color Preview */
+.niveles-color-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.niveles-color-preview__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.niveles-color-preview__nombre {
+    font-weight: 600;
+    color: var(--ds-primaryText);
+}
+
+.niveles-color-preview__nivel {
+    font-size: 11px;
+    color: var(--ds-secondaryText);
+}
+
+/* Nivel Badge */
+.niveles-nivel-cell {
+    text-align: center;
+}
+
+.niveles-nivel-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+/* Description */
+.niveles-description {
+    color: var(--ds-secondaryText);
+    font-size: 13px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Count Badge */
+.niveles-count {
+    text-align: center;
+}
+
+.niveles-count-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: var(--ds-secondaryBg);
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ds-secondaryText);
+    border: none;
+}
+
+.niveles-count-badge--clickable {
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.niveles-count-badge--clickable:hover {
+    background: var(--ds-accent);
+    color: white;
+}
+
+.niveles-count-badge__hint {
+    font-size: 10px;
+    display: none;
+    margin-left: 2px;
+}
+
+.niveles-count-badge--clickable:hover .niveles-count-badge__hint {
+    display: inline;
+}
+
+/* Actions */
+.niveles-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+/* Panel Count */
+.niveles-panel__count {
+    font-size: 13px;
+    color: var(--ds-secondaryText);
+    font-weight: 500;
+}
+
+/* Form */
+.niveles-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.niveles-form__row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+}
+
+/* Asegurar altura normal de inputs en el formulario */
+.niveles-form input[type="text"],
+.niveles-form input[type="number"] {
+    height: 38px;
+    padding: 8px 12px;
+    box-sizing: border-box;
+}
+
+/* Color Picker */
+.niveles-color-picker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.niveles-color-input {
+    width: 48px;
+    height: 38px;
+    padding: 2px;
+    border: 1px solid var(--ds-fieldBorder);
+    border-radius: 6px;
+    cursor: pointer;
+    background: var(--ds-fieldBg);
+}
+
+.niveles-color-input::-webkit-color-swatch-wrapper {
+    padding: 2px;
+}
+
+.niveles-color-input::-webkit-color-swatch {
+    border-radius: 4px;
+    border: none;
+}
+
+.niveles-color-text {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--ds-fieldBorder);
+    border-radius: 6px;
+    background: var(--ds-fieldBg);
+    color: var(--ds-fieldText);
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.niveles-color-text:focus {
+    outline: none;
+    border-color: var(--ds-accent);
+    box-shadow: 0 0 0 2px rgba(var(--ds-accent-rgb, 59, 130, 246), 0.2);
+}
+
+/* Checkbox */
+.niveles-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--ds-primaryText);
+}
+
+.niveles-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--ds-accent);
+}
+
+/* ============================================
+   Miembros Modal Styles
+   ============================================ */
+
+.miembros-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.miembros-modal__section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.miembros-modal__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ds-primaryText);
+    margin: 0;
+}
+
+.miembros-modal__empty {
+    font-size: 13px;
+    color: var(--ds-secondaryText);
+    font-style: italic;
+    text-align: center;
+    padding: 12px;
+    background: var(--ds-secondaryBg);
+    border-radius: 8px;
+    margin: 0;
+}
+
+.miembros-modal__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.miembros-modal__list--available {
+    max-height: 180px;
+    background: var(--ds-secondaryBg);
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.miembros-modal__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--ds-primaryBg);
+    border: 1px solid var(--ds-border);
+    border-radius: 8px;
+    gap: 12px;
+}
+
+.miembros-modal__item--available {
+    border: none;
+    background: var(--ds-primaryBg);
+}
+
+.miembros-modal__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.miembros-modal__name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ds-primaryText);
+}
+
+.miembros-modal__cargo {
+    font-size: 11px;
+    color: var(--ds-secondaryText);
+}
+
+.miembros-modal__current-group {
+    font-size: 10px;
+    color: var(--ds-accent);
+    font-style: italic;
+}
+
+.miembros-modal__remove,
+.miembros-modal__add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.miembros-modal__remove {
+    background: var(--ds-dangerBg, #fef2f2);
+    color: var(--ds-danger, #dc2626);
+}
+
+.miembros-modal__remove:hover {
+    background: var(--ds-danger, #dc2626);
+    color: white;
+}
+
+.miembros-modal__add {
+    background: var(--ds-successBg, #f0fdf4);
+    color: var(--ds-success, #16a34a);
+}
+
+.miembros-modal__add:hover {
+    background: var(--ds-success, #16a34a);
+    color: white;
+}
+
+.miembros-modal__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.miembros-modal__search-icon {
+    position: absolute;
+    left: 10px;
+    color: var(--ds-secondaryText);
+    pointer-events: none;
+}
+
+.miembros-modal__search-input {
+    width: 100%;
+    padding: 8px 10px 8px 32px;
+    border: 1px solid var(--ds-fieldBorder);
+    border-radius: 6px;
+    font-size: 13px;
+    background: var(--ds-fieldBg);
+    color: var(--ds-fieldText);
+}
+
+.miembros-modal__search-input:focus {
+    outline: none;
+    border-color: var(--ds-accent);
+}
+
+.miembros-modal__available {
+    min-height: 100px;
+}
+
+.miembros-modal__more {
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--ds-secondaryText);
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .niveles-form__row {
+        grid-template-columns: 1fr;
+    }
+
+    .niveles-table th,
+    .niveles-table td {
+        padding: 8px 10px;
+    }
+
+    .niveles-description {
+        max-width: 120px;
+    }
+}

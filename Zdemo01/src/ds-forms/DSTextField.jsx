@@ -1,4 +1,5 @@
 import React from 'react'
+import { HelpCircle } from 'lucide-react'
 
 // Campo de texto inspirado en Ext.form.TextField
 export function DSTextField({
@@ -8,21 +9,34 @@ export function DSTextField({
   onChange,
   placeholder,
   help,
+  tooltip,
   error,
+  required,
   disabled = false,
+  type = 'text',
+  step,
 }) {
   return (
     <div className="ds-field">
       {label ? (
         <label className="ds-field__label" htmlFor={name}>
-          {label}
+          <span className="ds-field__label-text">
+            {label}
+            {tooltip && (
+              <span className="ds-field__tooltip-icon" title={tooltip}>
+                <HelpCircle size={14} />
+              </span>
+            )}
+          </span>
+          {required && <span className="ds-field__required">*</span>}
         </label>
       ) : null}
       <input
         id={name}
         name={name}
         className="ds-field__control"
-        type="text"
+        type={type}
+        step={step}
         value={value}
         onChange={(e) => onChange?.(e.target.value, e)}
         placeholder={placeholder}

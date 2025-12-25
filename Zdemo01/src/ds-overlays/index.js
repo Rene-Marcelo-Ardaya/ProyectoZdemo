@@ -7,13 +7,15 @@ import { DSOverlayProvider, useMessageBox } from './DSOverlayContext'
 import { DSModal, DSModalSection, DSModalGrid } from './DSModal'
 import { DSAlert } from './DSAlert'
 import { DSLoading, DSSkeleton, DSSkeletonGroup, DSSkeletonRow, DSEmpty, DSErrorState } from './DSLoading'
+import { DSTooltip, DSHelpIcon } from './DSTooltip'
 
 export {
   DSWindow, DSDialog, DSLoadingMask, DSMessageBox, DSOverlayProvider, useMessageBox,
   // New components
   DSModal, DSModalSection, DSModalGrid,
   DSAlert,
-  DSLoading, DSSkeleton, DSSkeletonGroup, DSSkeletonRow, DSEmpty, DSErrorState
+  DSLoading, DSSkeleton, DSSkeletonGroup, DSSkeletonRow, DSEmpty, DSErrorState,
+  DSTooltip, DSHelpIcon
 }
 
 const placeholder = (name, children) =>

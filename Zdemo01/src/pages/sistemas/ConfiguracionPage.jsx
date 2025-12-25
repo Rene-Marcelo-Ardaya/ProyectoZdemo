@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Settings, Upload, Save, Loader2, X, Image, Type, Palette, Building2, HelpCircle, Monitor } from 'lucide-react';
+import { Settings, Upload, Save, Loader2, X, Image, Type, Palette, Building2, Monitor } from 'lucide-react';
 import { getAllSettings, updateSetting, uploadSettingImage, deleteSettingImage, getImageUrl } from '../../services/settingService';
 import { useTheme } from '../../theme';
 
-// Importar componentes DS reutilizables
 import {
     DSPage,
     DSPageHeader,
@@ -17,21 +16,10 @@ import {
     DSFieldsGrid,
     DSImageUpload,
     DSImagesGrid,
+    DSTooltip,
 } from '../../ds-components';
 
 import './ConfiguracionPage.css';
-
-// ============================================
-// COMPONENTE: Tooltip de Ayuda
-// ============================================
-function Tooltip({ text }) {
-    return (
-        <span className="config-tooltip">
-            <HelpCircle size={14} />
-            <span className="config-tooltip__text">{text}</span>
-        </span>
-    );
-}
 
 // ============================================
 // COMPONENTE: FormField con Tooltip
@@ -43,7 +31,7 @@ function FormField({ label, children, required, help, icon: Icon }) {
                 <span className="ds-field__label-text">
                     {Icon && <Icon size={14} className="ds-field__label-icon" />}
                     {label}
-                    {help && <Tooltip text={help} />}
+                    {help && <DSTooltip text={help} />}
                 </span>
                 {required && <span className="ds-field__required">*</span>}
             </label>
@@ -231,7 +219,7 @@ function ConfigImageField({ label, value, onUpload, onDelete, help, small }) {
             <label className="ds-field__label">
                 <Image size={14} />
                 {label}
-                {help && <span className="ds-field__tooltip" title={help}><HelpCircle size={12} /></span>}
+                {help && <DSTooltip text={help} iconSize={12} />}
             </label>
             <div className="config-image-box">
                 {displayPreview ? (

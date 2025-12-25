@@ -7,7 +7,6 @@ import {
     Save,
     ChevronRight,
     ChevronDown,
-    HelpCircle,
     AlertTriangle,
     FolderTree,
     Link,
@@ -25,7 +24,6 @@ import {
     deleteMenu
 } from '../../services/menuAdminService';
 
-// Importar componentes DS
 import {
     DSPage,
     DSPageHeader,
@@ -38,6 +36,7 @@ import {
     DSCount,
     DSModal,
     DSModalSection,
+    DSTooltip,
 } from '../../ds-components';
 
 import './MenusPage.css';
@@ -94,18 +93,6 @@ function useMenus() {
 }
 
 // ============================================
-// COMPONENTE: Tooltip
-// ============================================
-function Tooltip({ text }) {
-    return (
-        <span className="menus-tooltip">
-            <HelpCircle size={14} />
-            <span className="menus-tooltip__text">{text}</span>
-        </span>
-    );
-}
-
-// ============================================
 // COMPONENTE: FormField
 // ============================================
 function FormField({ label, children, required, help }) {
@@ -114,7 +101,7 @@ function FormField({ label, children, required, help }) {
             <label className="ds-field__label">
                 <span className="ds-field__label-text">
                     {label}
-                    {help && <Tooltip text={help} />}
+                    {help && <DSTooltip text={help} />}
                 </span>
                 {required && <span className="ds-field__required">*</span>}
             </label>

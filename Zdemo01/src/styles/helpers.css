@@ -118,7 +118,7 @@ select.ds-field__control {
 .ds-date__popover {
   position: absolute;
   inset-inline: 0;
-  top: calc(100% + 4px);
+  top: 100%;
   background: var(--ds-panelBg);
   border: 1px solid var(--ds-panelBorder);
   border-radius: var(--ds-radius-sm);

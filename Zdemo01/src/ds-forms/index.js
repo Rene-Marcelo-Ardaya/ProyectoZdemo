@@ -14,6 +14,7 @@ import { DSTimeField } from './DSTimeField'
 import { DSButton, DSButtonGroup } from './DSButton'
 import { DSField, DSFieldInput, DSFieldsGrid, DSFieldsRow, DSColorField } from './DSField'
 import { DSImageUpload, DSImagesGrid } from './DSImageUpload'
+import { SecuredButton } from './SecuredButton'
 
 export {
   DSFormPanel,
@@ -39,6 +40,7 @@ export {
   DSColorField,
   DSImageUpload,
   DSImagesGrid,
+  SecuredButton,
 }
 
 const placeholder = (name, children) =>

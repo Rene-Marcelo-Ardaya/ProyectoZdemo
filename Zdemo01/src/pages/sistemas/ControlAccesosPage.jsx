@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Shield, Plus, Pencil, Trash2, Save, Loader2, Users, Menu as MenuIcon, ChevronRight, HelpCircle } from 'lucide-react';
+import { Shield, Plus, Pencil, Trash2, Save, Loader2, Users, Menu as MenuIcon, ChevronRight } from 'lucide-react';
 import { getRoles, getRole, getMenusList, createRole, updateRole, deleteRole } from '../../services/roleService';
 
-// Importar componentes DS
 import {
     DSPage,
     DSPageHeader,
@@ -17,6 +16,7 @@ import {
     DSModal,
     DSModalSection,
     DSModalGrid,
+    DSTooltip,
 } from '../../ds-components';
 
 import './ControlAccesosPage.css';
@@ -52,25 +52,13 @@ function useRoles() {
 }
 
 // ============================================
-// COMPONENTE: Tooltip
-// ============================================
-function Tooltip({ text }) {
-    return (
-        <span className="accesos-tooltip">
-            <HelpCircle size={14} />
-            <span className="accesos-tooltip__text">{text}</span>
-        </span>
-    );
-}
-
-// ============================================
 // COMPONENTE: FormField (usando DSField base)
 // ============================================
 function FormField({ label, children, required, help }) {
     const labelContent = (
         <>
             {label}
-            {help && <Tooltip text={help} />}
+            {help && <DSTooltip text={help} />}
         </>
     );
 

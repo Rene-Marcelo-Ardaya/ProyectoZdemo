@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Users, UserPlus, Pencil, Trash2, Save, HelpCircle } from 'lucide-react';
+import { Users, UserPlus, Pencil, Trash2, Save } from 'lucide-react';
 import { getUsers, getRolesList, createUser, updateUser, deleteUser } from '../../services/userService';
 
-// Importar componentes DS
 import {
     DSPage,
     DSPageHeader,
@@ -12,6 +11,7 @@ import {
     DSLoading,
     DSBadge,
     DSModal,
+    DSTooltip,
 } from '../../ds-components';
 
 import './UsuariosPage.css';
@@ -47,18 +47,6 @@ function useUsuarios() {
 }
 
 // ============================================
-// COMPONENTE: Tooltip
-// ============================================
-function Tooltip({ text }) {
-    return (
-        <span className="usuarios-tooltip">
-            <HelpCircle size={14} />
-            <span className="usuarios-tooltip__text">{text}</span>
-        </span>
-    );
-}
-
-// ============================================
 // COMPONENTE: FormField
 // ============================================
 function FormField({ label, children, required, help }) {
@@ -67,7 +55,7 @@ function FormField({ label, children, required, help }) {
             <label className="ds-field__label">
                 <span className="ds-field__label-text">
                     {label}
-                    {help && <Tooltip text={help} />}
+                    {help && <DSTooltip text={help} />}
                 </span>
                 {required && <span className="ds-field__required">*</span>}
             </label>
