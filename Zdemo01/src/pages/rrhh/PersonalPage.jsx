@@ -44,6 +44,7 @@ import {
 } from '../../ds-components';
 
 import WhatsappVerificationModal from '../../components/WhatsappVerificationModal';
+import { SecuredButton } from '../../ds-forms/SecuredButton';
 
 import './PersonalPage.css';
 
@@ -214,14 +215,18 @@ function PersonalTable({ data, onEdit, onDelete, onVerify, searchTerm }) {
                             </td>
                             <td>
                                 <div className="personal-actions">
-                                    <DSButton
+                                    <SecuredButton
+                                        securityId="personal.editar"
+                                        securityDesc="Editar Personal"
                                         size="sm"
                                         iconOnly
                                         icon={<Edit2 size={14} />}
                                         onClick={() => onEdit(p)}
                                         title="Editar"
                                     />
-                                    <DSButton
+                                    <SecuredButton
+                                        securityId="personal.eliminar"
+                                        securityDesc="Desactivar Personal"
                                         size="sm"
                                         variant="outline-danger"
                                         iconOnly
@@ -747,9 +752,15 @@ export function PersonalPage() {
                 title="Gestión de Personal"
                 icon={<Users size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={handleCreate}>
+                    <SecuredButton
+                        securityId="personal.crear"
+                        securityDesc="Crear Nuevo Personal"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={handleCreate}
+                    >
                         Nuevo Personal
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 

@@ -40,6 +40,7 @@ import {
 } from '../../ds-components';
 
 import './MenusPage.css';
+import { SecuredButton } from '../../ds-forms/SecuredButton';
 
 // ============================================
 // Mapeo de iconos de Lucide
@@ -171,14 +172,18 @@ function MenuTreeItem({ menu, level = 0, onEdit, onDelete, expandedIds, toggleEx
                 </td>
                 <td>
                     <div className="ds-table__actions">
-                        <DSButton
+                        <SecuredButton
+                            securityId="menus.editar"
+                            securityDesc="Editar Menú"
                             size="sm"
                             iconOnly
                             icon={<Pencil size={15} />}
                             onClick={() => onEdit(menu)}
                             title="Editar"
                         />
-                        <DSButton
+                        <SecuredButton
+                            securityId="menus.eliminar"
+                            securityDesc="Eliminar Menú"
                             size="sm"
                             variant="outline-danger"
                             iconOnly
@@ -470,9 +475,15 @@ export function MenusPage() {
                 title="Administración de Menús"
                 icon={<FolderTree size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={() => openCreate()}>
+                    <SecuredButton
+                        securityId="menus.crear"
+                        securityDesc="Crear Nuevo Menú"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={() => openCreate()}
+                    >
                         Nuevo Menú
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 

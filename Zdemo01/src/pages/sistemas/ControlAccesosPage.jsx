@@ -20,6 +20,7 @@ import {
 } from '../../ds-components';
 
 import './ControlAccesosPage.css';
+import { SecuredButton } from '../../ds-forms/SecuredButton';
 
 // ============================================
 // CUSTOM HOOK: useRoles
@@ -286,9 +287,15 @@ export function ControlAccesosPage() {
                 title="Control de Accesos"
                 icon={<Shield size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="roles.crear"
+                        securityDesc="Crear Nuevo Rol"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nuevo Rol
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -355,14 +362,18 @@ export function ControlAccesosPage() {
                                             </td>
                                             <td>
                                                 <div className="ds-table__actions">
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="roles.editar"
+                                                        securityDesc="Editar Rol"
                                                         size="sm"
                                                         iconOnly
                                                         icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(role)}
                                                         title="Editar"
                                                     />
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="roles.eliminar"
+                                                        securityDesc="Eliminar Rol"
                                                         size="sm"
                                                         variant="outline-danger"
                                                         iconOnly
