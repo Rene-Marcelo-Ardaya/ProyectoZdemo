@@ -62,6 +62,7 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - demoz01_network
     healthcheck:
@@ -259,6 +260,41 @@ services:
     networks:
       - demoz01_network
 
+  # ============================================
+  # n8n - Workflow Automation
+  # ============================================
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: demoz01_n8n
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      # Database PostgreSQL
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: n8n
+      DB_POSTGRESDB_USER: evolution
+      DB_POSTGRESDB_PASSWORD: evolution_password
+
+      # Configuración básica
+      N8N_HOST: localhost
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      WEBHOOK_URL: http://localhost:5678
+
+      # Zona horaria
+      GENERIC_TIMEZONE: America/La_Paz
+      TZ: America/La_Paz
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - demoz01_network
+
 # ============================================
 # Volumes
 # ============================================
@@ -270,6 +306,8 @@ volumes:
   postgres_data:
     driver: local
   evolution_instances:
+    driver: local
+  n8n_data:
     driver: local
 
 # ============================================
