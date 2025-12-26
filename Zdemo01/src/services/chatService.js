@@ -1,7 +1,7 @@
 /**
  * Servicio de Chat
  * Maneja la comunicación con la API Laravel para chat
- * Incluye integración con Pusher para tiempo real
+ * Incluye integración con Soketi (WebSocket self-hosted) para tiempo real
  */
 
 import { authFetch, getToken } from './authService';
@@ -9,64 +9,43 @@ import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 import CONFIG from '../config';
 
-// Configurar Pusher globalmente
+// Configurar Pusher globalmente (Soketi es compatible con Pusher)
 window.Pusher = Pusher;
 
 // Instancia de Echo (se inicializa cuando hay sesión)
 let echoInstance = null;
 
-// Cache de credenciales de Pusher
-let pusherCredentialsCache = null;
-
 /**
- * Obtener credenciales de Pusher desde la API
- */
-async function getPusherCredentials() {
-    if (pusherCredentialsCache) {
-        return pusherCredentialsCache;
-    }
-    
-    try {
-        const response = await fetch(`${CONFIG.API_BASE_URL}/api-credentials/pusher/public`);
-        if (response.ok) {
-            const data = await response.json();
-            if (data.success && data.data) {
-                pusherCredentialsCache = data.data;
-                return pusherCredentialsCache;
-            }
-        }
-    } catch (error) {
-        console.warn('Error obteniendo credenciales de Pusher:', error);
-    }
-    
-    // Fallback: no hay credenciales
-    return null;
-}
-
-/**
- * Inicializar Laravel Echo con Pusher
- * Ahora obtiene credenciales dinámicamente de la base de datos
+ * Inicializar Laravel Echo con Soketi
+ * Usa credenciales fijas desde variables de entorno
  */
 export async function initializeEcho() {
     if (echoInstance) return echoInstance;
 
     const token = getToken();
-    if (!token) return null;
+    if (!token) {
+        // No hay token, no intentar conectar
+        return null;
+    }
 
     try {
-        // Obtener credenciales de la API
-        const credentials = await getPusherCredentials();
-        
-        if (!credentials || !credentials.app_key) {
-            console.warn('Credenciales de Pusher no configuradas');
-            return null;
-        }
+        // Credenciales de Soketi desde variables de entorno
+        const appKey = import.meta.env.VITE_PUSHER_APP_KEY || 'demoz01-key';
+        const host = import.meta.env.VITE_PUSHER_HOST || 'localhost';
+        const port = parseInt(import.meta.env.VITE_PUSHER_PORT || '6001');
+        const scheme = import.meta.env.VITE_PUSHER_SCHEME || 'http';
+        const cluster = import.meta.env.VITE_PUSHER_APP_CLUSTER || 'mt1';
 
         echoInstance = new Echo({
             broadcaster: 'pusher',
-            key: credentials.app_key,
-            cluster: credentials.app_cluster || 'mt1',
-            forceTLS: true,
+            key: appKey,
+            cluster: cluster,
+            wsHost: host,
+            wsPort: port,
+            wssPort: port,
+            forceTLS: scheme === 'https',
+            disableStats: true,
+            enabledTransports: ['ws', 'wss'],
             authEndpoint: `${CONFIG.API_BASE_URL}/broadcasting/auth`,
             auth: {
                 headers: {
@@ -75,9 +54,16 @@ export async function initializeEcho() {
                 },
             },
         });
+
+        // Manejar errores de conexión silenciosamente
+        echoInstance.connector.pusher.connection.bind('error', (err) => {
+            console.warn('⚠️ Error de conexión WebSocket:', err?.error?.data?.message || 'Conexión fallida');
+        });
+        
+        console.log(`✅ Echo configurado para Soketi (${host}:${port})`);
         return echoInstance;
     } catch (error) {
-        console.error('Error inicializando Echo:', error);
+        console.warn('⚠️ No se pudo inicializar Echo:', error.message);
         return null;
     }
 }

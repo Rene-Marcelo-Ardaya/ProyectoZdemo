@@ -111,12 +111,15 @@ services:
       SANCTUM_STATEFUL_DOMAINS: localhost:5173,127.0.0.1:5173,frontend:5173
       FRONTEND_URL: http://localhost:5173
 
-      # Pusher
+      # Soketi (reemplazo de Pusher - self-hosted, ilimitado)
       BROADCAST_CONNECTION: pusher
-      PUSHER_APP_ID: 2092299
-      PUSHER_APP_KEY: 92e89cd6afe7b32940f3
-      PUSHER_APP_SECRET: 07ad98dc1bb8204b523a
-      PUSHER_APP_CLUSTER: sa1
+      PUSHER_APP_ID: demoz01-app
+      PUSHER_APP_KEY: demoz01-key
+      PUSHER_APP_SECRET: demoz01-secret-key
+      PUSHER_HOST: soketi
+      PUSHER_PORT: 6001
+      PUSHER_SCHEME: http
+      PUSHER_APP_CLUSTER: mt1
 
       # Evolution API URL (para integración)
       EVOLUTION_API_URL: http://evolution_api:8080
@@ -259,6 +262,34 @@ services:
         condition: service_healthy
     networks:
       - demoz01_network
+  # ============================================
+  # Soketi - WebSocket Server (Pusher-compatible, self-hosted)
+  # ============================================
+  soketi:
+    image: quay.io/soketi/soketi:1.6-16-debian
+    container_name: demoz01_soketi
+    restart: always
+    ports:
+      - "6001:6001"
+      - "9601:9601" # Metrics (opcional)
+    environment:
+      SOKETI_DEBUG: "1"
+      SOKETI_DEFAULT_APP_ID: "demoz01-app"
+      SOKETI_DEFAULT_APP_KEY: "demoz01-key"
+      SOKETI_DEFAULT_APP_SECRET: "demoz01-secret-key"
+      SOKETI_DEFAULT_APP_ENABLE_CLIENT_MESSAGES: "true"
+      SOKETI_DEFAULT_APP_ENABLED: "true"
+      SOKETI_DEFAULT_APP_MAX_CONNECTIONS: "-1"
+      SOKETI_DEFAULT_APP_MAX_BACKEND_EVENTS_PER_SEC: "-1"
+      SOKETI_DEFAULT_APP_MAX_CLIENT_EVENTS_PER_SEC: "-1"
+      SOKETI_DEFAULT_APP_MAX_READ_REQ_PER_SEC: "-1"
+    networks:
+      - demoz01_network
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:6001" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   # ============================================
   # n8n - Workflow Automation
