@@ -94,6 +94,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/{provider}', [\App\Http\Controllers\ApiCredentialController::class, 'update']);
         Route::post('/{provider}/test', [\App\Http\Controllers\ApiCredentialController::class, 'testConnection']);
     });
+
+    // =====================================================
+    // MÓDULO DE CONTROL DE DIÉSEL
+    // =====================================================
+    Route::prefix('diesel')->group(function () {
+        // Tanques
+        Route::get('/tanques/activos', [\App\Http\Controllers\Diesel\TanqueController::class, 'activos']);
+        Route::get('/tanques/alertas', [\App\Http\Controllers\Diesel\TanqueController::class, 'alertas']);
+        Route::apiResource('tanques', \App\Http\Controllers\Diesel\TanqueController::class);
+    });
 });
 
 // Ruta pública para credenciales no secretas (app_key, cluster para frontend)

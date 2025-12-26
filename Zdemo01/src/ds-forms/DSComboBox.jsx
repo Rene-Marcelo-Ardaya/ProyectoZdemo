@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useRef } from 'react'
-import { HelpCircle } from 'lucide-react'
+import { DSTooltip } from '../ds-overlays/DSTooltip'
 
 // ComboBox con input editable y filtrado simple
 export function DSComboBox({
@@ -56,11 +56,7 @@ export function DSComboBox({
         <label className="ds-field__label" htmlFor={name}>
           <span className="ds-field__label-text">
             {label}
-            {tooltip && (
-              <span className="ds-field__tooltip-icon" title={tooltip}>
-                <HelpCircle size={14} />
-              </span>
-            )}
+            {tooltip && <DSTooltip text={tooltip} position="right" />}
           </span>
           {required && <span className="ds-field__required">*</span>}
         </label>

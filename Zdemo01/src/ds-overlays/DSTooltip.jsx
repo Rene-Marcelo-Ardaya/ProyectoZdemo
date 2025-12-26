@@ -22,15 +22,38 @@ export function DSTooltip({
 
     const Icon = icon || <HelpCircle size={iconSize} />;
 
+    const [actualPosition, setActualPosition] = useState(position);
+
     const updatePosition = useCallback(() => {
         if (!triggerRef.current) return;
 
         const rect = triggerRef.current.getBoundingClientRect();
         const offset = 8;
+        const tooltipWidth = 320; // max-width del tooltip
+        const tooltipHeight = 60; // altura aproximada
+        const padding = 10; // margen de seguridad
 
         let top, left;
+        let finalPosition = position;
 
-        switch (position) {
+        // Detectar si hay espacio arriba/abajo/izquierda/derecha
+        const spaceTop = rect.top;
+        const spaceBottom = window.innerHeight - rect.bottom;
+        const spaceLeft = rect.left;
+        const spaceRight = window.innerWidth - rect.right;
+
+        // Si la posición deseada no tiene espacio, buscar alternativa
+        if (position === 'top' && spaceTop < tooltipHeight + padding) {
+            finalPosition = 'bottom';
+        } else if (position === 'bottom' && spaceBottom < tooltipHeight + padding) {
+            finalPosition = 'top';
+        } else if (position === 'left' && spaceLeft < tooltipWidth + padding) {
+            finalPosition = 'right';
+        } else if (position === 'right' && spaceRight < tooltipWidth + padding) {
+            finalPosition = 'left';
+        }
+
+        switch (finalPosition) {
             case 'bottom':
                 top = rect.bottom + offset;
                 left = rect.left + rect.width / 2;
@@ -50,7 +73,16 @@ export function DSTooltip({
                 break;
         }
 
+        // Ajustar left para que no se salga de la pantalla horizontalmente
+        const halfTooltip = tooltipWidth / 2;
+        if (left - halfTooltip < padding) {
+            left = halfTooltip + padding;
+        } else if (left + halfTooltip > window.innerWidth - padding) {
+            left = window.innerWidth - halfTooltip - padding;
+        }
+
         setCoords({ top, left });
+        setActualPosition(finalPosition);
     }, [position]);
 
     const showTooltip = useCallback(() => {
@@ -82,7 +114,7 @@ export function DSTooltip({
             zIndex: 99999,
         };
 
-        switch (position) {
+        switch (actualPosition) {
             case 'bottom':
                 style.top = coords.top;
                 style.left = coords.left;
@@ -124,7 +156,7 @@ export function DSTooltip({
             {isVisible && createPortal(
                 <span
                     ref={tooltipRef}
-                    className={`ds-tooltip__text ds-tooltip__text--${position}`}
+                    className={`ds-tooltip__text ds-tooltip__text--${actualPosition}`}
                     style={getTooltipStyle()}
                 >
                     {text}

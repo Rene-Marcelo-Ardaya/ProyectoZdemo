@@ -19,17 +19,18 @@
 .ds-tooltip__text {
     background: #1f2937;
     color: #ffffff;
-    padding: 8px 12px;
+    padding: 10px 14px;
     border-radius: 6px;
     font-size: 12px;
     font-weight: 400;
-    line-height: 1.4;
-    max-width: 250px;
-    min-width: 80px;
+    line-height: 1.5;
+    max-width: 320px;
+    min-width: 100px;
     white-space: normal;
-    text-align: center;
+    word-wrap: break-word;
+    text-align: left;
     pointer-events: none;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     animation: ds-tooltip-fade-in 0.15s ease-out;
 }
 

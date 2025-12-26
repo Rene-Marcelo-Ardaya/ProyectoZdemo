@@ -15,6 +15,7 @@ import { PersonalPage } from './pages/rrhh/PersonalPage';
 import { CargosPage } from './pages/rrhh/CargosPage';
 import { NivelesSeguridadPage } from './pages/sistemas/NivelesSeguridadPage';
 import { ApisConfigPage } from './pages/sistemas/ApisConfigPage';
+import { TanquesPage } from './pages/diesel/TanquesPage';
 import { Sidebar } from './components/Sidebar'
 import { ChatWidget } from './components/ChatWidget'
 import { logout, getSession } from './services/authService'
@@ -34,7 +35,8 @@ const SUPPORTED_ROUTES = new Set([
   '/comunicacion/mensajeria',
   '/rrhh/personal',
   '/rrhh/cargos',
-  '/sistemas/apis'
+  '/sistemas/apis',
+  '/diesel/tanques'
 ])
 
 function getStoredActivePage() {
@@ -202,6 +204,7 @@ function App() {
             {activePage === '/rrhh/cargos' && <CargosPage />}
             {activePage === '/sistemas/niveles-seguridad' && <NivelesSeguridadPage />}
             {activePage === '/sistemas/apis' && <ApisConfigPage />}
+            {activePage === '/diesel/tanques' && <TanquesPage />}
           </div>
         </div>
 
