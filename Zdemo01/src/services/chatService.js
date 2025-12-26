@@ -15,20 +15,57 @@ window.Pusher = Pusher;
 // Instancia de Echo (se inicializa cuando hay sesión)
 let echoInstance = null;
 
+// Cache de credenciales de Pusher
+let pusherCredentialsCache = null;
+
+/**
+ * Obtener credenciales de Pusher desde la API
+ */
+async function getPusherCredentials() {
+    if (pusherCredentialsCache) {
+        return pusherCredentialsCache;
+    }
+    
+    try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/api-credentials/pusher/public`);
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.data) {
+                pusherCredentialsCache = data.data;
+                return pusherCredentialsCache;
+            }
+        }
+    } catch (error) {
+        console.warn('Error obteniendo credenciales de Pusher:', error);
+    }
+    
+    // Fallback: no hay credenciales
+    return null;
+}
+
 /**
  * Inicializar Laravel Echo con Pusher
+ * Ahora obtiene credenciales dinámicamente de la base de datos
  */
-export function initializeEcho() {
+export async function initializeEcho() {
     if (echoInstance) return echoInstance;
 
     const token = getToken();
     if (!token) return null;
 
     try {
+        // Obtener credenciales de la API
+        const credentials = await getPusherCredentials();
+        
+        if (!credentials || !credentials.app_key) {
+            console.warn('Credenciales de Pusher no configuradas');
+            return null;
+        }
+
         echoInstance = new Echo({
             broadcaster: 'pusher',
-            key: '92e89cd6afe7b32940f3', // Tu PUSHER_APP_KEY
-            cluster: 'sa1', // Tu PUSHER_APP_CLUSTER
+            key: credentials.app_key,
+            cluster: credentials.app_cluster || 'mt1',
             forceTLS: true,
             authEndpoint: `${CONFIG.API_BASE_URL}/broadcasting/auth`,
             auth: {
@@ -44,6 +81,7 @@ export function initializeEcho() {
         return null;
     }
 }
+
 
 /**
  * Obtener instancia de Echo

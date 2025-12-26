@@ -86,4 +86,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/componentes-seguridad', [\App\Http\Controllers\ComponenteSeguridadController::class, 'index']);
     Route::post('/componentes-seguridad', [\App\Http\Controllers\ComponenteSeguridadController::class, 'upsert']);
     Route::delete('/componentes-seguridad/{componenteId}', [\App\Http\Controllers\ComponenteSeguridadController::class, 'destroy']);
+
+    // API Credentials (Solo SuperAdmin)
+    Route::prefix('api-credentials')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ApiCredentialController::class, 'index']);
+        Route::get('/{provider}', [\App\Http\Controllers\ApiCredentialController::class, 'show']);
+        Route::put('/{provider}', [\App\Http\Controllers\ApiCredentialController::class, 'update']);
+        Route::post('/{provider}/test', [\App\Http\Controllers\ApiCredentialController::class, 'testConnection']);
+    });
 });
+
+// Ruta pública para credenciales no secretas (app_key, cluster para frontend)
+Route::get('/api-credentials/{provider}/public', [\App\Http\Controllers\ApiCredentialController::class, 'getPublicCredentials']);

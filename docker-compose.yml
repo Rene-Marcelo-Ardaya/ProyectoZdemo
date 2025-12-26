@@ -84,7 +84,7 @@ services:
     environment:
       APP_NAME: DemoZ01
       APP_ENV: local
-      APP_KEY: base64:docker-temp-key-will-be-generated
+      APP_KEY: base64:P3mwXpk7MaimITZSNY2F0rJKjQp+h9xXGTT/hipfGq0=
       APP_DEBUG: "true"
       APP_URL: http://localhost:8000
 

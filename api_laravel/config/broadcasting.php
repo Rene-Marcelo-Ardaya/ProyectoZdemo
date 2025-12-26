@@ -48,11 +48,35 @@ return [
 
         'pusher' => [
             'driver' => 'pusher',
-            'key' => env('PUSHER_APP_KEY'),
-            'secret' => env('PUSHER_APP_SECRET'),
-            'app_id' => env('PUSHER_APP_ID'),
+            'key' => env('PUSHER_APP_KEY', function() {
+                try {
+                    return \App\Models\ApiCredential::getValue('pusher', 'app_key');
+                } catch (\Exception $e) {
+                    return null;
+                }
+            }),
+            'secret' => env('PUSHER_APP_SECRET', function() {
+                try {
+                    return \App\Models\ApiCredential::getValue('pusher', 'app_secret');
+                } catch (\Exception $e) {
+                    return null;
+                }
+            }),
+            'app_id' => env('PUSHER_APP_ID', function() {
+                try {
+                    return \App\Models\ApiCredential::getValue('pusher', 'app_id');
+                } catch (\Exception $e) {
+                    return null;
+                }
+            }),
             'options' => [
-                'cluster' => env('PUSHER_APP_CLUSTER'),
+                'cluster' => env('PUSHER_APP_CLUSTER', function() {
+                    try {
+                        return \App\Models\ApiCredential::getValue('pusher', 'app_cluster', 'mt1');
+                    } catch (\Exception $e) {
+                        return 'mt1';
+                    }
+                }),
                 'host' => env('PUSHER_HOST') ?: 'api-'.env('PUSHER_APP_CLUSTER', 'mt1').'.pusher.com',
                 'port' => env('PUSHER_PORT', 443),
                 'scheme' => env('PUSHER_SCHEME', 'https'),
@@ -63,6 +87,7 @@ return [
                 // Guzzle client options: https://docs.guzzlephp.org/en/stable/request-options.html
             ],
         ],
+
 
         'ably' => [
             'driver' => 'ably',
