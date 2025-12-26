@@ -8,6 +8,30 @@
 }
 
 /* ============================================
+   CONTENEDOR: Tabs + Panel unidos
+   ============================================ */
+
+.api-tabs-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+}
+
+/* ============================================
+   PANEL: Contenedor de contenido de tab
+   ============================================ */
+
+.api-tab-panel {
+    /* Mismos estilos que ds-section body */
+    background: var(--ds-panelBg, #ffffff);
+    border: 1px solid var(--ds-panelBorder, #c2d3ef);
+    border-top: 1px solid var(--ds-panelBorder, #c2d3ef);
+    border-radius: 0 3px 3px 3px;
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
    SECCIÓN: Proveedor de API
    ============================================ */
 

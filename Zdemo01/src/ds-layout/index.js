@@ -1,14 +1,17 @@
 import React from 'react'
 import { DSPanel } from './DSPanel'
 import { DSTabs } from './DSTabs'
+import { DSNavTabs } from './DSNavTabs'
 import { DSAccordion } from './DSAccordion'
 import { DSBorderLayout } from './DSBorderLayout'
 import { DSPage, DSPageHeader, DSPageContent, DSPageGrid, DSBreadcrumbs, DSToolbar, DSToolbarGroup, DSToolbarSeparator, DSToolbarSpacer } from './DSPage'
 import { DSSection, DSSubsection, DSSectionDivider } from './DSSection'
+import './DSNavTabs.css'
 
 export {
   DSPanel,
   DSTabs,
+  DSNavTabs,
   DSAccordion,
   DSBorderLayout,
 

@@ -39,6 +39,7 @@ export {
 export {
   DSPanel,
   DSTabs,
+  DSNavTabs,
   DSAccordion,
   DSBorderLayout,
   DSPage,

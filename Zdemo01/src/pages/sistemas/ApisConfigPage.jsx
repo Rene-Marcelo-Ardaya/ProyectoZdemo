@@ -11,7 +11,12 @@ import {
     Radio,
     Lock,
     Globe,
-    Server
+    Server,
+    MessageSquare,
+    Webhook,
+    Cloud,
+    CreditCard,
+    Mail,
 } from 'lucide-react';
 
 import {
@@ -26,6 +31,7 @@ import {
     DSField,
     DSFieldInput,
     DSFieldsGrid,
+    DSNavTabs,
 } from '../../ds-components';
 
 import {
@@ -287,6 +293,16 @@ function ApisConfigPage() {
     const [error, setError] = useState(null);
     const [pusherCredentials, setPusherCredentials] = useState(null);
     const [alert, setAlert] = useState(null);
+    const [activeProvider, setActiveProvider] = useState('pusher');
+
+    // Definición de proveedores de API disponibles
+    const apiProviders = [
+        { key: 'pusher', label: 'Pusher', icon: <Radio size={16} /> },
+        // Futuras integraciones:
+        // { key: 'whatsapp', label: 'WhatsApp', icon: <MessageSquare size={16} /> },
+        // { key: 'email', label: 'Email SMTP', icon: <Mail size={16} /> },
+        // { key: 'payments', label: 'Pagos', icon: <CreditCard size={16} /> },
+    ];
 
     // Cargar credenciales
     const loadCredentials = useCallback(async () => {
@@ -407,49 +423,67 @@ function ApisConfigPage() {
                     Todos los cambios quedan registrados en el log de auditoría.
                 </DSAlert>
 
-                {/* Pusher */}
-                <DSSection title="Comunicación en Tiempo Real">
-                    <DSSubsection
-                        title="Configuración de Pusher"
-                        description="Credenciales para el servicio de WebSocket que permite chat y notificaciones en tiempo real."
-                    >
-                        <ProviderSection
-                            provider="pusher"
-                            title="Pusher"
-                            subtitle="WebSocket para comunicación en tiempo real"
-                            icon={Radio}
-                            credentials={pusherCredentials}
-                            onUpdate={handleUpdate}
-                            onTest={handleTest}
-                        />
-                    </DSSubsection>
-                </DSSection>
+                {/* Contenedor de tabs + contenido (unidos) */}
+                <div className="api-tabs-container">
+                    {/* Navegación por proveedores */}
+                    <DSNavTabs
+                        tabs={apiProviders}
+                        activeKey={activeProvider}
+                        onChange={setActiveProvider}
+                        variant="card"
+                    />
+
+                    {/* Panel de contenido del tab */}
+                    <div className="api-tab-panel">
+                        {/* Contenido según proveedor seleccionado */}
+                        {activeProvider === 'pusher' && (
+                            <ProviderSection
+                                provider="pusher"
+                                title="Pusher"
+                                subtitle="WebSocket para comunicación en tiempo real"
+                                icon={Radio}
+                                credentials={pusherCredentials}
+                                onUpdate={handleUpdate}
+                                onTest={handleTest}
+                            />
+                        )}
+
+                        {/* Placeholder para otros proveedores */}
+                        {activeProvider !== 'pusher' && (
+                            <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                                <strong>Próximamente:</strong> La configuración de {apiProviders.find(p => p.key === activeProvider)?.label || activeProvider} estará disponible en futuras actualizaciones.
+                            </div>
+                        )}
+                    </div>
+                </div>
 
                 {/* Instrucciones */}
-                <DSSection title="Instrucciones">
-                    <div style={{
-                        background: 'var(--bg-secondary)',
-                        padding: '1.25rem',
-                        borderRadius: 'var(--radius-lg)',
-                        border: '1px solid var(--border-color)'
-                    }}>
-                        <h4 style={{ margin: '0 0 0.75rem 0', color: 'var(--text-primary)' }}>
-                            ¿Cómo obtener credenciales de Pusher?
-                        </h4>
-                        <ol style={{
-                            margin: 0,
-                            paddingLeft: '1.25rem',
-                            color: 'var(--text-secondary)',
-                            lineHeight: 1.7
+                {activeProvider === 'pusher' && (
+                    <DSSection title="Instrucciones" style={{ marginTop: '1.5rem' }}>
+                        <div style={{
+                            background: 'var(--bg-secondary)',
+                            padding: '1.25rem',
+                            borderRadius: 'var(--radius-lg)',
+                            border: '1px solid var(--border-color)'
                         }}>
-                            <li>Visita <a href="https://pusher.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)' }}>pusher.com</a> y crea una cuenta gratuita</li>
-                            <li>Crea una nueva aplicación (Channels)</li>
-                            <li>Selecciona el cluster más cercano a tu ubicación (ej: <code>sa1</code> para Sudamérica)</li>
-                            <li>Copia las credenciales (App ID, Key, Secret, Cluster) aquí</li>
-                            <li>Usa el botón "Probar Conexión" para verificar que todo funciona</li>
-                        </ol>
-                    </div>
-                </DSSection>
+                            <h4 style={{ margin: '0 0 0.75rem 0', color: 'var(--text-primary)' }}>
+                                ¿Cómo obtener credenciales de Pusher?
+                            </h4>
+                            <ol style={{
+                                margin: 0,
+                                paddingLeft: '1.25rem',
+                                color: 'var(--text-secondary)',
+                                lineHeight: 1.7
+                            }}>
+                                <li>Visita <a href="https://pusher.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)' }}>pusher.com</a> y crea una cuenta gratuita</li>
+                                <li>Crea una nueva aplicación (Channels)</li>
+                                <li>Selecciona el cluster más cercano a tu ubicación (ej: <code>sa1</code> para Sudamérica)</li>
+                                <li>Copia las credenciales (App ID, Key, Secret, Cluster) aquí</li>
+                                <li>Usa el botón "Probar Conexión" para verificar que todo funciona</li>
+                            </ol>
+                        </div>
+                    </DSSection>
+                )}
             </DSPageContent>
         </DSPage>
     );
