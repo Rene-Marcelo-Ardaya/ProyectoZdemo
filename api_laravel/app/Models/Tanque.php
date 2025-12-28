@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Tanque extends Model
@@ -47,6 +48,15 @@ class Tanque extends Model
     public function responsable(): BelongsTo
     {
         return $this->belongsTo(Persona::class, 'responsable_id');
+    }
+
+    /**
+     * Configuraciones de alerta asociadas a este tanque
+     */
+    public function alertConfigurations(): BelongsToMany
+    {
+        return $this->belongsToMany(AlertConfiguration::class, 'tanque_alert_config')
+            ->withPivot('last_alert_at');
     }
 
     /**

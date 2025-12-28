@@ -231,7 +231,8 @@ services:
       QRCODE_COLOR: "#175197"
 
       # Versión de WhatsApp (CRÍTICO para QR)
-      CONFIG_SESSION_PHONE_VERSION: "2.3000.1031332979"
+      # NOTA: Usar versión compatible - 2.24.6.77 funciona con grupos
+      CONFIG_SESSION_PHONE_VERSION: "2.3000.1031494939"
       CONFIG_SESSION_PHONE_CLIENT: "Evolution API"
       CONFIG_SESSION_PHONE_NAME: "Chrome"
 

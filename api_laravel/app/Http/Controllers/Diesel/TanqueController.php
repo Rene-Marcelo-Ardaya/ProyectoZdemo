@@ -4,11 +4,19 @@ namespace App\Http\Controllers\Diesel;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tanque;
+use App\Services\AlertService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class TanqueController extends Controller
 {
+    protected AlertService $alertService;
+
+    public function __construct(AlertService $alertService)
+    {
+        $this->alertService = $alertService;
+    }
+
     /**
      * Listar todos los tanques
      */
@@ -161,6 +169,7 @@ class TanqueController extends Controller
     public function update(Request $request, $id): JsonResponse
     {
         $tanque = Tanque::findOrFail($id);
+        $nivelAnterior = $tanque->nivel_actual;
 
         $validated = $request->validate([
             'nombre' => 'required|string|max:100',
@@ -206,9 +215,17 @@ class TanqueController extends Controller
             'observaciones' => $validated['observaciones'] ?? null,
         ]);
 
+        // Verificar y enviar alertas si el nivel bajó
+        $alertResults = [];
+        if ($nivelActual < $nivelAnterior) {
+            $tanque->refresh();
+            $alertResults = $this->alertService->checkAndSendAlerts($tanque);
+        }
+
         return response()->json([
             'success' => true,
-            'message' => 'Tanque actualizado correctamente'
+            'message' => 'Tanque actualizado correctamente',
+            'alerts_sent' => count(array_filter($alertResults, fn($r) => $r['sent'] ?? false)),
         ]);
     }
 

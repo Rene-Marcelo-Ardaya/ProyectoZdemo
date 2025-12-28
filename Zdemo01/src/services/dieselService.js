@@ -175,6 +175,170 @@ export async function fetchTanquesAlerta() {
     }
 }
 
+// ============================================
+// CONFIGURACIÓN DE ALERTAS
+// ============================================
+
+/**
+ * Obtener configuraciones de alertas
+ */
+export async function fetchAlertConfigurations() {
+    try {
+        const response = await authFetch('/diesel/alertas');
+        const data = await response.json();
+        
+        if (!response.ok) {
+            return { success: false, error: data.message || 'Error obteniendo alertas' };
+        }
+        
+        return { success: true, data: data.data || [] };
+    } catch (error) {
+        console.error('Error fetching alert configs:', error);
+        return { success: false, error: 'Error de conexión' };
+    }
+}
+
+/**
+ * Obtener una configuración de alerta por ID
+ */
+export async function getAlertConfiguration(id) {
+    try {
+        const response = await authFetch(`/diesel/alertas/${id}`);
+        const data = await response.json();
+        
+        if (!response.ok) {
+            return { success: false, error: data.message || 'Error obteniendo alerta' };
+        }
+        
+        return { success: true, data: data.data };
+    } catch (error) {
+        console.error('Error getting alert config:', error);
+        return { success: false, error: 'Error de conexión' };
+    }
+}
+
+/**
+ * Crear configuración de alerta
+ */
+export async function createAlertConfiguration(alertData) {
+    try {
+        const response = await authFetch('/diesel/alertas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(alertData),
+        });
+        const data = await response.json();
+        
+        if (!response.ok) {
+            return { success: false, error: data.message || 'Error creando alerta', errors: data.errors };
+        }
+        
+        return { success: true, data: data.data, message: data.message };
+    } catch (error) {
+        console.error('Error creating alert config:', error);
+        return { success: false, error: 'Error de conexión' };
+    }
+}
+
+/**
+ * Actualizar configuración de alerta
+ */
+export async function updateAlertConfiguration(id, alertData) {
+    try {
+        const response = await authFetch(`/diesel/alertas/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(alertData),
+        });
+        const data = await response.json();
+        
+        if (!response.ok) {
+            return { success: false, error: data.message || 'Error actualizando alerta' };
+        }
+        
+        return { success: true, message: data.message };
+    } catch (error) {
+        console.error('Error updating alert config:', error);
+        return { success: false, error: 'Error de conexión' };
+    }
+}
+
+/**
+ * Eliminar configuración de alerta
+ */
+export async function deleteAlertConfiguration(id) {
+    try {
+        const response = await authFetch(`/diesel/alertas/${id}`, { method: 'DELETE' });
+        const data = await response.json();
+        
+        if (!response.ok) {
+            return { success: false, error: data.message || 'Error eliminando alerta' };
+        }
+        
+        return { success: true, message: data.message };
+    } catch (error) {
+        console.error('Error deleting alert config:', error);
+        return { success: false, error: 'Error de conexión' };
+    }
+}
+
+/**
+ * Obtener instancias de Evolution API disponibles
+ */
+export async function fetchEvolutionInstances() {
+    try {
+        const response = await authFetch('/diesel/alertas/evolution-instances');
+        const data = await response.json();
+        
+        if (!response.ok) {
+            return { success: false, error: data.message || 'Error obteniendo instancias' };
+        }
+        
+        return { success: true, data: data.data || [] };
+    } catch (error) {
+        console.error('Error fetching evolution instances:', error);
+        return { success: false, error: 'Error de conexión' };
+    }
+}
+
+/**
+ * Probar envío de alerta
+ */
+export async function testAlertConfiguration(alertId, tanqueId) {
+    try {
+        const response = await authFetch(`/diesel/alertas/${alertId}/test`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tanque_id: tanqueId }),
+        });
+        const data = await response.json();
+        
+        return { success: data.success, message: data.message };
+    } catch (error) {
+        console.error('Error testing alert:', error);
+        return { success: false, error: 'Error de conexión' };
+    }
+}
+
+/**
+ * Obtener grupos de WhatsApp de una instancia
+ */
+export async function fetchWhatsAppGroups(instance) {
+    try {
+        const response = await authFetch(`/diesel/alertas/whatsapp-groups?instance=${encodeURIComponent(instance)}`);
+        const data = await response.json();
+        
+        if (!response.ok || !data.success) {
+            return { success: false, error: data.error || 'Error obteniendo grupos' };
+        }
+        
+        return { success: true, data: data.data || [] };
+    } catch (error) {
+        console.error('Error fetching WhatsApp groups:', error);
+        return { success: false, error: 'Error de conexión' };
+    }
+}
+
 export default {
     fetchTanques,
     getTanque,
@@ -183,4 +347,14 @@ export default {
     deleteTanque,
     fetchTanquesActivos,
     fetchTanquesAlerta,
+    // Alertas
+    fetchAlertConfigurations,
+    getAlertConfiguration,
+    createAlertConfiguration,
+    updateAlertConfiguration,
+    deleteAlertConfiguration,
+    fetchEvolutionInstances,
+    testAlertConfiguration,
+    fetchWhatsAppGroups,
 };
+

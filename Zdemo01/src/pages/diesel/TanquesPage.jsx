@@ -10,12 +10,20 @@ import {
     Truck,
     Factory,
     MapPin,
+    Bell,
+    Settings,
 } from 'lucide-react';
 import {
     fetchTanques,
     createTanque,
     updateTanque,
     deleteTanque,
+    fetchAlertConfigurations,
+    createAlertConfiguration,
+    updateAlertConfiguration,
+    deleteAlertConfiguration,
+    fetchEvolutionInstances,
+    fetchWhatsAppGroups,
 } from '../../services/dieselService';
 import { fetchPersonal } from '../../services/personalService';
 
@@ -489,6 +497,7 @@ export function TanquesPage() {
     const [modalOpen, setModalOpen] = useState(false);
     const [editData, setEditData] = useState(null);
     const [alert, setAlert] = useState(null);
+    const [showAlertasModal, setShowAlertasModal] = useState(false);
 
     // Filtrar tanques
     const filteredTanques = tanques.filter(t => {
@@ -596,6 +605,17 @@ export function TanquesPage() {
                         />
                     </div>
                     <div className="tanques-filters">
+                        <SecuredButton
+                            securityId="DIESEL_ALERTAS_CONFIG"
+                            securityDesc="Configurar Alertas de Tanques"
+                            size="sm"
+                            variant="outline"
+                            icon={<Bell size={16} />}
+                            onClick={() => setShowAlertasModal(true)}
+                            style={{ marginRight: '8px' }}
+                        >
+                            Alertas
+                        </SecuredButton>
                         <select
                             className="ds-combobox__select"
                             value={filterTipo}
@@ -693,8 +713,324 @@ export function TanquesPage() {
                 editData={editData}
                 responsables={responsables}
             />
+
+            {/* Modal de Alertas */}
+            <AlertasConfigModal
+                isOpen={showAlertasModal}
+                onClose={() => setShowAlertasModal(false)}
+                tanques={tanques}
+            />
         </DSPage>
     );
 }
 
+// ============================================
+// COMPONENTE: AlertasConfigModal
+// ============================================
+function AlertasConfigModal({ isOpen, onClose, tanques }) {
+    const [alertConfigs, setAlertConfigs] = useState([]);
+    const [evolutionInstances, setEvolutionInstances] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [showForm, setShowForm] = useState(false);
+    const [editingConfig, setEditingConfig] = useState(null);
+
+    // Form state
+    const [form, setForm] = useState({
+        name: '',
+        type: 'whatsapp',
+        is_enabled: true,
+        config: { instance: '', destination: '' },
+        min_interval_minutes: 30,
+        tanque_ids: [],
+    });
+    const [tanqueSearch, setTanqueSearch] = useState('');
+    const [whatsappGroups, setWhatsappGroups] = useState([]);
+    const [loadingGroups, setLoadingGroups] = useState(false);
+    const [destinationType, setDestinationType] = useState('group'); // 'group' o 'number'
+
+    useEffect(() => {
+        if (isOpen) {
+            loadData();
+        }
+    }, [isOpen]);
+
+    const loadData = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const [alertsResult, instancesResult] = await Promise.all([
+                fetchAlertConfigurations(),
+                fetchEvolutionInstances(),
+            ]);
+            if (alertsResult.success) setAlertConfigs(alertsResult.data);
+            if (instancesResult.success) setEvolutionInstances(instancesResult.data);
+        } catch (err) {
+            setError('Error cargando datos');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSubmit = async () => {
+        const payload = {
+            ...form,
+            tanque_ids: form.tanque_ids.length > 0 ? form.tanque_ids : tanques.map(t => t.id),
+        };
+
+        const result = editingConfig
+            ? await updateAlertConfiguration(editingConfig.id, payload)
+            : await createAlertConfiguration(payload);
+
+        if (result.success) {
+            loadData();
+            setShowForm(false);
+            setEditingConfig(null);
+            resetForm();
+        } else {
+            setError(result.error);
+        }
+    };
+
+    const handleEdit = async (config) => {
+        const configData = config.config || { instance: '', destination: '' };
+
+        // Detectar si es grupo o número por el formato del destino
+        const isGroup = configData.destination?.includes('@g.us');
+        setDestinationType(isGroup ? 'group' : 'number');
+
+        setForm({
+            name: config.name,
+            type: config.type,
+            is_enabled: config.is_enabled,
+            config: configData,
+            min_interval_minutes: config.min_interval_minutes,
+            tanque_ids: config.tanques || [],
+        });
+        setEditingConfig(config);
+        setShowForm(true);
+
+        // Si es WhatsApp y tiene instancia, cargar grupos
+        if (config.type === 'whatsapp' && configData.instance) {
+            setLoadingGroups(true);
+            const result = await fetchWhatsAppGroups(configData.instance);
+            setLoadingGroups(false);
+            if (result.success) setWhatsappGroups(result.data);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (!confirm('¿Eliminar esta configuración de alerta?')) return;
+        const result = await deleteAlertConfiguration(id);
+        if (result.success) loadData();
+    };
+
+    const resetForm = () => {
+        setForm({
+            name: '',
+            type: 'whatsapp',
+            is_enabled: true,
+            config: { instance: '', destination: '' },
+            min_interval_minutes: 30,
+            tanque_ids: [],
+        });
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <DSModal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="⚙️ Configuración de Alertas"
+            size="large"
+        >
+            <div style={{ padding: '16px' }}>
+                {loading ? (
+                    <DSLoading />
+                ) : error ? (
+                    <DSAlert variant="error">{error}</DSAlert>
+                ) : showForm ? (
+                    /* Formulario de alerta */
+                    <div className="alert-form">
+                        <DSTextField
+                            label="Nombre de la alerta"
+                            value={form.name}
+                            onChange={(v) => setForm({ ...form, name: v })}
+                            placeholder="Ej: Alertas Gerencia"
+                            required
+                        />
+
+                        <DSComboBox
+                            label="Tipo de alerta"
+                            value={form.type}
+                            onChange={(v) => setForm({ ...form, type: v })}
+                            options={[
+                                { value: 'whatsapp', label: '📱 WhatsApp' },
+                                { value: 'email', label: '📧 Email (próximamente)' },
+                                { value: 'sms', label: '💬 SMS (próximamente)' },
+                            ]}
+                            required
+                            editable={false}
+                        />
+
+                        {/* Advertencia solo para WhatsApp */}
+                        {form.type === 'whatsapp' && (
+                            <>
+                                <DSAlert variant="warning" className="mb-3" style={{ marginTop: '12px' }}>
+                                    <strong>⚠️ Importante:</strong> Este sistema utiliza una versión no oficial de la API de WhatsApp
+                                    a través de Evolution API. El envío excesivo de mensajes puede resultar en bloqueo temporal
+                                    o permanente del número de teléfono. Se recomienda:
+                                    <ul style={{ margin: '8px 0 0 16px', padding: 0 }}>
+                                        <li>Configurar intervalos mínimos de 30+ minutos</li>
+                                        <li>Evitar enviar mensajes masivos</li>
+                                    </ul>
+                                </DSAlert>
+
+                                <DSComboBox
+                                    label="Instancia de Evolution API"
+                                    value={form.config.instance}
+                                    onChange={(v) => {
+                                        setForm({ ...form, config: { ...form.config, instance: v, destination: '' } });
+                                    }}
+                                    options={evolutionInstances.map(i => ({ value: i.name, label: `${i.name} (${i.status})` }))}
+                                    placeholder="Seleccionar instancia conectada"
+                                    required
+                                    editable={false}
+                                />
+
+                                <DSTextField
+                                    label="Número de teléfono"
+                                    value={form.config.destination}
+                                    onChange={(v) => setForm({ ...form, config: { ...form.config, destination: v } })}
+                                    placeholder="Ej: 59172345678"
+                                    tooltip="Número con código de país sin el +"
+                                    required
+                                />
+                            </>
+                        )}
+
+                        {form.type !== 'whatsapp' && (
+                            <DSAlert variant="info" style={{ marginTop: '12px' }}>
+                                Esta opción estará disponible próximamente.
+                            </DSAlert>
+                        )}
+
+                        <DSTextField
+                            label="Intervalo mínimo entre alertas (minutos)"
+                            value={form.min_interval_minutes}
+                            onChange={(v) => setForm({ ...form, min_interval_minutes: parseInt(v) || 30 })}
+                            type="number"
+                            tooltip="Tiempo mínimo entre alertas para evitar spam"
+                        />
+
+                        <div style={{ marginTop: '16px' }}>
+                            <label style={{ fontWeight: 500, marginBottom: '8px', display: 'block' }}>
+                                Tanques a monitorear:
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="🔍 Buscar tanque..."
+                                value={tanqueSearch}
+                                onChange={(e) => setTanqueSearch(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '8px 12px',
+                                    marginBottom: '8px',
+                                    border: '1px solid var(--ds-fieldBorder)',
+                                    borderRadius: '6px',
+                                    background: 'var(--ds-fieldBg)',
+                                    color: 'var(--ds-fieldText)',
+                                }}
+                            />
+                            <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid var(--ds-fieldBorder)', borderRadius: '6px', padding: '8px' }}>
+                                {tanques
+                                    .filter(t =>
+                                        !tanqueSearch ||
+                                        t.nombre?.toLowerCase().includes(tanqueSearch.toLowerCase()) ||
+                                        t.codigo?.toLowerCase().includes(tanqueSearch.toLowerCase())
+                                    )
+                                    .map(t => (
+                                        <label key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={form.tanque_ids.includes(t.id)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setForm({ ...form, tanque_ids: [...form.tanque_ids, t.id] });
+                                                    } else {
+                                                        setForm({ ...form, tanque_ids: form.tanque_ids.filter(id => id !== t.id) });
+                                                    }
+                                                }}
+                                            />
+                                            {t.tipo === 'MOVIL' ? '🚚' : '🏭'} {t.nombre} ({t.codigo})
+                                        </label>
+                                    ))}
+                            </div>
+                            <small style={{ color: 'var(--ds-fieldHint)' }}>
+                                Si no seleccionas ninguno, se monitoreará todos los tanques.
+                            </small>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px', paddingTop: '16px', borderTop: '1px solid var(--ds-fieldBorder)' }}>
+                            <DSButton variant="ghost" onClick={() => { setShowForm(false); setEditingConfig(null); resetForm(); }}>
+                                Cancelar
+                            </DSButton>
+                            <DSButton variant="primary" icon={<Save size={16} />} onClick={handleSubmit}>
+                                {editingConfig ? 'Actualizar' : 'Guardar'}
+                            </DSButton>
+                        </div>
+                    </div>
+                ) : (
+                    /* Lista de alertas */
+                    <div>
+                        <DSButton variant="primary" icon={<Plus size={16} />} onClick={() => setShowForm(true)} className="mb-3">
+                            Nueva Alerta
+                        </DSButton>
+
+                        {alertConfigs.length === 0 ? (
+                            <DSEmpty
+                                icon={<Bell size={48} />}
+                                title="Sin configuraciones"
+                                description="No hay alertas configuradas"
+                            />
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                {alertConfigs.map(config => (
+                                    <div
+                                        key={config.id}
+                                        style={{
+                                            padding: '12px',
+                                            border: '1px solid var(--ds-fieldBorder)',
+                                            borderRadius: '8px',
+                                            background: config.is_enabled ? 'var(--ds-cardBg)' : 'var(--ds-fieldDisabledBg)',
+                                        }}
+                                    >
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div>
+                                                <strong>{config.name}</strong>
+                                                <DSBadge variant={config.is_enabled ? 'success' : 'default'} size="sm" style={{ marginLeft: '8px' }}>
+                                                    {config.is_enabled ? 'Activo' : 'Inactivo'}
+                                                </DSBadge>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <DSButton size="sm" variant="ghost" icon={<Edit2 size={14} />} onClick={() => handleEdit(config)} />
+                                                <DSButton size="sm" variant="ghost" icon={<Trash2 size={14} />} onClick={() => handleDelete(config.id)} />
+                                            </div>
+                                        </div>
+                                        <small style={{ color: 'var(--ds-fieldHint)' }}>
+                                            📱 {config.type} | ⏱️ {config.min_interval_minutes} min | 🛢️ {config.tanques_nombres || 'Todos'}
+                                        </small>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        </DSModal>
+    );
+}
+
 export default TanquesPage;
+

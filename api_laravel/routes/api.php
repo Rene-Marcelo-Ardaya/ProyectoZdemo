@@ -103,6 +103,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/tanques/activos', [\App\Http\Controllers\Diesel\TanqueController::class, 'activos']);
         Route::get('/tanques/alertas', [\App\Http\Controllers\Diesel\TanqueController::class, 'alertas']);
         Route::apiResource('tanques', \App\Http\Controllers\Diesel\TanqueController::class);
+
+        // Configuración de Alertas
+        Route::get('/alertas/evolution-instances', [\App\Http\Controllers\Diesel\AlertConfigurationController::class, 'getEvolutionInstances']);
+        Route::get('/alertas/whatsapp-groups', [\App\Http\Controllers\Diesel\AlertConfigurationController::class, 'getWhatsAppGroups']);
+        Route::post('/alertas/test-send-message', [\App\Http\Controllers\Diesel\AlertConfigurationController::class, 'testSendMessage']);
+        Route::post('/alertas/{id}/test', [\App\Http\Controllers\Diesel\AlertConfigurationController::class, 'testAlert']);
+        Route::apiResource('alertas', \App\Http\Controllers\Diesel\AlertConfigurationController::class);
     });
 });
 
