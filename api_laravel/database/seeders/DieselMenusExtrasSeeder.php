@@ -49,28 +49,18 @@ class DieselMenusExtrasSeeder extends Seeder
         ];
 
         foreach ($nuevosMenus as $menu) {
-            // Verificar si ya existe
-            $existe = DB::table('menus')
-                ->where('url', $menu['url'])
-                ->where('parent_id', $parentId)
-                ->exists();
-
-            if (!$existe) {
-                DB::table('menus')->insert([
+            DB::table('menus')->updateOrInsert(
+                ['url' => $menu['url']],
+                [
                     'name' => $menu['name'],
-                    'url' => $menu['url'],
                     'icon' => $menu['icon'],
                     'parent_id' => $parentId,
                     'order' => $menu['order'],
                     'module' => 'DIESEL',
                     'is_active' => true,
-                    'created_at' => now(),
                     'updated_at' => now()
-                ]);
-                $this->command->info("✓ Menú '{$menu['name']}' creado");
-            } else {
-                $this->command->info("- Menú '{$menu['name']}' ya existe, omitido");
-            }
+                ]
+            );
         }
     }
 }

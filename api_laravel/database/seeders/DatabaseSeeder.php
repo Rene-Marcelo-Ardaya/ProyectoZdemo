@@ -163,5 +163,8 @@ class DatabaseSeeder extends Seeder
 
         // Cargar configuraciones del sistema
         $this->call(SettingSeeder::class);
+        
+        // Cargar módulo Diesel
+        $this->call(DieselMasterSeeder::class);
     }
 }

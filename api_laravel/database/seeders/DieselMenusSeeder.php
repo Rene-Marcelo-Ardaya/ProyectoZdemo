@@ -15,17 +15,23 @@ class DieselMenusSeeder extends Seeder
         // =============================================
         // MENÚ PADRE: Configuraciones Diesel
         // =============================================
-        $parentId = DB::table('menus')->insertGetId([
-            'name' => 'Configuraciones Diesel',
-            'url' => null,
-            'icon' => 'Fuel',
-            'parent_id' => null,
-            'order' => 50, // Después de otros módulos
-            'module' => 'DIESEL',
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
+        // =============================================
+        // MENÚ PADRE: Configuraciones Diesel
+        // =============================================
+        DB::table('menus')->updateOrInsert(
+            ['name' => 'Configuraciones Diesel'],
+            [
+                'url' => null,
+                'icon' => 'Fuel',
+                'parent_id' => null,
+                'order' => 50, // Después de otros módulos
+                'module' => 'DIESEL',
+                'is_active' => true,
+                'updated_at' => now()
+            ]
+        );
+        
+        $parentId = DB::table('menus')->where('name', 'Configuraciones Diesel')->value('id');
 
         // =============================================
         // SUBMENÚS
@@ -64,17 +70,18 @@ class DieselMenusSeeder extends Seeder
         ];
 
         foreach ($submenus as $submenu) {
-            DB::table('menus')->insert([
-                'name' => $submenu['name'],
-                'url' => $submenu['url'],
-                'icon' => $submenu['icon'],
-                'parent_id' => $parentId,
-                'order' => $submenu['order'],
-                'module' => 'DIESEL',
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+            DB::table('menus')->updateOrInsert(
+                ['url' => $submenu['url']],
+                [
+                    'name' => $submenu['name'],
+                    'icon' => $submenu['icon'],
+                    'parent_id' => $parentId,
+                    'order' => $submenu['order'],
+                    'module' => 'DIESEL',
+                    'is_active' => true,
+                    'updated_at' => now()
+                ]
+            );
         }
     }
 }
