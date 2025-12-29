@@ -12,6 +12,7 @@ import {
     DSBadge,
     DSModal,
     DSModalSection,
+    SecuredButton,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -184,9 +185,15 @@ export function ProveedoresPage() {
                 title="Gestión de Proveedores"
                 icon={<Truck size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="proveedores.crear"
+                        securityDesc="Crear nuevo proveedor"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nuevo Proveedor
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -243,14 +250,18 @@ export function ProveedoresPage() {
                                             </td>
                                             <td>
                                                 <div className="ds-table__actions">
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="proveedores.editar"
+                                                        securityDesc="Editar proveedor"
                                                         size="sm"
                                                         iconOnly
                                                         icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(item)}
                                                         title="Editar"
                                                     />
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="proveedores.toggle"
+                                                        securityDesc="Activar/Desactivar proveedor"
                                                         size="sm"
                                                         variant={item.is_active ? 'outline-danger' : 'outline-success'}
                                                         iconOnly

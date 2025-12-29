@@ -21,7 +21,8 @@ import {
     DSModalSection,
     DSGrid,
     DSFieldsGrid,
-    DSEditableGrid
+    DSEditableGrid,
+    SecuredButton,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -427,9 +428,15 @@ export function IngresosPage() {
                 title="Ingresos de Combustible"
                 icon={<Download size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="ingresos.crear"
+                        securityDesc="Registrar nuevo ingreso"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nuevo Ingreso
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -551,7 +558,9 @@ export function IngresosPage() {
                                         </td>
                                         <td>
                                             {row.estado === 'ACTIVO' && (
-                                                <DSButton
+                                                <SecuredButton
+                                                    securityId="ingresos.anular"
+                                                    securityDesc="Anular ingreso"
                                                     size="sm"
                                                     variant="ghost-danger"
                                                     icon={<Trash2 size={16} />}

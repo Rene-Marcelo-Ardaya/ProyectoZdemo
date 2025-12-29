@@ -12,6 +12,7 @@ import {
     DSBadge,
     DSModal,
     DSModalSection,
+    SecuredButton,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -198,9 +199,15 @@ export function TrabajosPage() {
                 title="Gestión de Trabajos"
                 icon={<Hammer size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="trabajos.crear"
+                        securityDesc="Crear nuevo trabajo"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nuevo Trabajo
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -253,14 +260,18 @@ export function TrabajosPage() {
                                             </td>
                                             <td>
                                                 <div className="ds-table__actions">
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="trabajos.editar"
+                                                        securityDesc="Editar trabajo"
                                                         size="sm"
                                                         iconOnly
                                                         icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(item)}
                                                         title="Editar"
                                                     />
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="trabajos.toggle"
+                                                        securityDesc="Activar/Desactivar trabajo"
                                                         size="sm"
                                                         variant={item.is_active ? 'outline-danger' : 'outline-success'}
                                                         iconOnly

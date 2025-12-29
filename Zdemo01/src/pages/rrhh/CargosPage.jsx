@@ -14,6 +14,7 @@ import {
     DSCount,
     DSModal,
     DSModalSection,
+    SecuredButton,
 } from '../../ds-components';
 
 import './CargosPage.css';
@@ -212,9 +213,15 @@ export function CargosPage() {
                 title="Gestión de Cargos"
                 icon={<Briefcase size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="cargos.crear"
+                        securityDesc="Crear nuevo cargo"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nuevo Cargo
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -275,14 +282,18 @@ export function CargosPage() {
                                             </td>
                                             <td>
                                                 <div className="ds-table__actions">
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="cargos.editar"
+                                                        securityDesc="Editar cargo"
                                                         size="sm"
                                                         iconOnly
                                                         icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(cargo)}
                                                         title="Editar"
                                                     />
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="cargos.eliminar"
+                                                        securityDesc="Eliminar cargo"
                                                         size="sm"
                                                         variant="outline-danger"
                                                         iconOnly

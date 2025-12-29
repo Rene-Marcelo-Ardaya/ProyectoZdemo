@@ -33,6 +33,7 @@ export {
   DSHelpText,
   DSValidationMessage,
   DSSearchSelect,
+  SecuredButton,
 } from '../ds-forms';
 
 // DS Layout

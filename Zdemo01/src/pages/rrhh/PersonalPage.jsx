@@ -15,6 +15,7 @@ import {
     DSModalSection,
     DSModalGrid,
     DSSearchSelect,
+    SecuredButton,
 } from '../../ds-components';
 
 import './PersonalPage.css';
@@ -281,9 +282,15 @@ export function PersonalPage() {
                 title="Gestión de Personal"
                 icon={<UserCircle size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="personal.crear"
+                        securityDesc="Crear nuevo empleado"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nuevo Empleado
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -348,14 +355,18 @@ export function PersonalPage() {
                                             <td>{emp.fecha_ingreso}</td>
                                             <td>
                                                 <div className="ds-table__actions">
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="personal.editar"
+                                                        securityDesc="Editar empleado"
                                                         size="sm"
                                                         iconOnly
                                                         icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(emp)}
                                                         title="Editar"
                                                     />
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="personal.desactivar"
+                                                        securityDesc="Desactivar empleado"
                                                         size="sm"
                                                         variant="outline-danger"
                                                         iconOnly

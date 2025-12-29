@@ -19,6 +19,7 @@ import {
     DSBadge,
     DSModal,
     DSModalSection,
+    SecuredButton,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -208,9 +209,15 @@ export function MaquinasPage() {
                 title="Gestión de Máquinas"
                 icon={<Cog size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="maquinas.crear"
+                        securityDesc="Crear nueva máquina"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nueva Máquina
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -263,14 +270,18 @@ export function MaquinasPage() {
                                             </td>
                                             <td>
                                                 <div className="ds-table__actions">
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="maquinas.editar"
+                                                        securityDesc="Editar máquina"
                                                         size="sm"
                                                         iconOnly
                                                         icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(item)}
                                                         title="Editar"
                                                     />
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="maquinas.toggle"
+                                                        securityDesc="Activar/Desactivar máquina"
                                                         size="sm"
                                                         variant={item.is_active ? 'outline-danger' : 'outline-success'}
                                                         iconOnly

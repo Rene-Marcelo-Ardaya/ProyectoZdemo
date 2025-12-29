@@ -59,6 +59,7 @@ import {
     DSCount,
     DSModal,
     DSModalSection,
+    SecuredButton,
 } from '../../ds-components';
 
 import './MenusPage.css';
@@ -205,14 +206,18 @@ function MenuTreeItem({ menu, level = 0, onEdit, onDelete, expandedIds, toggleEx
                 </td>
                 <td>
                     <div className="ds-table__actions">
-                        <DSButton
+                        <SecuredButton
+                            securityId="menus.editar"
+                            securityDesc="Editar menú"
                             size="sm"
                             iconOnly
                             icon={<Pencil size={15} />}
                             onClick={() => onEdit(menu)}
                             title="Editar"
                         />
-                        <DSButton
+                        <SecuredButton
+                            securityId="menus.eliminar"
+                            securityDesc="Eliminar menú"
                             size="sm"
                             variant="outline-danger"
                             iconOnly
@@ -727,9 +732,15 @@ export function MenusPage() {
                                 >
                                     Ordenar
                                 </DSButton>
-                                <DSButton variant="primary" icon={<Plus size={16} />} onClick={() => openCreate()}>
+                                <SecuredButton
+                                    securityId="menus.crear"
+                                    securityDesc="Crear nuevo menú"
+                                    variant="primary"
+                                    icon={<Plus size={16} />}
+                                    onClick={() => openCreate()}
+                                >
                                     Nuevo Menú
-                                </DSButton>
+                                </SecuredButton>
                             </>
                         )}
                         {isOrderMode && (

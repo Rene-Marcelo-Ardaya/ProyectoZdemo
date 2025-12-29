@@ -19,6 +19,7 @@ import {
     DSBadge,
     DSModal,
     DSModalSection,
+    SecuredButton,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -226,9 +227,15 @@ export function TanquesPage() {
                 title="Gestión de Tanques"
                 icon={<Container size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="tanques.crear"
+                        securityDesc="Crear nuevo tanque"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nuevo Tanque
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -297,14 +304,18 @@ export function TanquesPage() {
                                                 </td>
                                                 <td>
                                                     <div className="ds-table__actions">
-                                                        <DSButton
+                                                        <SecuredButton
+                                                            securityId="tanques.editar"
+                                                            securityDesc="Editar tanque"
                                                             size="sm"
                                                             iconOnly
                                                             icon={<Pencil size={15} />}
                                                             onClick={() => openEdit(item)}
                                                             title="Editar"
                                                         />
-                                                        <DSButton
+                                                        <SecuredButton
+                                                            securityId="tanques.toggle"
+                                                            securityDesc="Activar/Desactivar tanque"
                                                             size="sm"
                                                             variant={item.is_active ? 'outline-danger' : 'outline-success'}
                                                             iconOnly

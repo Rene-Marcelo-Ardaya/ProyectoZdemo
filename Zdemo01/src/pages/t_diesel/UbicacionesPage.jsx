@@ -19,6 +19,7 @@ import {
     DSBadge,
     DSModal,
     DSModalSection,
+    SecuredButton,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -213,9 +214,15 @@ export function UbicacionesPage() {
                 title="Gestión de Ubicaciones Físicas"
                 icon={<MapPin size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="ubicaciones.crear"
+                        securityDesc="Crear nueva ubicación"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nueva Ubicación
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -268,14 +275,18 @@ export function UbicacionesPage() {
                                             </td>
                                             <td>
                                                 <div className="ds-table__actions">
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="ubicaciones.editar"
+                                                        securityDesc="Editar ubicación"
                                                         size="sm"
                                                         iconOnly
                                                         icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(item)}
                                                         title="Editar"
                                                     />
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="ubicaciones.toggle"
+                                                        securityDesc="Activar/Desactivar ubicación"
                                                         size="sm"
                                                         variant={item.is_active ? 'outline-danger' : 'outline-success'}
                                                         iconOnly

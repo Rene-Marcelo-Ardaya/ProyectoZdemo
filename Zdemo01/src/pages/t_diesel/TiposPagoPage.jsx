@@ -12,6 +12,7 @@ import {
     DSBadge,
     DSModal,
     DSModalSection,
+    SecuredButton,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -171,9 +172,15 @@ export function TiposPagoPage() {
                 title="Gestión de Tipos de Pago"
                 icon={<CreditCard size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="tipospago.crear"
+                        securityDesc="Crear nuevo tipo de pago"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nuevo Tipo de Pago
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -224,14 +231,18 @@ export function TiposPagoPage() {
                                             </td>
                                             <td>
                                                 <div className="ds-table__actions">
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="tipospago.editar"
+                                                        securityDesc="Editar tipo de pago"
                                                         size="sm"
                                                         iconOnly
                                                         icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(item)}
                                                         title="Editar"
                                                     />
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="tipospago.toggle"
+                                                        securityDesc="Activar/Desactivar tipo de pago"
                                                         size="sm"
                                                         variant={item.is_active ? 'outline-danger' : 'outline-success'}
                                                         iconOnly

@@ -18,6 +18,7 @@ import {
     DSBadge,
     DSModal,
     DSModalSection,
+    SecuredButton,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -187,9 +188,15 @@ export function TiposMovimientoPage() {
                 title="Tipos de Movimiento"
                 icon={<Settings2 size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="tiposmovimiento.crear"
+                        securityDesc="Crear nuevo tipo de movimiento"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nuevo Tipo
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -242,14 +249,18 @@ export function TiposMovimientoPage() {
                                             </td>
                                             <td>
                                                 <div className="ds-table__actions">
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="tiposmovimiento.editar"
+                                                        securityDesc="Editar tipo de movimiento"
                                                         size="sm"
                                                         iconOnly
                                                         icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(item)}
                                                         title="Editar"
                                                     />
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="tiposmovimiento.toggle"
+                                                        securityDesc="Activar/Desactivar tipo de movimiento"
                                                         size="sm"
                                                         variant={item.is_active ? 'outline-danger' : 'outline-success'}
                                                         iconOnly

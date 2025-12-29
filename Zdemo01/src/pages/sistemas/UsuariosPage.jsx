@@ -12,6 +12,7 @@ import {
     DSLoading,
     DSBadge,
     DSModal,
+    SecuredButton,
 } from '../../ds-components';
 
 import './UsuariosPage.css';
@@ -220,9 +221,15 @@ export function UsuariosPage() {
                 title="Gestión de Usuarios"
                 icon={<Users size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<UserPlus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="usuarios.crear"
+                        securityDesc="Crear nuevo usuario"
+                        variant="primary"
+                        icon={<UserPlus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nuevo Usuario
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -279,14 +286,18 @@ export function UsuariosPage() {
                                             </td>
                                             <td>
                                                 <div className="ds-table__actions">
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="usuarios.editar"
+                                                        securityDesc="Editar usuario"
                                                         size="sm"
                                                         iconOnly
                                                         icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(user)}
                                                         title="Editar"
                                                     />
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="usuarios.eliminar"
+                                                        securityDesc="Eliminar usuario"
                                                         size="sm"
                                                         variant="outline-danger"
                                                         iconOnly

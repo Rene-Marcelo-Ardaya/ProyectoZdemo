@@ -12,6 +12,7 @@ import {
     DSBadge,
     DSModal,
     DSModalSection,
+    SecuredButton,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -171,9 +172,15 @@ export function DivisionesPage() {
                 title="Gestión de Divisiones"
                 icon={<Building2 size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="divisiones.crear"
+                        securityDesc="Crear nueva división"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nueva División
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -224,14 +231,18 @@ export function DivisionesPage() {
                                             </td>
                                             <td>
                                                 <div className="ds-table__actions">
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="divisiones.editar"
+                                                        securityDesc="Editar división"
                                                         size="sm"
                                                         iconOnly
                                                         icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(item)}
                                                         title="Editar"
                                                     />
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="divisiones.toggle"
+                                                        securityDesc="Activar/Desactivar división"
                                                         size="sm"
                                                         variant={item.is_active ? 'outline-danger' : 'outline-success'}
                                                         iconOnly

@@ -12,6 +12,7 @@ import {
     DSBadge,
     DSModal,
     DSModalSection,
+    SecuredButton,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -171,9 +172,15 @@ export function MotivosAjustePage() {
                 title="Gestión de Motivos de Ajuste"
                 icon={<ClipboardList size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="motivosajuste.crear"
+                        securityDesc="Crear nuevo motivo de ajuste"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nuevo Motivo
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -224,14 +231,18 @@ export function MotivosAjustePage() {
                                             </td>
                                             <td>
                                                 <div className="ds-table__actions">
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="motivosajuste.editar"
+                                                        securityDesc="Editar motivo de ajuste"
                                                         size="sm"
                                                         iconOnly
                                                         icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(item)}
                                                         title="Editar"
                                                     />
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="motivosajuste.toggle"
+                                                        securityDesc="Activar/Desactivar motivo de ajuste"
                                                         size="sm"
                                                         variant={item.is_active ? 'outline-danger' : 'outline-success'}
                                                         iconOnly

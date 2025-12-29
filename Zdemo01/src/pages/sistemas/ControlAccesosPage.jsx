@@ -17,6 +17,7 @@ import {
     DSModal,
     DSModalSection,
     DSModalGrid,
+    SecuredButton,
 } from '../../ds-components';
 
 import './ControlAccesosPage.css';
@@ -301,9 +302,15 @@ export function ControlAccesosPage() {
                 title="Control de Accesos"
                 icon={<Shield size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={openCreate}>
+                    <SecuredButton
+                        securityId="accesos.crear"
+                        securityDesc="Crear nuevo rol"
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={openCreate}
+                    >
                         Nuevo Rol
-                    </DSButton>
+                    </SecuredButton>
                 }
             />
 
@@ -370,14 +377,18 @@ export function ControlAccesosPage() {
                                             </td>
                                             <td>
                                                 <div className="ds-table__actions">
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="accesos.editar"
+                                                        securityDesc="Editar rol"
                                                         size="sm"
                                                         iconOnly
                                                         icon={<Pencil size={15} />}
                                                         onClick={() => openEdit(role)}
                                                         title="Editar"
                                                     />
-                                                    <DSButton
+                                                    <SecuredButton
+                                                        securityId="accesos.eliminar"
+                                                        securityDesc="Eliminar rol"
                                                         size="sm"
                                                         variant="outline-danger"
                                                         iconOnly
