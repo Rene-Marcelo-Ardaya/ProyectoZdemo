@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Plus, Pencil, Power, HelpCircle } from 'lucide-react';
+import { Container, Plus, Pencil, Power, Search, Truck, Factory, MapPin, AlertTriangle, Droplets } from 'lucide-react';
 import {
     getTanques,
     getTanque,
     createTanque,
     updateTanque,
     toggleTanque,
-    comboUbicaciones
+    comboUbicaciones,
+    adjustStock // New service function
 } from '../../services/dieselService';
 
 import {
@@ -22,8 +23,129 @@ import {
     SecuredButton,
 } from '../../ds-components';
 
-import './DieselPages.css';
+import './TanquesPage.css';
 
+// =============================================
+// COMPONENTE: Gauge Visual de Nivel
+// =============================================
+function TanqueGauge({ nivel, capacidad }) {
+    const porcentaje = capacidad > 0 ? Math.round((nivel / capacidad) * 100) : 0;
+
+    let colorClass = 'gauge-high';
+    if (porcentaje <= 20) colorClass = 'gauge-critical';
+    else if (porcentaje <= 40) colorClass = 'gauge-low';
+    else if (porcentaje <= 60) colorClass = 'gauge-medium';
+
+    return (
+        <div className="tanque-gauge">
+            <div className="tanque-gauge__container">
+                <div
+                    className={`tanque-gauge__fill ${colorClass}`}
+                    style={{ height: `${Math.min(porcentaje, 100)}%` }}
+                />
+                <div className="tanque-gauge__label">{porcentaje}%</div>
+            </div>
+            <div className="tanque-gauge__info">
+                <span className="tanque-gauge__nivel">{parseFloat(nivel).toLocaleString()} L</span>
+                <span className="tanque-gauge__capacidad">/ {parseFloat(capacidad).toLocaleString()} L</span>
+            </div>
+        </div>
+    );
+}
+
+// =============================================
+// COMPONENTE: Tarjeta de Tanque
+// =============================================
+function TanqueCard({ tanque, onEdit, onToggle, onAdjustStock }) {
+    const esMovil = tanque.tipo === 'MOVIL';
+    const porcentaje = tanque.capacidad_maxima > 0
+        ? (tanque.stock_actual / tanque.capacidad_maxima) * 100
+        : 0;
+    const nivelBajo = porcentaje <= 20;
+
+    const cardClass = [
+        'tanque-card',
+        nivelBajo && tanque.is_active ? 'tanque-card--alerta' : '',
+        !tanque.is_active ? 'tanque-card--inactivo' : ''
+    ].filter(Boolean).join(' ');
+
+    return (
+        <div className={cardClass}>
+            <div className="tanque-card__header">
+                <div className="tanque-card__tipo">
+                    {esMovil ? (
+                        <Truck size={18} className="icon-movil" />
+                    ) : (
+                        <Factory size={18} className="icon-fijo" />
+                    )}
+                    <DSBadge variant={esMovil ? 'info' : 'default'} size="sm">
+                        {esMovil ? 'Móvil' : 'Fijo'}
+                    </DSBadge>
+                </div>
+                {nivelBajo && tanque.is_active && (
+                    <DSBadge variant="warning" size="sm">
+                        <AlertTriangle size={12} /> Bajo
+                    </DSBadge>
+                )}
+            </div>
+
+            <h3 className="tanque-card__nombre">{tanque.nombre}</h3>
+
+            {tanque.ubicacion?.nombre && (
+                <div className="tanque-card__ubicacion">
+                    <MapPin size={14} />
+                    <span>{tanque.ubicacion.nombre}</span>
+                </div>
+            )}
+
+            <TanqueGauge
+                nivel={tanque.stock_actual}
+                capacidad={tanque.capacidad_maxima}
+            />
+
+            <div className="tanque-card__footer">
+                <DSBadge variant={tanque.is_active ? 'success' : 'error'} size="sm">
+                    {tanque.is_active ? 'Activo' : 'Inactivo'}
+                </DSBadge>
+                <div className="tanque-card__actions">
+                    <SecuredButton
+                        securityId="tanques.editar"
+                        securityDesc="Ajustar Stock"
+                        size="sm"
+                        variant="secondary"
+                        iconOnly
+                        icon={<Droplets size={14} />}
+                        onClick={() => onAdjustStock(tanque)}
+                        title="Ajustar Stock"
+                    />
+                    <SecuredButton
+                        securityId="tanques.editar"
+                        securityDesc="Editar tanque"
+                        size="sm"
+                        iconOnly
+                        icon={<Pencil size={14} />}
+                        onClick={() => onEdit(tanque)}
+                        title="Editar"
+                    />
+                    <SecuredButton
+                        securityId="tanques.toggle"
+                        securityDesc="Activar/Desactivar tanque"
+                        size="sm"
+                        variant={tanque.is_active ? 'outline-danger' : 'outline-success'}
+                        iconOnly
+                        icon={<Power size={14} />}
+                        onClick={() => onToggle(tanque)}
+                        title={tanque.is_active ? 'Desactivar' : 'Activar'}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// =============================================
+// HOOK: useTanques
+// =============================================
 function useTanques() {
     const [tanques, setTanques] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -67,23 +189,27 @@ function useUbicaciones() {
     return ubicaciones;
 }
 
-function Tooltip({ text }) {
+// =============================================
+// COMPONENTE: Empty State
+// =============================================
+function TanquesEmpty({ icon: Icon, title, description }) {
     return (
-        <span className="diesel-tooltip">
-            <HelpCircle size={14} />
-            <span className="diesel-tooltip__text">{text}</span>
-        </span>
+        <div className="tanques-empty">
+            <Icon size={48} />
+            <h4 className="tanques-empty__title">{title}</h4>
+            <p className="tanques-empty__desc">{description}</p>
+        </div>
     );
 }
 
-function FormField({ label, children, required, help }) {
+// =============================================
+// COMPONENTE: Formulario Modal
+// =============================================
+function FormField({ label, children, required }) {
     return (
         <div className="ds-field">
             <label className="ds-field__label">
-                <span className="ds-field__label-text">
-                    {label}
-                    {help && <Tooltip text={help} />}
-                </span>
+                <span className="ds-field__label-text">{label}</span>
                 {required && <span className="ds-field__required">*</span>}
             </label>
             <div className="ds-field__control-wrapper">
@@ -93,15 +219,25 @@ function FormField({ label, children, required, help }) {
     );
 }
 
+// =============================================
+// COMPONENTE PRINCIPAL: TanquesPage
+// =============================================
 export function TanquesPage() {
     const { tanques, loading, error: loadError, refetch } = useTanques();
     const ubicaciones = useUbicaciones();
 
+    // Filtros
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterTipo, setFilterTipo] = useState('');
+
+    // Modal state
     const [modalOpen, setModalOpen] = useState(false);
+    const [stockModalOpen, setStockModalOpen] = useState(false);
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState(null);
     const [formSuccess, setFormSuccess] = useState(null);
     const [editingItem, setEditingItem] = useState(null);
+    const [stockItem, setStockItem] = useState(null);
 
     const [form, setForm] = useState({
         nombre: '',
@@ -111,11 +247,32 @@ export function TanquesPage() {
         stock_actual: ''
     });
 
+    const [newStock, setNewStock] = useState('');
+
     const resetForm = useCallback(() => {
         setForm({ nombre: '', tipo: 'FIJO', d_ubicacion_fisica_id: '', capacidad_maxima: '', stock_actual: '' });
         setEditingItem(null);
         setFormError(null);
     }, []);
+
+    // Filtrar tanques
+    const filteredTanques = tanques.filter(t => {
+        // Búsqueda por texto
+        if (searchTerm) {
+            const term = searchTerm.toLowerCase();
+            const matchSearch =
+                t.nombre?.toLowerCase().includes(term) ||
+                t.ubicacion?.nombre?.toLowerCase().includes(term);
+            if (!matchSearch) return false;
+        }
+        // Filtro por tipo
+        if (filterTipo && t.tipo !== filterTipo) return false;
+        return true;
+    });
+
+    // Separar por tipo
+    const tanquesFijos = filteredTanques.filter(t => t.tipo === 'FIJO');
+    const tanquesMoviles = filteredTanques.filter(t => t.tipo === 'MOVIL');
 
     const openCreate = () => {
         resetForm();
@@ -138,9 +295,19 @@ export function TanquesPage() {
         }
     };
 
+    const openStockAdjust = (item) => {
+        setStockItem(item);
+        setNewStock(item.stock_actual);
+        setFormError(null);
+        setStockModalOpen(true);
+    };
+
     const closeModal = () => {
         setModalOpen(false);
+        setStockModalOpen(false);
         resetForm();
+        setNewStock('');
+        setStockItem(null);
     };
 
     const handleChange = (field) => (e) => {
@@ -197,6 +364,38 @@ export function TanquesPage() {
         }
     };
 
+    const handleSaveStock = async () => {
+        if (newStock === '' || parseFloat(newStock) < 0) {
+            setFormError('El stock debe ser válido');
+            return;
+        }
+
+        if (parseFloat(newStock) > parseFloat(stockItem.capacidad_maxima)) {
+            setFormError(`El stock no puede superar la capacidad máxima (${stockItem.capacidad_maxima} L)`);
+            return;
+        }
+
+        setSaving(true);
+        setFormError(null);
+
+        try {
+            const result = await adjustStock(stockItem.id, parseFloat(newStock));
+
+            if (result.success) {
+                setFormSuccess('Stock actualizado');
+                closeModal();
+                refetch();
+                setTimeout(() => setFormSuccess(null), 3000);
+            } else {
+                setFormError(result.error || result.message || 'Error guardando');
+            }
+        } catch (err) {
+            setFormError('Error de conexión');
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const handleToggle = async (item) => {
         const action = item.is_active ? 'desactivar' : 'activar';
         if (!window.confirm(`¿${action.charAt(0).toUpperCase() + action.slice(1)} "${item.nombre}"?`)) return;
@@ -213,12 +412,6 @@ export function TanquesPage() {
         } catch (err) {
             alert('Error de conexión');
         }
-    };
-
-    // Calcular porcentaje
-    const calcPorcentaje = (stock, capacidad) => {
-        if (!capacidad || capacidad <= 0) return 0;
-        return Math.round((stock / capacidad) * 100);
     };
 
     return (
@@ -250,91 +443,109 @@ export function TanquesPage() {
                 </DSAlert>
             )}
 
-            <DSSection
-                title="Listado de Tanques"
-                actions={<span className="diesel-panel__count">{tanques.length} tanques</span>}
-            >
-                <div className="ds-table-wrapper">
-                    {loading ? (
-                        <DSLoading text="Cargando..." />
-                    ) : (
-                        <table className="ds-table ds-table--striped ds-table--hover">
-                            <thead>
-                                <tr>
-                                    <th style={{ width: '5%' }}>ID</th>
-                                    <th style={{ width: '20%' }}>Nombre</th>
-                                    <th style={{ width: '10%' }}>Tipo</th>
-                                    <th style={{ width: '20%' }}>Ubicación</th>
-                                    <th style={{ width: '15%' }}>Stock / Cap.</th>
-                                    <th style={{ width: '10%' }}>%</th>
-                                    <th style={{ width: '10%' }}>Estado</th>
-                                    <th style={{ width: '10%' }}>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {tanques.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="8" className="ds-table__empty">
-                                            No hay tanques registrados
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    tanques.map(item => {
-                                        const pct = calcPorcentaje(item.stock_actual, item.capacidad_maxima);
-                                        return (
-                                            <tr key={item.id}>
-                                                <td>{item.id}</td>
-                                                <td><strong>{item.nombre}</strong></td>
-                                                <td>
-                                                    <DSBadge variant={item.tipo === 'FIJO' ? 'info' : 'warning'}>
-                                                        {item.tipo}
-                                                    </DSBadge>
-                                                </td>
-                                                <td>{item.ubicacion?.nombre || '-'}</td>
-                                                <td>{parseFloat(item.stock_actual).toFixed(0)} / {parseFloat(item.capacidad_maxima).toFixed(0)} L</td>
-                                                <td>
-                                                    <DSBadge variant={pct > 50 ? 'success' : pct > 20 ? 'warning' : 'error'}>
-                                                        {pct}%
-                                                    </DSBadge>
-                                                </td>
-                                                <td>
-                                                    <DSBadge variant={item.is_active ? 'success' : 'error'}>
-                                                        {item.is_active ? 'Activo' : 'Inactivo'}
-                                                    </DSBadge>
-                                                </td>
-                                                <td>
-                                                    <div className="ds-table__actions">
-                                                        <SecuredButton
-                                                            securityId="tanques.editar"
-                                                            securityDesc="Editar tanque"
-                                                            size="sm"
-                                                            iconOnly
-                                                            icon={<Pencil size={15} />}
-                                                            onClick={() => openEdit(item)}
-                                                            title="Editar"
-                                                        />
-                                                        <SecuredButton
-                                                            securityId="tanques.toggle"
-                                                            securityDesc="Activar/Desactivar tanque"
-                                                            size="sm"
-                                                            variant={item.is_active ? 'outline-danger' : 'outline-success'}
-                                                            iconOnly
-                                                            icon={<Power size={15} />}
-                                                            onClick={() => handleToggle(item)}
-                                                            title={item.is_active ? 'Desactivar' : 'Activar'}
-                                                        />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
-                                )}
-                            </tbody>
-                        </table>
-                    )}
+            {/* TOOLBAR: Búsqueda y Filtros */}
+            <DSSection style={{ overflow: 'visible' }}>
+                <div className="tanques-toolbar">
+                    <div className="tanques-search">
+                        <Search size={16} />
+                        <input
+                            type="text"
+                            placeholder="Buscar por nombre o ubicación..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <div className="tanques-toolbar__filters">
+                        <select
+                            className="ds-field__control"
+                            value={filterTipo}
+                            onChange={(e) => setFilterTipo(e.target.value)}
+                            style={{ width: '160px' }}
+                        >
+                            <option value="">Todos los tipos</option>
+                            <option value="FIJO">🏭 Fijos</option>
+                            <option value="MOVIL">🚚 Móviles</option>
+                        </select>
+                        <DSButton size="sm" onClick={refetch}>
+                            Actualizar
+                        </DSButton>
+                    </div>
                 </div>
             </DSSection>
 
+            {loading ? (
+                <DSLoading text="Cargando tanques..." />
+            ) : (
+                <>
+                    {/* TANQUES FIJOS */}
+                    {(filterTipo === '' || filterTipo === 'FIJO') && (
+                        <DSSection
+                            title={
+                                <span className="tanques-section-title">
+                                    <Factory size={18} />
+                                    Tanques Fijos
+                                    <DSBadge variant="neutral" size="sm">{tanquesFijos.length}</DSBadge>
+                                </span>
+                            }
+                        >
+                            {tanquesFijos.length === 0 ? (
+                                <TanquesEmpty
+                                    icon={Factory}
+                                    title="Sin tanques fijos"
+                                    description="No hay tanques fijos registrados"
+                                />
+                            ) : (
+                                <div className="tanques-grid">
+                                    {tanquesFijos.map(tanque => (
+                                        <TanqueCard
+                                            key={tanque.id}
+                                            tanque={tanque}
+                                            onEdit={openEdit}
+                                            onToggle={handleToggle}
+                                            onAdjustStock={openStockAdjust}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </DSSection>
+                    )}
+
+                    {/* TANQUES MÓVILES */}
+                    {(filterTipo === '' || filterTipo === 'MOVIL') && (
+                        <DSSection
+                            title={
+                                <span className="tanques-section-title">
+                                    <Truck size={18} />
+                                    Tanques Móviles (Cisternas)
+                                    <DSBadge variant="neutral" size="sm">{tanquesMoviles.length}</DSBadge>
+                                </span>
+                            }
+                        >
+                            {tanquesMoviles.length === 0 ? (
+                                <TanquesEmpty
+                                    icon={Truck}
+                                    title="Sin tanques móviles"
+                                    description="No hay cisternas registradas"
+                                />
+                            ) : (
+                                <div className="tanques-grid">
+                                    {tanquesMoviles.map(tanque => (
+                                        <TanqueCard
+                                            key={tanque.id}
+                                            tanque={tanque}
+                                            onEdit={openEdit}
+                                            onToggle={handleToggle}
+                                            onAdjustStock={openStockAdjust}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </DSSection>
+                    )}
+                </>
+            )}
+
+            {/* MODAL: Crear/Editar */}
             <DSModal
                 isOpen={modalOpen}
                 onClose={closeModal}
@@ -374,8 +585,8 @@ export function TanquesPage() {
                                     value={form.tipo}
                                     onChange={handleChange('tipo')}
                                 >
-                                    <option value="FIJO">FIJO</option>
-                                    <option value="MOVIL">MÓVIL</option>
+                                    <option value="FIJO">🏭 Fijo</option>
+                                    <option value="MOVIL">🚚 Móvil</option>
                                 </select>
                             </FormField>
 
@@ -406,7 +617,7 @@ export function TanquesPage() {
                             </FormField>
 
                             {!editingItem && (
-                                <FormField label="Stock Inicial (L)" help="Stock inicial al crear el tanque">
+                                <FormField label="Stock Inicial (L)">
                                     <input
                                         type="number"
                                         className="ds-field__control"
@@ -419,6 +630,46 @@ export function TanquesPage() {
                             )}
                         </div>
                     </form>
+                </DSModalSection>
+            </DSModal>
+
+            {/* MODAL: Ajuste de Stock */}
+            <DSModal
+                isOpen={stockModalOpen}
+                onClose={closeModal}
+                title="Ajuste Rápido de Stock"
+                size="sm"
+                footer={
+                    <>
+                        <DSButton onClick={closeModal} disabled={saving}>Cancelar</DSButton>
+                        <DSButton variant="primary" onClick={handleSaveStock} disabled={saving} loading={saving}>
+                            {saving ? 'Guardando...' : 'Actualizar Stock'}
+                        </DSButton>
+                    </>
+                }
+            >
+                {formError && (
+                    <DSAlert variant="error" dismissible onDismiss={() => setFormError(null)} className="diesel-alert-margin">
+                        {formError}
+                    </DSAlert>
+                )}
+                <DSModalSection>
+                    <p style={{ marginBottom: '16px' }}>
+                        Ajustar stock actual para: <strong>{stockItem?.nombre}</strong>
+                        <br />
+                        <small className="text-muted">Capacidad Máxima: {parseFloat(stockItem?.capacidad_maxima || 0).toLocaleString()} L</small>
+                    </p>
+                    <FormField label="Nuevo Stock Actual (Litros)" required>
+                        <input
+                            type="number"
+                            className="ds-field__control"
+                            value={newStock}
+                            onChange={(e) => setNewStock(e.target.value)}
+                            placeholder="Ingrese cantidad real"
+                            min="0"
+                            autoFocus
+                        />
+                    </FormField>
                 </DSModalSection>
             </DSModal>
         </DSPage>

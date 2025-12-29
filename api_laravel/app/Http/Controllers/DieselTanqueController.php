@@ -168,4 +168,38 @@ class DieselTanqueController extends Controller
             'data' => $tanque
         ]);
     }
+    /**
+     * Ajustar stock manualmente
+     */
+    public function adjustStock(Request $request, $id): JsonResponse
+    {
+        $tanque = Tanque::find($id);
+
+        if (!$tanque) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Tanque no encontrado'
+            ], 404);
+        }
+
+        $validated = $request->validate([
+            'nuevo_stock' => 'required|numeric|min:0'
+        ]);
+
+        if ($validated['nuevo_stock'] > $tanque->capacidad_maxima) {
+            return response()->json([
+                'success' => false,
+                'error' => 'El stock no puede exceder la capacidad máxima'
+            ], 400);
+        }
+
+        $tanque->stock_actual = $validated['nuevo_stock'];
+        $tanque->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Stock actualizado correctamente',
+            'data' => $tanque
+        ]);
+    }
 }

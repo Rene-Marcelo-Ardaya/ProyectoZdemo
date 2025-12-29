@@ -319,6 +319,14 @@ export async function toggleTanque(id) {
   return response.json();
 }
 
+export async function adjustStock(id, nuevoStock) {
+  const response = await authFetch(`/diesel/tanques/${id}/adjust-stock`, {
+    method: 'PATCH',
+    body: JSON.stringify({ nuevo_stock: nuevoStock })
+  });
+  return response.json();
+}
+
 // ============================================
 // MÁQUINAS
 // ============================================

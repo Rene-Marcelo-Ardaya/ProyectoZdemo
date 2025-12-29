@@ -1,0 +1,270 @@
+/* =============================================
+   TanquesPage - Enhanced Visual Styles
+   ============================================= */
+
+/* Toolbar */
+.tanques-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.tanques-toolbar__filters {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Search box */
+.tanques-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--ds-fieldBg);
+    border: 1px solid var(--ds-fieldBorder);
+    border-radius: 8px;
+    padding: 8px 12px;
+    flex: 1;
+    max-width: 360px;
+}
+
+.tanques-search input {
+    border: none;
+    background: transparent;
+    outline: none;
+    flex: 1;
+    font-size: 0.9rem;
+    color: var(--ds-fieldText);
+}
+
+.tanques-search input::placeholder {
+    color: var(--ds-placeholderText);
+}
+
+.tanques-search svg {
+    color: var(--ds-secondaryText);
+}
+
+/* Grid de Cards */
+.tanques-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 8px 0;
+}
+
+/* Card de Tanque */
+.tanque-card {
+    background: var(--ds-sectionBg);
+    border: 1px solid var(--ds-sectionBorder);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.tanque-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Alerta visual - borde amarillo cuando nivel bajo */
+.tanque-card--alerta {
+    border-color: var(--ds-warning);
+    background: linear-gradient(180deg, rgba(245, 158, 11, 0.05) 0%, transparent 100%);
+}
+
+.tanque-card--inactivo {
+    opacity: 0.6;
+}
+
+.tanque-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tanque-card__tipo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tanque-card__tipo .icon-movil {
+    color: var(--ds-info);
+}
+
+.tanque-card__tipo .icon-fijo {
+    color: var(--ds-secondaryText);
+}
+
+.tanque-card__nombre {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ds-primaryText);
+    margin: 0;
+}
+
+.tanque-card__ubicacion {
+    font-size: 0.85rem;
+    color: var(--ds-secondaryText);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tanque-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid var(--ds-sectionBorder);
+    margin-top: auto;
+}
+
+.tanque-card__actions {
+    display: flex;
+    gap: 6px;
+}
+
+/* Gauge de Nivel */
+.tanque-gauge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0;
+}
+
+.tanque-gauge__container {
+    width: 60px;
+    height: 100px;
+    background: var(--ds-fieldBg);
+    border: 2px solid var(--ds-fieldBorder);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+}
+
+.tanque-gauge__fill {
+    width: 100%;
+    transition: height 0.5s ease, background-color 0.3s;
+    border-radius: 0 0 6px 6px;
+}
+
+.tanque-gauge__fill.gauge-high {
+    background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+}
+
+.tanque-gauge__fill.gauge-medium {
+    background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+}
+
+.tanque-gauge__fill.gauge-low {
+    background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+}
+
+.tanque-gauge__fill.gauge-critical {
+    background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+    animation: pulse-critical 1.5s infinite;
+}
+
+@keyframes pulse-critical {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.tanque-gauge__label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--ds-primaryText);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    z-index: 2;
+}
+
+.tanque-gauge__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.tanque-gauge__nivel {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ds-primaryText);
+}
+
+.tanque-gauge__capacidad {
+    font-size: 0.75rem;
+    color: var(--ds-secondaryText);
+}
+
+/* Section title with icon */
+.tanques-section-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Empty state */
+.tanques-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ds-secondaryText);
+}
+
+.tanques-empty svg {
+    margin-bottom: 12px;
+    opacity: 0.4;
+}
+
+.tanques-empty__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 4px;
+}
+
+.tanques-empty__desc {
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .tanques-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tanques-toolbar__filters {
+        justify-content: space-between;
+    }
+
+    .tanques-search {
+        max-width: none;
+    }
+
+    .tanques-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -141,6 +141,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::post('/', [DieselTanqueController::class, 'store']);
             Route::put('/{id}', [DieselTanqueController::class, 'update']);
             Route::patch('/{id}/toggle', [DieselTanqueController::class, 'toggleActivo']);
+            Route::patch('/{id}/adjust-stock', [DieselTanqueController::class, 'adjustStock']);
         });
 
         // ==================== MÁQUINAS ====================
