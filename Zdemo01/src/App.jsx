@@ -24,6 +24,7 @@ import { TiposMovimientoPage } from './pages/t_diesel/TiposMovimientoPage';
 import { IngresosPage } from './pages/t_diesel/IngresosPage';
 import { Sidebar } from './components/Sidebar'
 import { ChatWidget } from './components/ChatWidget'
+import { SyncManager } from './components/SyncManager'
 import { logout, getSession } from './services/authService'
 import { getStoredMenu, getHeaderConfig, staticMenus } from './services/menuService'
 import { getPublicConfig, applyConfigToDOM } from './services/settingService'
@@ -270,6 +271,9 @@ function App() {
 
         {/* Chat Widget Flotante - Solo visible si el usuario tiene acceso al chat */}
         <ChatWidget menus={userMenus} />
+
+        {/* Gestor de Sincronización Offline */}
+        <SyncManager />
       </div>
     </SecurityProvider>
   )

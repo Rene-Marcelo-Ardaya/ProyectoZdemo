@@ -7,18 +7,11 @@ import CONFIG from '../config';
 
 const API_BASE = CONFIG.API_BASE_URL;
 
-// Helper para fetch con autenticación
-async function authFetch(url, options = {}) {
-  const token = localStorage.getItem('auth_token');
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` }),
-    ...options.headers,
-  };
+import { authFetch } from './authService';
 
-  const response = await fetch(`${API_BASE}${url}`, { ...options, headers });
-  return response;
-}
+
+
+// ============================================
 
 // ============================================
 // TRABAJOS

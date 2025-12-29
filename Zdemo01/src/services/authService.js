@@ -167,9 +167,16 @@ export async function getProfile() {
  * @param {object} options - Opciones de fetch
  * @returns {Promise<Response>}
  */
+import { db, queueRequest, cacheResponse, getCachedResponse } from '../db/db';
+
+/**
+ * Helper para hacer requests autenticadas con soporte Offline
+ * @param {string} endpoint - Endpoint de la API (sin el base URL)
+ * @param {object} options - Opciones de fetch
+ * @returns {Promise<Response>}
+ */
 export async function authFetch(endpoint, options = {}) {
     const token = getToken();
-    
     const headers = {
         'Accept': 'application/json',
         ...options.headers,
@@ -178,11 +185,73 @@ export async function authFetch(endpoint, options = {}) {
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
-    
-    return fetch(`${API_BASE_URL}${endpoint}`, {
-        ...options,
-        headers,
-    });
+
+    const url = `${API_BASE_URL}${endpoint}`;
+    const method = options.method || 'GET';
+    const isGet = method === 'GET';
+
+    // Función auxiliar para retornar respuesta simulada
+    const mockResponse = (data, status = 200, statusText = 'OK') => {
+        return new Response(JSON.stringify(data), {
+            status,
+            statusText,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    };
+
+    /**
+     * Intenta obtener del cache si falla la red
+     */
+    const tryCacheOrOffline = async () => {
+        if (isGet) {
+            const cached = await getCachedResponse(url);
+            if (cached) {
+                console.log('📦 Sirviendo desde caché local:', url);
+                return mockResponse(cached);
+            }
+            throw new Error('Sin conexión y sin caché disponible');
+        } else {
+            // Guardar para sincronizar después
+            const added = await queueRequest(endpoint, method, options.body ? JSON.parse(options.body) : null);
+            if (added) {
+                return mockResponse({
+                    success: true,
+                    offline: true,
+                    message: 'Guardado sin conexión'
+                });
+            }
+            throw new Error('Error guardando en base de datos local');
+        }
+    };
+
+    // Si el navegador dice que no hay red, ir directo a offline
+    if (!navigator.onLine) {
+        return tryCacheOrOffline();
+    }
+
+    try {
+        const response = await fetch(url, { ...options, headers });
+        
+        // Si el servidor da error 5xx, tratar como offline (server down)
+        if (response.status >= 500) {
+            console.warn('⚠️ Servidor caído (5xx), pasando a modo offline');
+            window.dispatchEvent(new Event('zdemo:offline-mode'));
+            return tryCacheOrOffline();
+        }
+
+        // Si es GET exitoso, guardar en caché
+        if (isGet && response.ok) {
+            window.dispatchEvent(new Event('zdemo:online-mode'));
+            const clone = response.clone();
+            clone.json().then(data => cacheResponse(url, data));
+        }
+
+        return response;
+    } catch (error) {
+        console.warn('⚠️ Error de red, pasando a modo offline:', error);
+        window.dispatchEvent(new Event('zdemo:offline-mode'));
+        return tryCacheOrOffline();
+    }
 }
 
 /**
