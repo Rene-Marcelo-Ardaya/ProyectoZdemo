@@ -36,12 +36,35 @@
 
 ---
 
+## 🏢 SECCIÓN 1.5: DIVISIONES
+
+> **Concepto:** Las divisiones organizacionales donde operan los vehículos/maquinarias. Cada división tiene una ubicación geográfica.
+
+### Backend
+- [ ] Crear migración `create_divisiones_table`
+  - [ ] Campos: id, nombre, codigo, ubicacion, descripcion, responsable_id, estado, timestamps
+- [ ] Crear modelo `Division.php` con relaciones
+- [ ] Crear `DivisionController.php` con CRUD
+- [ ] Agregar rutas API `/api/diesel/divisiones`
+- [ ] Crear seeder con datos de prueba
+
+### Frontend
+- [ ] Crear página `DivisionesPage.jsx`
+- [ ] Implementar tabla de divisiones
+- [ ] Modal para crear/editar división
+- [ ] Integrar con SecuredButton para permisos
+
+---
+
 ## 🚗 SECCIÓN 2: VEHÍCULOS Y MAQUINARIA
+
+> **Concepto:** Cada vehículo/maquinaria tiene un trabajo específico y está asignado a una división.
 
 ### Backend
 - [ ] Crear migración `create_vehiculos_table`
-  - [ ] Campos: id, placa, tipo, marca, modelo, año, capacidad_tanque, consumo_promedio, kilometraje_actual, departamento_id, responsable_id, estado
-- [ ] Crear modelo `Vehiculo.php` con relaciones
+  - [ ] Campos: id, placa, tipo, marca, modelo, año, capacidad_tanque, consumo_promedio, kilometraje_actual, horometro_actual, trabajo, division_id, responsable_id, estado, timestamps
+  - [ ] Nota: Vehículos usan `kilometraje_actual`, Maquinarias usan `horometro_actual`
+- [ ] Crear modelo `Vehiculo.php` con relaciones (belongsTo Division)
 - [ ] Crear `VehiculoController.php` con CRUD
 - [ ] Agregar rutas API `/api/diesel/vehiculos`
 - [ ] Crear seeder con datos de prueba
@@ -50,10 +73,33 @@
 - [ ] Crear página `VehiculosPage.jsx`
 - [ ] Implementar tabla de vehículos/maquinaria
 - [ ] Modal para crear/editar vehículo
-- [ ] Filtros por tipo (vehículo, maquinaria, generador)
+  - [ ] Campo "Trabajo" (texto o selector)
+  - [ ] Selector de División
+  - [ ] Campo GPS/Device ID (opcional)
+- [ ] Filtros por tipo (vehículo, maquinaria, camion) y por división
 - [ ] Mostrar estadísticas de consumo por vehículo
 - [ ] Integrar con SecuredButton para permisos
+
 ---
+
+## 📍 SECCIÓN 2.5: UBICACIÓN GPS DE VEHÍCULOS (Traccar)
+
+> **Concepto:** Historial de ubicaciones GPS de los vehículos integrado con Traccar.
+
+### Backend
+- [ ] Crear migración `create_vehiculo_ubicaciones_table`
+  - [ ] Campos: id, vehiculo_id, device_id, latitud, longitud, altitud, velocidad, rumbo, odometro, ignicion, bateria, direccion_geocodificada, timestamp, raw_data (JSON)
+- [ ] Crear modelo `VehiculoUbicacion.php` (belongsTo Vehiculo)
+- [ ] Crear `VehiculoUbicacionController.php`
+- [ ] Agregar rutas API `/api/diesel/vehiculos/{id}/ubicaciones`
+- [ ] Servicio de integración con Traccar API
+- [ ] Job/Cron para sincronizar ubicaciones periódicamente
+
+### Frontend
+- [ ] Componente mapa de ubicación de vehículo
+- [ ] Historial de ubicaciones con filtro de fechas
+- [ ] Mostrar última ubicación conocida en lista de vehículos
+- [ ] Vista de mapa con todos los vehículos (opcional)
 
 ## ⛽ SECCIÓN 3: RECARGAS DE TANQUE (INGRESOS)
 
@@ -207,15 +253,18 @@
 
 | Sección | Duración | Estado |
 |---------|----------|--------|
-| Tanques | 1-2 días | ⬜ Pendiente |
+| Tanques | 1-2 días | ✅ Completado |
+| Divisiones | 1 día | ⬜ Pendiente |
 | Vehículos | 1-2 días | ⬜ Pendiente |
+| GPS/Traccar | 2-3 días | ⬜ Pendiente |
 | Recargas | 1 día | ⬜ Pendiente |
+| Transferencias | 1 día | ⬜ Pendiente |
 | Despachos | 2-3 días | ⬜ Pendiente |
 | Dashboard | 1-2 días | ⬜ Pendiente |
 | Reportes | 2 días | ⬜ Pendiente |
 | Permisos | 1 día | ⬜ Pendiente |
 | Pruebas | 1-2 días | ⬜ Pendiente |
-| **TOTAL** | **10-15 días** | |
+| **TOTAL** | **14-21 días** | |
 
 ---
 
