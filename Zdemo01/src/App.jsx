@@ -10,6 +10,16 @@ import { ConfiguracionPage } from './pages/sistemas/ConfiguracionPage';
 import { MenusPage } from './pages/sistemas/MenusPage';
 import { CargosPage } from './pages/rrhh/CargosPage';
 import { PersonalPage } from './pages/rrhh/PersonalPage';
+import { TrabajosPage } from './pages/t_diesel/TrabajosPage';
+import { DivisionesPage } from './pages/t_diesel/DivisionesPage';
+import { ProveedoresPage } from './pages/t_diesel/ProveedoresPage';
+import { TiposPagoPage } from './pages/t_diesel/TiposPagoPage';
+import { MotivosAjustePage } from './pages/t_diesel/MotivosAjustePage';
+import { UbicacionesPage } from './pages/t_diesel/UbicacionesPage';
+import { TanquesPage } from './pages/t_diesel/TanquesPage';
+import { MaquinasPage } from './pages/t_diesel/MaquinasPage';
+import { TiposMovimientoPage } from './pages/t_diesel/TiposMovimientoPage';
+import { IngresosPage } from './pages/t_diesel/IngresosPage';
 import { Sidebar } from './components/Sidebar'
 import { ChatWidget } from './components/ChatWidget'
 import { logout, getSession } from './services/authService'
@@ -26,7 +36,17 @@ const SUPPORTED_ROUTES = new Set([
   '/sistemas/configuracion',
   '/sistemas/menus',
   '/rrhh/cargos',
-  '/rrhh/personal'
+  '/rrhh/personal',
+  '/diesel/trabajos',
+  '/diesel/divisiones',
+  '/diesel/proveedores',
+  '/diesel/tipos-pago',
+  '/diesel/motivos-ajuste',
+  '/diesel/ubicaciones',
+  '/diesel/tanques',
+  '/diesel/maquinas',
+  '/diesel/tipos-movimiento',
+  '/diesel/ingresos'
 ])
 
 function getStoredActivePage() {
@@ -229,6 +249,17 @@ function App() {
           {activePage === '/sistemas/menus' && <MenusPage />}
           {activePage === '/rrhh/cargos' && <CargosPage />}
           {activePage === '/rrhh/personal' && <PersonalPage />}
+          {activePage === '/diesel/maquinas' && <MaquinasPage />}
+          {activePage === '/diesel/tipos-movimiento' && <TiposMovimientoPage />}
+          {activePage === '/diesel/ingresos' && <IngresosPage />}
+          {activePage === '/diesel/trabajos' && <TrabajosPage />}
+          {activePage === '/diesel/divisiones' && <DivisionesPage />}
+          {activePage === '/diesel/proveedores' && <ProveedoresPage />}
+          {activePage === '/diesel/tipos-pago' && <TiposPagoPage />}
+          {activePage === '/diesel/motivos-ajuste' && <MotivosAjustePage />}
+          {activePage === '/diesel/ubicaciones' && <UbicacionesPage />}
+          {activePage === '/diesel/tanques' && <TanquesPage />}
+          {activePage === '/diesel/maquinas' && <MaquinasPage />}
         </div>
       </div>
 

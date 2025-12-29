@@ -13,14 +13,14 @@ class MenuController extends Controller
     private function isSuperAdmin($user)
     {
         if (!$user) return false;
-        
+
         // Verificar por slug O nombre que contenga "admin" o "super"
         return $user->roles()
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->where('slug', 'super-admin')
-                  ->orWhere('slug', 'admin')
-                  ->orWhere('name', 'like', '%Admin%')
-                  ->orWhere('name', 'like', '%Super%');
+                    ->orWhere('slug', 'admin')
+                    ->orWhere('name', 'like', '%Admin%')
+                    ->orWhere('name', 'like', '%Super%');
             })
             ->exists();
     }
@@ -42,7 +42,7 @@ class MenuController extends Controller
             ->with('children')
             ->orderBy('order')
             ->get()
-            ->map(function($menu) {
+            ->map(function ($menu) {
                 return [
                     'id' => $menu->id,
                     'name' => $menu->name,
@@ -54,7 +54,7 @@ class MenuController extends Controller
                     'parent_id' => $menu->parent_id,
                     'children_count' => $menu->children->count(),
                     'roles_count' => $menu->roles()->count(),
-                    'children' => $menu->children->map(function($child) {
+                    'children' => $menu->children->map(function ($child) {
                         return [
                             'id' => $child->id,
                             'name' => $child->name,
@@ -257,12 +257,44 @@ class MenuController extends Controller
 
         // Eliminar relaciones con roles
         $menu->roles()->detach();
-        
+
         $menu->delete();
 
         return response()->json([
             'success' => true,
             'message' => 'Menú eliminado correctamente'
+        ]);
+    }
+
+    /**
+     * Actualizar posiciones de menús (Drag & Drop)
+     */
+    public function updatePositions(Request $request)
+    {
+        if (!$this->isSuperAdmin($request->user())) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Acceso denegado'
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'items' => 'required|array',
+            'items.*.id' => 'required|exists:menus,id',
+            'items.*.parent_id' => 'nullable|exists:menus,id',
+            'items.*.order' => 'required|integer'
+        ]);
+
+        foreach ($validated['items'] as $item) {
+            Menu::where('id', $item['id'])->update([
+                'parent_id' => $item['parent_id'],
+                'order' => $item['order']
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Posiciones actualizadas correctamente'
         ]);
     }
 
@@ -273,28 +305,119 @@ class MenuController extends Controller
     {
         // Lista de iconos Lucide más comunes para menús
         $icons = [
-            'Home', 'Settings', 'Users', 'User', 'Lock', 'Shield',
-            'Wrench', 'Cog', 'Menu', 'List', 'Grid', 'Folder',
-            'File', 'FileText', 'Database', 'Server', 'Cloud',
-            'MessageCircle', 'Mail', 'Bell', 'Calendar', 'Clock',
-            'Search', 'Filter', 'Plus', 'Minus', 'Edit', 'Trash2',
-            'Eye', 'EyeOff', 'Download', 'Upload', 'Share',
-            'Link', 'ExternalLink', 'Bookmark', 'Star', 'Heart',
-            'ShoppingCart', 'CreditCard', 'DollarSign', 'TrendingUp',
-            'BarChart', 'PieChart', 'Activity', 'Zap', 'Award',
-            'Package', 'Box', 'Archive', 'Briefcase', 'Building',
-            'Map', 'MapPin', 'Navigation', 'Compass', 'Globe',
-            'Phone', 'Smartphone', 'Tablet', 'Monitor', 'Laptop',
-            'Printer', 'Camera', 'Image', 'Video', 'Music',
-            'Play', 'Pause', 'Volume2', 'Mic', 'Headphones',
-            'Wifi', 'Bluetooth', 'Battery', 'Power', 'RefreshCw',
-            'RotateCcw', 'RotateCw', 'Shuffle', 'Repeat', 'Save',
-            'Copy', 'Clipboard', 'CheckCircle', 'XCircle', 'AlertCircle',
-            'Info', 'HelpCircle', 'Sun', 'Moon', 'Layers',
-            'Layout', 'Sidebar', 'Square', 'Circle', 'Triangle',
-            'Hash', 'AtSign', 'Terminal', 'Code', 'GitBranch',
-            'Github', 'Gitlab', 'Chrome', 'Facebook', 'Twitter',
-            'Linkedin', 'Instagram', 'Youtube', 'Truck', 'Tag', 'Tags'
+            'Home',
+            'Settings',
+            'Users',
+            'User',
+            'Lock',
+            'Shield',
+            'Wrench',
+            'Cog',
+            'Menu',
+            'List',
+            'Grid',
+            'Folder',
+            'File',
+            'FileText',
+            'Database',
+            'Server',
+            'Cloud',
+            'MessageCircle',
+            'Mail',
+            'Bell',
+            'Calendar',
+            'Clock',
+            'Search',
+            'Filter',
+            'Plus',
+            'Minus',
+            'Edit',
+            'Trash2',
+            'Eye',
+            'EyeOff',
+            'Download',
+            'Upload',
+            'Share',
+            'Link',
+            'ExternalLink',
+            'Bookmark',
+            'Star',
+            'Heart',
+            'ShoppingCart',
+            'CreditCard',
+            'DollarSign',
+            'TrendingUp',
+            'BarChart',
+            'PieChart',
+            'Activity',
+            'Zap',
+            'Award',
+            'Package',
+            'Box',
+            'Archive',
+            'Briefcase',
+            'Building',
+            'Map',
+            'MapPin',
+            'Navigation',
+            'Compass',
+            'Globe',
+            'Phone',
+            'Smartphone',
+            'Tablet',
+            'Monitor',
+            'Laptop',
+            'Printer',
+            'Camera',
+            'Image',
+            'Video',
+            'Music',
+            'Play',
+            'Pause',
+            'Volume2',
+            'Mic',
+            'Headphones',
+            'Wifi',
+            'Bluetooth',
+            'Battery',
+            'Power',
+            'RefreshCw',
+            'RotateCcw',
+            'RotateCw',
+            'Shuffle',
+            'Repeat',
+            'Save',
+            'Copy',
+            'Clipboard',
+            'CheckCircle',
+            'XCircle',
+            'AlertCircle',
+            'Info',
+            'HelpCircle',
+            'Sun',
+            'Moon',
+            'Layers',
+            'Layout',
+            'Sidebar',
+            'Square',
+            'Circle',
+            'Triangle',
+            'Hash',
+            'AtSign',
+            'Terminal',
+            'Code',
+            'GitBranch',
+            'Github',
+            'Gitlab',
+            'Chrome',
+            'Facebook',
+            'Twitter',
+            'Linkedin',
+            'Instagram',
+            'Youtube',
+            'Truck',
+            'Tag',
+            'Tags'
         ];
 
         return response()->json([

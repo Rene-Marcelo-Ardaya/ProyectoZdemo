@@ -65,4 +65,36 @@ class Personal extends Model
     {
         return trim("{$this->nombre} {$this->apellido_paterno} {$this->apellido_materno}");
     }
+
+    /**
+     * Permisos de PIN en ubicaciones diesel
+     */
+    public function dieselPinPermissions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(DieselPinPermission::class, 'personal_id');
+    }
+
+    /**
+     * Movimientos autorizados por este personal (con PIN)
+     */
+    public function dieselMovementsAuthorized(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(DieselMovement::class, 'authorized_by_pin_id');
+    }
+
+    /**
+     * Movimientos como chofer
+     */
+    public function dieselMovementsAsDriver(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(DieselMovement::class, 'driver_id');
+    }
+
+    /**
+     * Movimientos como receptor
+     */
+    public function dieselMovementsAsReceiver(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(DieselMovement::class, 'receiver_id');
+    }
 }

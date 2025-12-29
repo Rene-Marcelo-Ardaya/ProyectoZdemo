@@ -3,7 +3,9 @@ import { DSList } from './DSList'
 import { DSGrid } from './DSGrid'
 import { DSBadge, DSCount, DSCode } from './DSBadge'
 
-export { DSList, DSGrid, DSBadge, DSCount, DSCode }
+import { DSEditableGrid } from './DSEditableGrid'
+
+export { DSList, DSGrid, DSBadge, DSCount, DSCode, DSEditableGrid }
 
 const placeholder = (name, children) =>
   React.createElement(

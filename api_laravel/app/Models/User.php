@@ -71,4 +71,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Message::class);
     }
+
+    /**
+     * Movimientos de diesel digitados por el usuario
+     */
+    public function dieselMovements(): HasMany
+    {
+        return $this->hasMany(DieselMovement::class, 'user_id');
+    }
 }

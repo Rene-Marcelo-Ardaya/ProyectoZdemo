@@ -1,0 +1,335 @@
+/* ============================================
+   Diesel Pages - Estilos compartidos
+   ============================================ */
+
+.diesel-alert-margin {
+    margin-bottom: 16px;
+}
+
+.diesel-panel__count {
+    font-size: 13px;
+    color: var(--ds-secondaryText);
+    font-weight: 500;
+}
+
+/* Formulario */
+.diesel-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.diesel-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.diesel-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--ds-primaryText);
+}
+
+.diesel-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--ds-accent);
+    cursor: pointer;
+}
+
+/* Tooltip */
+.diesel-tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    color: var(--ds-secondaryText);
+    cursor: help;
+}
+
+.diesel-tooltip__text {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(100% + 8px);
+    width: 220px;
+    padding: 8px 12px;
+    background: var(--ds-tooltipBg, #1a1a1a);
+    color: var(--ds-tooltipText, #fff);
+    font-size: 12px;
+    line-height: 1.4;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: opacity 0.2s, visibility 0.2s;
+    text-align: left;
+    font-weight: normal;
+}
+
+.diesel-tooltip__text::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--ds-tooltipBg, #1a1a1a);
+}
+
+.diesel-tooltip:hover .diesel-tooltip__text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Grid para formularios con múltiples campos */
+.diesel-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.diesel-form-grid--full {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 768px) {
+    .diesel-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================
+   Filtros
+   ============================================ */
+.diesel-filters-section {
+    margin-bottom: 16px;
+}
+
+.diesel-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: var(--ds-secondaryBg, #f9fafb);
+    border-radius: 8px;
+    border: 1px solid var(--ds-fieldBorder, #e5e7eb);
+}
+
+.diesel-filters__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.diesel-filters__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 140px;
+    flex: 1;
+}
+
+.diesel-filters__field--wide {
+    flex: 2;
+    min-width: 200px;
+}
+
+.diesel-filters__shortcuts {
+    align-items: center;
+    padding-top: 8px;
+    border-top: 1px solid var(--ds-fieldBorder, #e5e7eb);
+}
+
+.diesel-filters__label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ds-secondaryText);
+    margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+    .diesel-filters__field {
+        min-width: 100%;
+    }
+
+    .diesel-filters__field--wide {
+        min-width: 100%;
+    }
+}
+
+/* ============================================
+   Modal Footer
+   ============================================ */
+.diesel-modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 16px;
+}
+
+.diesel-modal-footer__totals {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 13px;
+    color: var(--ds-secondaryText);
+}
+
+.diesel-modal-footer__total {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--ds-success, #16a34a);
+}
+
+.diesel-modal-footer__actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* ============================================
+   View Modal
+   ============================================ */
+.diesel-view-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 16px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.diesel-view-info p {
+    margin: 0;
+}
+
+.diesel-view-subtitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ds-secondaryText);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.diesel-view-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.diesel-view-table th,
+.diesel-view-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--ds-fieldBorder, #e5e7eb);
+}
+
+.diesel-view-table th {
+    background: var(--ds-secondaryBg, #f9fafb);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--ds-secondaryText);
+}
+
+/* ============================================
+   Main Table
+   ============================================ */
+.diesel-table-wrapper {
+    overflow-x: auto;
+    min-height: 200px;
+}
+
+.diesel-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--ds-fieldBg, #fff);
+}
+
+.diesel-table th,
+.diesel-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--ds-fieldBorder, #e5e7eb);
+}
+
+.diesel-table th {
+    background: var(--ds-secondaryBg, #f9fafb);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--ds-secondaryText);
+    white-space: nowrap;
+}
+
+.diesel-table tbody tr:hover {
+    background: var(--ds-hoverBg, #f3f4f6);
+}
+
+.diesel-table .text-right {
+    text-align: right;
+    font-family: monospace;
+}
+
+.diesel-empty {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--ds-secondaryText);
+    font-style: italic;
+    background: var(--ds-secondaryBg, #f9fafb);
+    border-radius: 8px;
+}
+
+/* ============================================
+   Combo Refresh Buttons
+   ============================================ */
+.diesel-combo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.diesel-combo-header--section {
+    margin-top: 16px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--ds-fieldBorder, #e5e7eb);
+}
+
+.diesel-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ds-secondaryText);
+    text-transform: uppercase;
+}
+
+.diesel-refresh-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    font-size: 11px;
+    color: var(--ds-accent, #3b82f6);
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.diesel-refresh-btn:hover {
+    background: var(--ds-accentLight, #eff6ff);
+    color: var(--ds-accentDark, #1d4ed8);
+}
+
+.diesel-refresh-btn:active {
+    transform: scale(0.95);
+}
