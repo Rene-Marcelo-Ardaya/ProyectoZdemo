@@ -3,24 +3,38 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class NivelSeguridad extends Model
 {
-    public $timestamps = false;
     protected $table = 'niveles_seguridad';
 
     protected $fillable = [
         'nombre',
-        'nivel'
+        'color',
+        'descripcion',
+        'is_active',
     ];
 
     protected $casts = [
-        'nivel' => 'integer'
+        'is_active' => 'boolean',
     ];
 
-    // Relaciones
-    public function personalPinAccesos()
+    // Relación con empleados
+    public function personal(): HasMany
     {
-        return $this->hasMany(PersonalPinAcceso::class, 'nivel_seguridad_id');
+        return $this->hasMany(Personal::class, 'nivel_seguridad_id');
+    }
+
+    // Relación con componentes protegidos
+    public function componentes(): HasMany
+    {
+        return $this->hasMany(ComponenteSeguridad::class, 'nivel_seguridad_id');
+    }
+
+    // Scope para obtener solo niveles activos
+    public function scopeActivos($query)
+    {
+        return $query->where('is_active', true);
     }
 }

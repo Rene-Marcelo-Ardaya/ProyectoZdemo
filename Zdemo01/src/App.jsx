@@ -2,12 +2,14 @@
 import './App.css'
 import './styles/pages.css'
 import { useTheme } from './theme'
+import { SecurityProvider } from './core/SecurityContext'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { UsuariosPage } from './pages/sistemas/UsuariosPage';
 import { ControlAccesosPage } from './pages/sistemas/ControlAccesosPage';
 import { ConfiguracionPage } from './pages/sistemas/ConfiguracionPage';
 import { MenusPage } from './pages/sistemas/MenusPage';
+import { NivelesSeguridadPage } from './pages/sistemas/NivelesSeguridadPage';
 import { CargosPage } from './pages/rrhh/CargosPage';
 import { PersonalPage } from './pages/rrhh/PersonalPage';
 import { TrabajosPage } from './pages/t_diesel/TrabajosPage';
@@ -35,6 +37,7 @@ const SUPPORTED_ROUTES = new Set([
   '/sistemas/accesos',
   '/sistemas/configuracion',
   '/sistemas/menus',
+  '/sistemas/niveles-seguridad',
   '/rrhh/cargos',
   '/rrhh/personal',
   '/diesel/trabajos',
@@ -170,102 +173,105 @@ function App() {
   const { Icon: HeaderIcon, title: headerTitle } = getHeaderConfig(activePage)
 
   return (
-    <div className="app-with-sidebar">
-      {/* SIDEBAR con menús desplegables */}
-      <Sidebar
-        menus={userMenus}
-        activePage={activePage}
-        onNavigate={goToPage}
-        user={userData}
-        onLogout={handleLogout}
-        isCollapsed={isCollapsed}
-        onToggle={() => setIsCollapsed(!isCollapsed)}
-        appConfig={appConfig}
-      />
+    <SecurityProvider user={userData}>
+      <div className="app-with-sidebar">
+        {/* SIDEBAR con menús desplegables */}
+        <Sidebar
+          menus={userMenus}
+          activePage={activePage}
+          onNavigate={goToPage}
+          user={userData}
+          onLogout={handleLogout}
+          isCollapsed={isCollapsed}
+          onToggle={() => setIsCollapsed(!isCollapsed)}
+          appConfig={appConfig}
+        />
 
-      {/* Contenido principal */}
-      <div
-        className={`main-content ${isCollapsed ? 'is-collapsed' : ''}`}
-        style={{
-          minHeight: '100vh',
-          background: 'var(--ds-primaryBg)',
-          transition: 'background-color 0.2s'
-        }}
-      >
-        {/* Header */}
-        <div className="main-content__header">
-          <h1 className="main-content__title">
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
-              <HeaderIcon size={20} />
-              <span>{headerTitle}</span>
-            </span>
-          </h1>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <span style={{ fontSize: '12px', color: 'var(--ds-secondaryText)' }}>
-              {userData?.name || userData?.email}
-            </span>
-            <select
-              value={theme}
-              onChange={(e) => setTheme(e.target.value)}
-              style={{
-                padding: '4px 8px',
-                borderRadius: '4px',
-                border: '1px solid var(--ds-fieldBorder)',
-                background: 'var(--ds-fieldBg)',
-                color: 'var(--ds-fieldText)'
-              }}
-            >
-              {availableThemes?.map((t) => (
-                <option key={t} value={t}>{themeLabels?.[t] || t}</option>
-              ))}
-            </select>
+        {/* Contenido principal */}
+        <div
+          className={`main-content ${isCollapsed ? 'is-collapsed' : ''}`}
+          style={{
+            minHeight: '100vh',
+            background: 'var(--ds-primaryBg)',
+            transition: 'background-color 0.2s'
+          }}
+        >
+          {/* Header */}
+          <div className="main-content__header">
+            <h1 className="main-content__title">
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+                <HeaderIcon size={20} />
+                <span>{headerTitle}</span>
+              </span>
+            </h1>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <span style={{ fontSize: '12px', color: 'var(--ds-secondaryText)' }}>
+                {userData?.name || userData?.email}
+              </span>
+              <select
+                value={theme}
+                onChange={(e) => setTheme(e.target.value)}
+                style={{
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  border: '1px solid var(--ds-fieldBorder)',
+                  background: 'var(--ds-fieldBg)',
+                  color: 'var(--ds-fieldText)'
+                }}
+              >
+                {availableThemes?.map((t) => (
+                  <option key={t} value={t}>{themeLabels?.[t] || t}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Warning de sesión por expirar */}
+          {sessionWarning && sessionWarning <= 5 && (
+            <div style={{
+              background: '#fef3cd',
+              borderLeft: '4px solid #f59e0b',
+              color: '#92400e',
+              padding: '10px 16px',
+              margin: '0 24px 16px 24px',
+              borderRadius: '0 6px 6px 0',
+              fontSize: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              ⏱️ Tu sesión expirará en <strong>{sessionWarning} minuto{sessionWarning !== 1 ? 's' : ''}</strong>. Guarda tu trabajo.
+            </div>
+          )}
+
+          {/* Páginas */}
+          <div className="main-content__body">
+            {activePage === 'dashboard' && <DashboardPage user={userData} menus={userMenus} />}
+            {activePage === '/sistemas/usuarios' && <UsuariosPage />}
+            {activePage === '/sistemas/accesos' && <ControlAccesosPage />}
+            {activePage === '/sistemas/configuracion' && <ConfiguracionPage />}
+            {activePage === '/sistemas/menus' && <MenusPage />}
+            {activePage === '/sistemas/niveles-seguridad' && <NivelesSeguridadPage />}
+            {activePage === '/rrhh/cargos' && <CargosPage />}
+            {activePage === '/rrhh/personal' && <PersonalPage />}
+            {activePage === '/diesel/maquinas' && <MaquinasPage />}
+            {activePage === '/diesel/tipos-movimiento' && <TiposMovimientoPage />}
+            {activePage === '/diesel/ingresos' && <IngresosPage />}
+            {activePage === '/diesel/trabajos' && <TrabajosPage />}
+            {activePage === '/diesel/divisiones' && <DivisionesPage />}
+            {activePage === '/diesel/proveedores' && <ProveedoresPage />}
+            {activePage === '/diesel/tipos-pago' && <TiposPagoPage />}
+            {activePage === '/diesel/motivos-ajuste' && <MotivosAjustePage />}
+            {activePage === '/diesel/ubicaciones' && <UbicacionesPage />}
+            {activePage === '/diesel/tanques' && <TanquesPage />}
+            {activePage === '/diesel/maquinas' && <MaquinasPage />}
           </div>
         </div>
 
-        {/* Warning de sesión por expirar */}
-        {sessionWarning && sessionWarning <= 5 && (
-          <div style={{
-            background: '#fef3cd',
-            borderLeft: '4px solid #f59e0b',
-            color: '#92400e',
-            padding: '10px 16px',
-            margin: '0 24px 16px 24px',
-            borderRadius: '0 6px 6px 0',
-            fontSize: '14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            ⏱️ Tu sesión expirará en <strong>{sessionWarning} minuto{sessionWarning !== 1 ? 's' : ''}</strong>. Guarda tu trabajo.
-          </div>
-        )}
-
-        {/* Páginas */}
-        <div className="main-content__body">
-          {activePage === 'dashboard' && <DashboardPage user={userData} menus={userMenus} />}
-          {activePage === '/sistemas/usuarios' && <UsuariosPage />}
-          {activePage === '/sistemas/accesos' && <ControlAccesosPage />}
-          {activePage === '/sistemas/configuracion' && <ConfiguracionPage />}
-          {activePage === '/sistemas/menus' && <MenusPage />}
-          {activePage === '/rrhh/cargos' && <CargosPage />}
-          {activePage === '/rrhh/personal' && <PersonalPage />}
-          {activePage === '/diesel/maquinas' && <MaquinasPage />}
-          {activePage === '/diesel/tipos-movimiento' && <TiposMovimientoPage />}
-          {activePage === '/diesel/ingresos' && <IngresosPage />}
-          {activePage === '/diesel/trabajos' && <TrabajosPage />}
-          {activePage === '/diesel/divisiones' && <DivisionesPage />}
-          {activePage === '/diesel/proveedores' && <ProveedoresPage />}
-          {activePage === '/diesel/tipos-pago' && <TiposPagoPage />}
-          {activePage === '/diesel/motivos-ajuste' && <MotivosAjustePage />}
-          {activePage === '/diesel/ubicaciones' && <UbicacionesPage />}
-          {activePage === '/diesel/tanques' && <TanquesPage />}
-          {activePage === '/diesel/maquinas' && <MaquinasPage />}
-        </div>
+        {/* Chat Widget Flotante - Solo visible si el usuario tiene acceso al chat */}
+        <ChatWidget menus={userMenus} />
       </div>
-
-      {/* Chat Widget Flotante - Solo visible si el usuario tiene acceso al chat */}
-      <ChatWidget menus={userMenus} />
-    </div>
+    </SecurityProvider>
   )
 }
 

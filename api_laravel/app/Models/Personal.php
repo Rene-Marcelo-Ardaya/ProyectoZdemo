@@ -24,6 +24,7 @@ class Personal extends Model
         'telefono',
         'email',
         'cargo_id',
+        'nivel_seguridad_id',
         'fecha_ingreso',
         'fecha_salida',
         'salario',

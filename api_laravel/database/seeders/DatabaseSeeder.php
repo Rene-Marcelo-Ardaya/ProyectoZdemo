@@ -15,26 +15,29 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Crear Roles
-        $adminRoleId = \Illuminate\Support\Facades\DB::table('roles')->insertGetId([
-            'name' => 'Super Admin',
-            'slug' => 'super-admin',
-            'description' => 'Acceso total al sistema',
-            'is_active' => true,
-            'session_timeout_minutes' => null, // Sin límite
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // 1. Crear Roles (idempotente)
+        \Illuminate\Support\Facades\DB::table('roles')->updateOrInsert(
+            ['slug' => 'super-admin'],
+            [
+                'name' => 'Super Admin',
+                'description' => 'Acceso total al sistema',
+                'is_active' => true,
+                'session_timeout_minutes' => null, // Sin límite
+                'updated_at' => now(),
+            ]
+        );
+        $adminRoleId = \Illuminate\Support\Facades\DB::table('roles')->where('slug', 'super-admin')->value('id');
 
-        \Illuminate\Support\Facades\DB::table('roles')->insert([
-            'name' => 'Usuario',
-            'slug' => 'user',
-            'description' => 'Acceso limitado',
-            'is_active' => true,
-            'session_timeout_minutes' => 60, // 1 hora
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        \Illuminate\Support\Facades\DB::table('roles')->updateOrInsert(
+            ['slug' => 'user'],
+            [
+                'name' => 'Usuario',
+                'description' => 'Acceso limitado',
+                'is_active' => true,
+                'session_timeout_minutes' => 60, // 1 hora
+                'updated_at' => now(),
+            ]
+        );
 
         // 2. Crear Usuario Admin (o actualizar si existe)
         $user = User::firstOrCreate(
@@ -52,93 +55,102 @@ class DatabaseSeeder extends Seeder
             []
         );
 
-        // 4. Crear Menús Básicos (Sistemas)
+        // 4. Crear Menús Básicos (Sistemas) - Idempotente
         // Módulo Sistemas
-        $sysMenuId = \Illuminate\Support\Facades\DB::table('menus')->insertGetId([
-            'name' => 'Sistemas',
-            'icon' => 'Settings', // Icono Lucide
-            'order' => 99,
-            'module' => 'Sistemas',
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        \Illuminate\Support\Facades\DB::table('menus')->updateOrInsert(
+            ['name' => 'Sistemas', 'parent_id' => null],
+            [
+                'icon' => 'Settings',
+                'order' => 99,
+                'module' => 'Sistemas',
+                'is_active' => true,
+                'updated_at' => now(),
+            ]
+        );
+        $sysMenuId = \Illuminate\Support\Facades\DB::table('menus')->where('name', 'Sistemas')->whereNull('parent_id')->value('id');
 
         // Submenú: Usuarios
-        \Illuminate\Support\Facades\DB::table('menus')->insert([
-            'name' => 'Usuarios',
-            'url' => '/sistemas/usuarios',
-            'icon' => 'Users',
-            'parent_id' => $sysMenuId,
-            'order' => 1,
-            'module' => 'Sistemas',
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        \Illuminate\Support\Facades\DB::table('menus')->updateOrInsert(
+            ['url' => '/sistemas/usuarios'],
+            [
+                'name' => 'Usuarios',
+                'icon' => 'Users',
+                'parent_id' => $sysMenuId,
+                'order' => 1,
+                'module' => 'Sistemas',
+                'is_active' => true,
+                'updated_at' => now(),
+            ]
+        );
 
         // Submenú: Control de Accesos
-        \Illuminate\Support\Facades\DB::table('menus')->insert([
-            'name' => 'Control de Accesos',
-            'url' => '/sistemas/accesos',
-            'icon' => 'Lock',
-            'parent_id' => $sysMenuId,
-            'order' => 2,
-            'module' => 'Sistemas',
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        \Illuminate\Support\Facades\DB::table('menus')->updateOrInsert(
+            ['url' => '/sistemas/accesos'],
+            [
+                'name' => 'Control de Accesos',
+                'icon' => 'Lock',
+                'parent_id' => $sysMenuId,
+                'order' => 2,
+                'module' => 'Sistemas',
+                'is_active' => true,
+                'updated_at' => now(),
+            ]
+        );
 
         // Submenú: Configuración
-        \Illuminate\Support\Facades\DB::table('menus')->insert([
-            'name' => 'Configuración',
-            'url' => '/sistemas/configuracion',
-            'icon' => 'Wrench',
-            'parent_id' => $sysMenuId,
-            'order' => 3,
-            'module' => 'Sistemas',
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        \Illuminate\Support\Facades\DB::table('menus')->updateOrInsert(
+            ['url' => '/sistemas/configuracion'],
+            [
+                'name' => 'Configuración',
+                'icon' => 'Wrench',
+                'parent_id' => $sysMenuId,
+                'order' => 3,
+                'module' => 'Sistemas',
+                'is_active' => true,
+                'updated_at' => now(),
+            ]
+        );
 
         // Submenú: Administración de Menús (Solo Superusuarios)
-        $menuAdminId = \Illuminate\Support\Facades\DB::table('menus')->insertGetId([
-            'name' => 'Administración de Menús',
-            'url' => '/sistemas/menus',
-            'icon' => 'FolderTree',
-            'parent_id' => $sysMenuId,
-            'order' => 4,
-            'module' => 'Sistemas',
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        \Illuminate\Support\Facades\DB::table('menus')->updateOrInsert(
+            ['url' => '/sistemas/menus'],
+            [
+                'name' => 'Administración de Menús',
+                'icon' => 'FolderTree',
+                'parent_id' => $sysMenuId,
+                'order' => 4,
+                'module' => 'Sistemas',
+                'is_active' => true,
+                'updated_at' => now(),
+            ]
+        );
         
         // Módulo: Comunicación (Chat)
-        $comMenuId = \Illuminate\Support\Facades\DB::table('menus')->insertGetId([
-            'name' => 'Comunicación',
-            'icon' => 'MessageCircle',
-            'order' => 10,
-            'module' => 'Chat',
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        \Illuminate\Support\Facades\DB::table('menus')->updateOrInsert(
+            ['name' => 'Comunicación', 'parent_id' => null],
+            [
+                'icon' => 'MessageCircle',
+                'order' => 10,
+                'module' => 'Chat',
+                'is_active' => true,
+                'updated_at' => now(),
+            ]
+        );
+        $comMenuId = \Illuminate\Support\Facades\DB::table('menus')->where('name', 'Comunicación')->whereNull('parent_id')->value('id');
 
         // Submenú: Chat
-        \Illuminate\Support\Facades\DB::table('menus')->insert([
-            'name' => 'Chat',
-            'url' => '/chat',
-            'icon' => 'MessageCircle',
-            'parent_id' => $comMenuId,
-            'order' => 1,
-            'module' => 'Chat',
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        \Illuminate\Support\Facades\DB::table('menus')->updateOrInsert(
+            ['url' => '/chat'],
+            [
+                'name' => 'Chat',
+                'icon' => 'MessageCircle',
+                'parent_id' => $comMenuId,
+                'order' => 1,
+                'module' => 'Chat',
+                'is_active' => true,
+                'updated_at' => now(),
+            ]
+        );
         
         // Asignar menus al rol admin (Ver todo)
         $menus = \Illuminate\Support\Facades\DB::table('menus')->pluck('id');

@@ -13,12 +13,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('personal', function (Blueprint $table) {
-            // Eliminar codigo_empleado
-            $table->dropUnique(['codigo_empleado']);
-            $table->dropColumn('codigo_empleado');
+            // Eliminar codigo_empleado si existe
+            if (Schema::hasColumn('personal', 'codigo_empleado')) {
+                // Verificar si el índice existe antes de eliminarlo
+                $sm = Schema::getConnection()->getDoctrineSchemaManager();
+                $indexesFound = $sm->listTableIndexes('personal');
+                if (array_key_exists('personal_codigo_empleado_unique', $indexesFound)) {
+                    $table->dropUnique(['codigo_empleado']);
+                }
+                $table->dropColumn('codigo_empleado');
+            }
             
-            // Agregar PIN (hasheado, por eso 255 caracteres)
-            $table->string('pin', 255)->nullable()->after('ci');
+            // Agregar PIN si no existe (hasheado, por eso 255 caracteres)
+            if (!Schema::hasColumn('personal', 'pin')) {
+                $table->string('pin', 255)->nullable()->after('ci');
+            }
         });
 
         // Actualizar enum estado a solo activo/inactivo

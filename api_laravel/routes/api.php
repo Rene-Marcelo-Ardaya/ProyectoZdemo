@@ -11,6 +11,8 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CargoController;
 use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\NivelSeguridadController;
+use App\Http\Controllers\ComponenteSeguridadController;
 use App\Http\Controllers\DieselDivisionController;
 use App\Http\Controllers\DieselTrabajoController;
 use App\Http\Controllers\DieselUbicacionController;
@@ -79,6 +81,21 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // RRHH - Personal
     Route::get('/personal/stats', [PersonalController::class, 'stats']);
     Route::apiResource('personal', PersonalController::class);
+
+    // ======================================================================
+    // NIVELES DE SEGURIDAD (SecuredButton System)
+    // ======================================================================
+    Route::get('/niveles-seguridad/activos', [NivelSeguridadController::class, 'activos']);
+    Route::get('/niveles-seguridad/{id}/miembros', [NivelSeguridadController::class, 'miembros']);
+    Route::get('/niveles-seguridad/{id}/empleados-disponibles', [NivelSeguridadController::class, 'empleadosDisponibles']);
+    Route::post('/niveles-seguridad/{id}/miembros', [NivelSeguridadController::class, 'addMiembro']);
+    Route::delete('/niveles-seguridad/{id}/miembros/{personaId}', [NivelSeguridadController::class, 'removeMiembro']);
+    Route::apiResource('niveles-seguridad', NivelSeguridadController::class);
+
+    // Componentes con Seguridad
+    Route::get('/componentes-seguridad', [ComponenteSeguridadController::class, 'index']);
+    Route::post('/componentes-seguridad', [ComponenteSeguridadController::class, 'upsert']);
+    Route::delete('/componentes-seguridad/{componenteId}', [ComponenteSeguridadController::class, 'destroy']);
 
     // ======================================================================
     // SISTEMA DE GESTIÓN DE DIESEL - NUEVA ESTRUCTURA

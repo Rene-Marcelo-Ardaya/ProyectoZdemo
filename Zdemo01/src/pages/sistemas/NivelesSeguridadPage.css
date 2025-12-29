@@ -1,0 +1,192 @@
+/* =============================================
+   Niveles de Seguridad Page Styles
+   ============================================= */
+
+.niveles-alert-margin {
+    margin: 0 0 1rem 0;
+}
+
+.niveles-panel__count {
+    font-size: 13px;
+    color: var(--ds-secondaryText, #6b7280);
+}
+
+/* Tooltip */
+.niveles-tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    color: var(--ds-secondaryText, #9ca3af);
+    cursor: help;
+}
+
+.niveles-tooltip__text {
+    display: none;
+    position: absolute;
+    left: 50%;
+    bottom: 120%;
+    transform: translateX(-50%);
+    background: var(--ds-text, #111827);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    max-width: 250px;
+    white-space: normal;
+    z-index: 1000;
+}
+
+.niveles-tooltip:hover .niveles-tooltip__text {
+    display: block;
+}
+
+/* Form */
+.niveles-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.niveles-textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.niveles-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.niveles-checkbox input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* Color dot in table */
+.niveles-color-dot {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Color Picker */
+.niveles-color-picker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.niveles-color-picker__presets {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.niveles-color-picker__swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.niveles-color-picker__swatch:hover {
+    transform: scale(1.1);
+}
+
+.niveles-color-picker__swatch.is-selected {
+    border-color: var(--ds-text, #111827);
+    box-shadow: 0 0 0 2px white;
+}
+
+.niveles-color-picker__input {
+    width: 36px;
+    height: 28px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* Miembros Modal */
+.niveles-miembros {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.niveles-miembros__empty {
+    color: var(--ds-secondaryText, #6b7280);
+    font-size: 14px;
+    font-style: italic;
+    padding: 1rem 0;
+}
+
+.niveles-miembros__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.niveles-miembros__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--ds-secondaryBg, #f9fafb);
+    border-radius: 6px;
+    border: 1px solid var(--ds-divider, #e5e7eb);
+}
+
+.niveles-miembros__item--selectable {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.niveles-miembros__item--selectable:hover {
+    background: var(--ds-accentLight, #eff6ff);
+}
+
+.niveles-miembros__item--selectable input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.niveles-miembros__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.niveles-miembros__info strong {
+    font-size: 14px;
+    color: var(--ds-text, #111827);
+}
+
+.niveles-miembros__meta {
+    font-size: 12px;
+    color: var(--ds-secondaryText, #6b7280);
+}
+
+.niveles-miembros__actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 12px;
+    border-top: 1px solid var(--ds-divider, #e5e7eb);
+    margin-top: 8px;
+}

@@ -15,7 +15,9 @@ import { DSButton, DSButtonGroup } from './DSButton'
 import { DSField, DSFieldInput, DSFieldsGrid, DSFieldsRow, DSColorField } from './DSField'
 import { DSImageUpload, DSImagesGrid } from './DSImageUpload'
 import { DSSearchSelect } from './DSSearchSelect'
+import { SecuredButton } from './SecuredButton'
 import './DSSearchSelect.css'
+import './SecuredButton.css'
 
 export {
   DSFormPanel,
@@ -42,6 +44,7 @@ export {
   DSImageUpload,
   DSImagesGrid,
   DSSearchSelect,
+  SecuredButton,
 }
 
 const placeholder = (name, children) =>
