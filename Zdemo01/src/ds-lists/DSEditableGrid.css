@@ -1,0 +1,178 @@
+/* ========================================
+   DSEditableGrid - Responsive Editable Grid
+   ======================================== */
+
+.ds-editable-grid {
+    width: 100%;
+}
+
+/* ----------------------------------------
+   DESKTOP TABLE VIEW
+   ---------------------------------------- */
+.ds-editable-grid__table-wrapper {
+    display: none;
+    overflow-x: auto;
+    border: 1px solid var(--ds-fieldBorder, #e5e7eb);
+    border-radius: 8px;
+    background: var(--ds-fieldBg, #fff);
+}
+
+.ds-editable-grid__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.ds-editable-grid__table thead {
+    background: var(--ds-secondaryBg, #f9fafb);
+    border-bottom: 1px solid var(--ds-fieldBorder, #e5e7eb);
+}
+
+.ds-editable-grid__table th {
+    padding: 10px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--ds-secondaryText, #6b7280);
+    letter-spacing: 0.05em;
+}
+
+.ds-editable-grid__table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--ds-fieldBorder, #f3f4f6);
+    vertical-align: middle;
+}
+
+.ds-editable-grid__table tbody tr:hover {
+    background: var(--ds-hoverBg, #f9fafb);
+}
+
+.ds-editable-grid__th-actions,
+.ds-editable-grid__td-actions {
+    width: 40px;
+    text-align: center;
+}
+
+.ds-editable-grid__delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border: none;
+    background: transparent;
+    color: var(--ds-secondaryText, #9ca3af);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+}
+
+.ds-editable-grid__delete-btn:hover {
+    color: var(--ds-danger, #ef4444);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.ds-editable-grid__select,
+.ds-editable-grid__input {
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 13px;
+}
+
+.ds-editable-grid__input--number {
+    text-align: right;
+}
+
+.ds-editable-grid__empty {
+    padding: 32px 16px;
+    text-align: center;
+    color: var(--ds-secondaryText, #9ca3af);
+    font-style: italic;
+}
+
+/* ----------------------------------------
+   MOBILE CARDS VIEW
+   ---------------------------------------- */
+.ds-editable-grid__cards-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ds-editable-grid__card {
+    position: relative;
+    background: var(--ds-fieldBg, #fff);
+    border: 1px solid var(--ds-fieldBorder, #e5e7eb);
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.ds-editable-grid__card-delete {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px;
+    border: none;
+    background: transparent;
+    color: var(--ds-secondaryText, #9ca3af);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: color 0.15s;
+}
+
+.ds-editable-grid__card-delete:hover {
+    color: var(--ds-danger, #ef4444);
+}
+
+.ds-editable-grid__card-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 24px;
+}
+
+.ds-editable-grid__card-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ds-editable-grid__card-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--ds-secondaryText, #6b7280);
+    letter-spacing: 0.05em;
+}
+
+.ds-editable-grid__card-value {
+    font-size: 14px;
+}
+
+.ds-editable-grid__empty--card {
+    border: 2px dashed var(--ds-fieldBorder, #e5e7eb);
+    border-radius: 8px;
+    background: var(--ds-secondaryBg, #f9fafb);
+}
+
+/* ----------------------------------------
+   FOOTER
+   ---------------------------------------- */
+.ds-editable-grid__footer {
+    margin-top: 12px;
+}
+
+/* ----------------------------------------
+   RESPONSIVE BREAKPOINT (768px)
+   ---------------------------------------- */
+@media (min-width: 768px) {
+
+    /* Show table, hide cards on desktop */
+    .ds-editable-grid__table-wrapper {
+        display: block;
+    }
+
+    .ds-editable-grid__cards-wrapper {
+        display: none;
+    }
+}

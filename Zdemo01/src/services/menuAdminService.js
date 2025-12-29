@@ -121,3 +121,22 @@ export async function deleteMenu(id) {
     }
 }
 
+/**
+ * Actualizar posiciones de menús (Drag & Drop)
+ * @param {Array} items - Array de { id, parent_id, order }
+ */
+export async function updateMenuPositions(items) {
+    try {
+        const response = await authFetch(`${ENDPOINT}/positions`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items })
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error updating menu positions:', error);
+        return { success: false, error: error.message || 'Error al actualizar posiciones' };
+    }
+}
+

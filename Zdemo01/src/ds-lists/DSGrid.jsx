@@ -31,9 +31,9 @@ export function DSGrid({ columns = [], data = [], toolbar, pagination, getRowCla
     <div className="ds-grid">
       {toolbar ? <div className="ds-grid__toolbar">{toolbar}</div> : null}
       <div className="ds-grid__header">
-        {columns.map((col) => (
+        {columns.map((col, idx) => (
           <div
-            key={col.key}
+            key={col.key || col.field || idx}
             className={`ds-grid__cell ds-grid__cell--header ${col.sortable ? 'is-sortable' : ''}`}
             style={{ width: col.width }}
             onClick={() => handleSort(col)}
@@ -48,8 +48,8 @@ export function DSGrid({ columns = [], data = [], toolbar, pagination, getRowCla
           const extraClass = getRowClassName ? getRowClassName(row) : ''
           return (
             <div key={row.id ?? idx} className={`ds-grid__row ${extraClass}`}>
-              {columns.map((col) => (
-                <div key={col.key} className="ds-grid__cell" style={{ width: col.width }}>
+              {columns.map((col, cIdx) => (
+                <div key={col.key || col.field || cIdx} className="ds-grid__cell" style={{ width: col.width }}>
                   {editing.rowId === row.id && editing.colKey === col.key ? (
                     <input
                       className="ds-field__control"

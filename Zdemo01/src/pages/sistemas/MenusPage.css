@@ -326,3 +326,93 @@
     opacity: 1;
     visibility: visible;
 }
+
+/* ============================================
+   DRAG & DROP - Modo Ordenar
+   ============================================ */
+.menus-drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border: none;
+    background: transparent;
+    color: var(--ds-secondaryText);
+    cursor: grab;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.menus-drag-handle:hover {
+    background: var(--ds-hoverBg);
+    color: var(--ds-accentColor);
+}
+
+.menus-drag-handle:active {
+    cursor: grabbing;
+}
+
+.menus-table--order-mode tbody tr {
+    transition: all 0.2s ease;
+}
+
+.menus-table--order-mode tbody tr:hover {
+    background: var(--ds-hoverBg);
+}
+
+/* ============================================
+   VISTA JERÁRQUICA DE ORDENAMIENTO
+   ============================================ */
+.menus-order-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.menus-order-group {
+    background: var(--ds-panelBg);
+    border: 1px solid var(--ds-surfaceBorder);
+    border-radius: var(--ds-borderRadius);
+    overflow: hidden;
+}
+
+.menus-order-group__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--ds-hoverBg);
+    border-bottom: 1px solid var(--ds-surfaceBorder);
+    font-size: 14px;
+}
+
+.menus-order-group__header svg {
+    color: var(--ds-accentColor);
+}
+
+.menus-order-group__children {
+    display: flex;
+    flex-direction: column;
+}
+
+.menus-order-child {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px 10px 32px;
+    border-bottom: 1px solid var(--ds-fieldBorder);
+    font-size: 13px;
+    transition: all 0.15s ease;
+}
+
+.menus-order-child:last-child {
+    border-bottom: none;
+}
+
+.menus-order-child:hover {
+    background: var(--ds-hoverBg);
+}
+
+.menus-order-child svg {
+    color: var(--ds-secondaryText);
+}

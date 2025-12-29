@@ -70,6 +70,7 @@ export {
   DSGridPagination,
   DSSortHeader,
   DSSelectionModel,
+  DSEditableGrid,
 } from '../ds-lists';
 
 // DS Overlays

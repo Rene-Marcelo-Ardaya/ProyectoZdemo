@@ -13,8 +13,28 @@ import {
     Link,
     Hash,
     Eye,
-    EyeOff
+    EyeOff,
+    GripVertical,
+    ArrowUpDown,
+    X
 } from 'lucide-react';
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragOverlay
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+    useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import {
     getMenus,
     getMenu,
@@ -22,7 +42,8 @@ import {
     getAvailableIcons,
     createMenu,
     updateMenu,
-    deleteMenu
+    deleteMenu,
+    updateMenuPositions
 } from '../../services/menuAdminService';
 
 // Importar componentes DS
@@ -219,6 +240,126 @@ function MenuTreeItem({ menu, level = 0, onEdit, onDelete, expandedIds, toggleEx
 }
 
 // ============================================
+// COMPONENTE: SortableParentItem (menú padre arrastrable)
+// ============================================
+function SortableParentItem({ parent, children, onReorderChildren }) {
+    const Icon = getLucideIcon(parent.icon);
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id: `parent-${parent.id}` });
+
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates
+        })
+    );
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1
+    };
+
+    const handleChildDragEnd = (event) => {
+        const { active, over } = event;
+        if (active.id !== over?.id) {
+            const oldIndex = children.findIndex(c => `child-${c.id}` === active.id);
+            const newIndex = children.findIndex(c => `child-${c.id}` === over.id);
+            if (oldIndex !== -1 && newIndex !== -1) {
+                const reordered = arrayMove(children, oldIndex, newIndex).map((c, idx) => ({
+                    ...c,
+                    order: idx + 1
+                }));
+                onReorderChildren(parent.id, reordered);
+            }
+        }
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} className="menus-order-group">
+            {/* Header del grupo padre */}
+            <div className="menus-order-group__header">
+                <button
+                    className="menus-drag-handle"
+                    {...attributes}
+                    {...listeners}
+                >
+                    <GripVertical size={18} />
+                </button>
+                <Icon size={18} />
+                <strong>{parent.name}</strong>
+                <DSBadge variant="neutral" style={{ marginLeft: 'auto' }}>
+                    {children.length} submenús
+                </DSBadge>
+            </div>
+
+            {/* Lista de hijos ordenables */}
+            {children.length > 0 && (
+                <div className="menus-order-group__children">
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleChildDragEnd}
+                    >
+                        <SortableContext
+                            items={children.map(c => `child-${c.id}`)}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            {children.map(child => (
+                                <SortableChildRow key={child.id} menu={child} />
+                            ))}
+                        </SortableContext>
+                    </DndContext>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ============================================
+// COMPONENTE: SortableChildRow (submenú arrastrable)
+// ============================================
+function SortableChildRow({ menu }) {
+    const Icon = getLucideIcon(menu.icon);
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id: `child-${menu.id}` });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+        background: isDragging ? 'var(--ds-accent-10)' : undefined
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} className="menus-order-child">
+            <button
+                className="menus-drag-handle"
+                {...attributes}
+                {...listeners}
+            >
+                <GripVertical size={14} />
+            </button>
+            <Icon size={14} />
+            <span>{menu.name}</span>
+            <DSCount style={{ marginLeft: 'auto' }}>{menu.order}</DSCount>
+        </div>
+    );
+}
+
+// ============================================
 // COMPONENTE: IconPicker
 // ============================================
 function IconPicker({ icons, value, onChange }) {
@@ -298,6 +439,17 @@ export function MenusPage() {
     const [editingMenu, setEditingMenu] = useState(null);
     const [expandedIds, setExpandedIds] = useState([]);
 
+    // Estado para modo ordenar (drag & drop)
+    const [isOrderMode, setIsOrderMode] = useState(false);
+    const [orderedItems, setOrderedItems] = useState([]);
+    const [savingOrder, setSavingOrder] = useState(false);
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates
+        })
+    );
+
     const [form, setForm] = useState({
         name: '',
         url: '',
@@ -321,6 +473,88 @@ export function MenusPage() {
                 ? prev.filter(x => x !== id)
                 : [...prev, id]
         );
+    };
+
+    // Entrar en modo ordenar
+    const enterOrderMode = () => {
+        // Crear estructura jerárquica para ordenar
+        const hierarchical = menus.map(m => ({
+            ...m,
+            children: (m.children || []).map(c => ({ ...c }))
+        }));
+        setOrderedItems(hierarchical);
+        setIsOrderMode(true);
+    };
+
+    // Salir de modo ordenar sin guardar
+    const cancelOrderMode = () => {
+        setIsOrderMode(false);
+        setOrderedItems([]);
+    };
+
+    // Reordenar hijos dentro de un padre
+    const handleReorderChildren = (parentId, reorderedChildren) => {
+        setOrderedItems(prev => prev.map(p =>
+            p.id === parentId
+                ? { ...p, children: reorderedChildren }
+                : p
+        ));
+    };
+
+    // Manejar fin de drag de padres
+    const handleParentDragEnd = (event) => {
+        const { active, over } = event;
+        if (active.id !== over?.id) {
+            setOrderedItems(prev => {
+                const oldIndex = prev.findIndex(p => `parent-${p.id}` === active.id);
+                const newIndex = prev.findIndex(p => `parent-${p.id}` === over.id);
+                if (oldIndex !== -1 && newIndex !== -1) {
+                    const newArr = arrayMove(prev, oldIndex, newIndex);
+                    return newArr.map((item, idx) => ({ ...item, order: idx + 1 }));
+                }
+                return prev;
+            });
+        }
+    };
+
+    // Guardar el orden
+    const saveOrder = async () => {
+        setSavingOrder(true);
+        try {
+            // Aplanar la estructura jerárquica para enviar al backend
+            const items = [];
+            orderedItems.forEach((parent, parentIdx) => {
+                items.push({
+                    id: parent.id,
+                    parent_id: null,
+                    order: parentIdx + 1
+                });
+                if (parent.children) {
+                    parent.children.forEach((child, childIdx) => {
+                        items.push({
+                            id: child.id,
+                            parent_id: parent.id,
+                            order: childIdx + 1
+                        });
+                    });
+                }
+            });
+
+            const result = await updateMenuPositions(items);
+            if (result.success) {
+                setFormSuccess('Orden guardado correctamente');
+                setIsOrderMode(false);
+                setOrderedItems([]);
+                refetch();
+                setTimeout(() => setFormSuccess(null), 3000);
+            } else {
+                setFormError(result.error || 'Error guardando orden');
+            }
+        } catch (err) {
+            setFormError('Error de conexión');
+        } finally {
+            setSavingOrder(false);
+        }
     };
 
     // Reset form
@@ -483,9 +717,43 @@ export function MenusPage() {
                 title="Administración de Menús"
                 icon={<FolderTree size={22} />}
                 actions={
-                    <DSButton variant="primary" icon={<Plus size={16} />} onClick={() => openCreate()}>
-                        Nuevo Menú
-                    </DSButton>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        {!isOrderMode && (
+                            <>
+                                <DSButton
+                                    variant="outline"
+                                    icon={<ArrowUpDown size={16} />}
+                                    onClick={enterOrderMode}
+                                >
+                                    Ordenar
+                                </DSButton>
+                                <DSButton variant="primary" icon={<Plus size={16} />} onClick={() => openCreate()}>
+                                    Nuevo Menú
+                                </DSButton>
+                            </>
+                        )}
+                        {isOrderMode && (
+                            <>
+                                <DSButton
+                                    variant="outline"
+                                    icon={<X size={16} />}
+                                    onClick={cancelOrderMode}
+                                    disabled={savingOrder}
+                                >
+                                    Cancelar
+                                </DSButton>
+                                <DSButton
+                                    variant="primary"
+                                    icon={<Save size={16} />}
+                                    onClick={saveOrder}
+                                    loading={savingOrder}
+                                    disabled={savingOrder}
+                                >
+                                    Guardar Orden
+                                </DSButton>
+                            </>
+                        )}
+                    </div>
                 }
             />
 
@@ -514,13 +782,37 @@ export function MenusPage() {
 
             {/* TABLA */}
             <DSSection
-                title="Estructura de Menús"
+                title={isOrderMode ? 'Ordenar Menús (Arrastra para reordenar)' : 'Estructura de Menús'}
                 actions={<span className="menus-panel__count">{totalMenus} menús</span>}
             >
                 <div className="ds-table-wrapper">
                     {loading ? (
                         <DSLoading text="Cargando..." />
+                    ) : isOrderMode ? (
+                        /* MODO ORDENAR - Vista Jerárquica */
+                        <div className="menus-order-container">
+                            <DndContext
+                                sensors={sensors}
+                                collisionDetection={closestCenter}
+                                onDragEnd={handleParentDragEnd}
+                            >
+                                <SortableContext
+                                    items={orderedItems.map(p => `parent-${p.id}`)}
+                                    strategy={verticalListSortingStrategy}
+                                >
+                                    {orderedItems.map(parent => (
+                                        <SortableParentItem
+                                            key={parent.id}
+                                            parent={parent}
+                                            children={parent.children || []}
+                                            onReorderChildren={handleReorderChildren}
+                                        />
+                                    ))}
+                                </SortableContext>
+                            </DndContext>
+                        </div>
                     ) : (
+                        /* MODO NORMAL - Vista jerárquica */
                         <table className="ds-table ds-table--striped ds-table--hover menus-table">
                             <thead>
                                 <tr>
