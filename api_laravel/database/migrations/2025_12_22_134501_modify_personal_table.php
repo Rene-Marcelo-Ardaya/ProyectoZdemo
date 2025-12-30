@@ -15,11 +15,11 @@ return new class extends Migration
         Schema::table('personal', function (Blueprint $table) {
             // Eliminar codigo_empleado si existe
             if (Schema::hasColumn('personal', 'codigo_empleado')) {
-                // Verificar si el índice existe antes de eliminarlo
-                $sm = Schema::getConnection()->getDoctrineSchemaManager();
-                $indexesFound = $sm->listTableIndexes('personal');
-                if (array_key_exists('personal_codigo_empleado_unique', $indexesFound)) {
+                // Eliminar índice único si existe (usando try-catch para Laravel 11+)
+                try {
                     $table->dropUnique(['codigo_empleado']);
+                } catch (\Exception $e) {
+                    // El índice no existe, continuamos
                 }
                 $table->dropColumn('codigo_empleado');
             }
