@@ -73,7 +73,11 @@ export function RecepcionPage() {
         setError(null);
         try {
             const result = await getIngresos({ estado: 'PENDIENTE' });
-            setIngresosPendientes(result.data || []);
+            // Filtrar items que ya fueron recepcionados offline (estado cambió a FINALIZADO localmente)
+            const pendientes = (result.data || []).filter(
+                item => !(item._offlinePending && item.estado !== 'PENDIENTE')
+            );
+            setIngresosPendientes(pendientes);
         } catch (err) {
             setError('Error cargando ingresos pendientes');
         } finally {
@@ -93,7 +97,7 @@ export function RecepcionPage() {
             if (result.success) {
                 const data = result.data;
                 setSelectedIngreso(data);
-                
+
                 // Los valores del sistema ya vienen calculados del backend
                 const detallesConSistema = (data.detalles || []).map(det => {
                     return {
@@ -109,7 +113,7 @@ export function RecepcionPage() {
                         final_digital: ''
                     };
                 });
-                
+
                 setForm({
                     nombre_chofer: data.nombre_chofer || '',
                     placa_vehiculo: data.placa_vehiculo || '',
@@ -166,7 +170,7 @@ export function RecepcionPage() {
         for (const det of form.detalles) {
             const litrosRecibidos = parseFloat(det.final_digital) - parseFloat(det.inicio_digital);
             const litrosEsperados = det.litros; // Los litros que se registraron en el ingreso
-            
+
             // Si la diferencia es mayor a 0.5 litros
             if (Math.abs(litrosRecibidos - litrosEsperados) > 0.5) {
                 return det;
@@ -311,7 +315,13 @@ export function RecepcionPage() {
                                                 </span>
                                             ))}
                                         </td>
-                                        <td>{row.observaciones || '-'}</td>
+                                        <td>
+                                            {row._offlinePending ? (
+                                                <span style={{ color: '#6366f1' }}>☁️ Creado offline</span>
+                                            ) : (
+                                                row.observaciones || '-'
+                                            )}
+                                        </td>
                                         <td>
                                             <DSButton
                                                 size="sm"
@@ -422,27 +432,27 @@ export function RecepcionPage() {
                                         const stockActual = tanqueInfo ? parseFloat(tanqueInfo.stock_actual) : 0;
                                         const litrosEsperados = parseFloat(det.litros) || 0;
                                         const finalEsperado = stockActual + litrosEsperados;
-                                        
+
                                         const inicioDigital = parseFloat(det.inicio_digital) || 0;
                                         const finalDigital = parseFloat(det.final_digital) || 0;
                                         const litrosRecibidos = finalDigital - inicioDigital;
-                                        
+
                                         const diferencia = litrosRecibidos - litrosEsperados;
 
                                         return (
                                             <tr key={det.id}>
                                                 <td><strong>{det.tanque_nombre}</strong></td>
-                                                
+
                                                 {/* INICIO TANQUE (SISTEMA STOCK) */}
                                                 <td className="text-right" style={{ backgroundColor: '#f8f9fa' }}>
                                                     {stockActual.toFixed(2)} L
                                                 </td>
-                                                
+
                                                 {/* FINAL TANQUE (SISTEMA) */}
                                                 <td className="text-right" style={{ backgroundColor: '#f8f9fa' }}>
                                                     {finalEsperado.toFixed(2)} L
                                                 </td>
-                                                
+
                                                 {/* INICIO TANQUE DIGITAL */}
                                                 <td>
                                                     <input
@@ -454,7 +464,7 @@ export function RecepcionPage() {
                                                         style={{ width: '140px' }}
                                                     />
                                                 </td>
-                                                
+
                                                 {/* FINAL TANQUE DIGITAL */}
                                                 <td>
                                                     <input
@@ -466,7 +476,7 @@ export function RecepcionPage() {
                                                         style={{ width: '140px' }}
                                                     />
                                                 </td>
-                                                
+
                                                 {/* DIFERENCIA */}
                                                 <td className="text-right">
                                                     {det.inicio_digital && det.final_digital ? (

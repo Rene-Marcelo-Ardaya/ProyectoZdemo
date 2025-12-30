@@ -559,6 +559,7 @@ export function IngresosPage() {
                                         <td>{renderTanqueColumn(row)}</td>
                                         <td>
                                             <DSBadge variant={row.estado === 'PENDIENTE' ? 'warning' : row.estado === 'FINALIZADO' ? 'success' : 'error'}>
+                                                {row._offlinePending && '☁️ '}
                                                 {row.estado}
                                             </DSBadge>
                                         </td>
