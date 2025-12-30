@@ -17,36 +17,35 @@ class DieselMovimientosSeeder extends Seeder
         // =============================================
         // TIPO DE MOVIMIENTOS
         // =============================================
-        DB::table('d_tipo_movimientos')->insert([
+        $tipos = [
             [
                 'nombre' => 'INGRESO',
                 'descripcion' => 'Compra de combustible de proveedores',
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now()
             ],
             [
                 'nombre' => 'EGRESO',
                 'descripcion' => 'Despacho de combustible a máquinas',
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now()
             ],
             [
                 'nombre' => 'TRASPASO',
                 'descripcion' => 'Transferencia entre tanques',
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now()
             ],
             [
                 'nombre' => 'AJUSTE',
                 'descripcion' => 'Corrección de stock por diferencias',
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now()
             ],
-        ]);
+        ];
+
+        foreach ($tipos as $tipo) {
+             DB::table('d_tipo_movimientos')->updateOrInsert(
+                ['nombre' => $tipo['nombre']],
+                [
+                    'descripcion' => $tipo['descripcion'],
+                    'is_active' => true,
+                    'updated_at' => now()
+                ]
+            );
+        }
 
         $this->command->info('✓ Tipo de movimientos creados: INGRESO, EGRESO, TRASPASO, AJUSTE');
     }

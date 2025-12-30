@@ -87,6 +87,68 @@ class DieselMaquinaController extends Controller
     }
 
     /**
+     * Crear múltiples máquinas (ingreso masivo)
+     */
+    public function storeBulk(Request $request): JsonResponse
+    {
+        $request->validate([
+            'maquinas' => 'required|array|min:1',
+            'maquinas.*.codigo' => 'required|string|max:50|distinct',
+            'maquinas.*.d_division_id' => 'required|exists:d_divisiones,id',
+        ]);
+
+        $creados = [];
+        $errores = [];
+
+        \DB::beginTransaction();
+        try {
+            foreach ($request->maquinas as $data) {
+                // Verificar duplicados de código en BD
+                if (Maquina::where('codigo', $data['codigo'])->exists()) {
+                    $errores[] = [
+                        'codigo' => $data['codigo'],
+                        'error' => 'Ya existe una máquina con este código'
+                    ];
+                    continue;
+                }
+
+                $maquina = Maquina::create([
+                    'codigo' => $data['codigo'],
+                    'd_division_id' => $data['d_division_id'],
+                    'is_active' => true
+                ]);
+                $creados[] = $maquina;
+            }
+
+            if (empty($creados) && !empty($errores)) {
+                \DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se pudo crear ninguna máquina',
+                    'errores' => $errores
+                ], 422);
+            }
+
+            \DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => count($creados) . ' máquina(s) creada(s) correctamente',
+                'creados' => count($creados),
+                'errores' => $errores,
+                'data' => $creados
+            ], 201);
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al crear máquinas: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Actualizar máquina
      */
     public function update(Request $request, $id): JsonResponse

@@ -60,6 +60,7 @@ import {
     DSModal,
     DSModalSection,
     SecuredButton,
+    DSRefreshButton,
 } from '../../ds-components';
 
 import './MenusPage.css';
@@ -794,7 +795,12 @@ export function MenusPage() {
             {/* TABLA */}
             <DSSection
                 title={isOrderMode ? 'Ordenar Menús (Arrastra para reordenar)' : 'Estructura de Menús'}
-                actions={<span className="menus-panel__count">{totalMenus} menús</span>}
+                actions={
+                    <div className="ds-section__actions-row">
+                        {!isOrderMode && <DSRefreshButton onClick={refetch} loading={loading} />}
+                        <span className="menus-panel__count">{totalMenus} menús</span>
+                    </div>
+                }
             >
                 <div className="ds-table-wrapper">
                     {loading ? (

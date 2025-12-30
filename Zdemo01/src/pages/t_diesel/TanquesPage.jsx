@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Container, Plus, Pencil, Power, Search, Truck, Factory, MapPin, AlertTriangle, Droplets } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Container, Plus, Pencil, Power, Search, Truck, Factory, MapPin, AlertTriangle, Droplets, Upload } from 'lucide-react';
 import {
     getTanques,
     getTanque,
@@ -7,7 +7,8 @@ import {
     updateTanque,
     toggleTanque,
     comboUbicaciones,
-    adjustStock // New service function
+    adjustStock,
+    createTanquesBulk
 } from '../../services/dieselService';
 
 import {
@@ -21,6 +22,8 @@ import {
     DSModal,
     DSModalSection,
     SecuredButton,
+    DSRefreshButton,
+    DSBulkImportModal
 } from '../../ds-components';
 
 import './TanquesPage.css';
@@ -233,6 +236,7 @@ export function TanquesPage() {
     // Modal state
     const [modalOpen, setModalOpen] = useState(false);
     const [stockModalOpen, setStockModalOpen] = useState(false);
+    const [bulkModalOpen, setBulkModalOpen] = useState(false);
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState(null);
     const [formSuccess, setFormSuccess] = useState(null);
@@ -305,6 +309,7 @@ export function TanquesPage() {
     const closeModal = () => {
         setModalOpen(false);
         setStockModalOpen(false);
+        setBulkModalOpen(false);
         resetForm();
         setNewStock('');
         setStockItem(null);
@@ -414,21 +419,66 @@ export function TanquesPage() {
         }
     };
 
+    // Bulk Columns
+    const bulkColumns = useMemo(() => [
+        { field: 'nombre', label: 'Nombre', required: true, placeholder: 'Ej: Tanque Principal', width: '25%' },
+        {
+            field: 'tipo',
+            label: 'Tipo',
+            type: 'select',
+            options: [{ value: 'FIJO', label: 'Fijo' }, { value: 'MOVIL', label: 'Móvil' }],
+            required: true,
+            width: '15%'
+        },
+        {
+            field: 'd_ubicacion_fisica_id',
+            label: 'Ubicación',
+            type: 'select',
+            options: ubicaciones.map(u => ({ value: u.id, label: u.nombre })),
+            required: true,
+            placeholder: '-- Seleccionar --',
+            width: '20%'
+        },
+        { field: 'capacidad_maxima', label: 'Capacidad (L)', type: 'number', required: true, placeholder: 'Ej: 5000', width: '20%' },
+        { field: 'stock_actual', label: 'Stock Actual (L)', type: 'number', placeholder: 'Ej: 1000', width: '20%' }
+    ], [ubicaciones]);
+
+    const handleBulkSave = async (rows) => {
+        return await createTanquesBulk(rows);
+    };
+
+    const handleBulkSuccess = (result, message) => {
+        setFormSuccess(message);
+        refetch();
+        setTimeout(() => setFormSuccess(null), 5000);
+    };
+
     return (
         <DSPage>
             <DSPageHeader
                 title="Gestión de Tanques"
                 icon={<Container size={22} />}
                 actions={
-                    <SecuredButton
-                        securityId="tanques.crear"
-                        securityDesc="Crear nuevo tanque"
-                        variant="primary"
-                        icon={<Plus size={16} />}
-                        onClick={openCreate}
-                    >
-                        Nuevo Tanque
-                    </SecuredButton>
+                    <div className="ds-header__actions-row">
+                        <SecuredButton
+                            securityId="tanques.crear"
+                            securityDesc="Ingreso masivo de tanques"
+                            variant="secondary"
+                            icon={<Upload size={16} />}
+                            onClick={() => setBulkModalOpen(true)}
+                        >
+                            Ingreso Masivo
+                        </SecuredButton>
+                        <SecuredButton
+                            securityId="tanques.crear"
+                            securityDesc="Crear nuevo tanque"
+                            variant="primary"
+                            icon={<Plus size={16} />}
+                            onClick={openCreate}
+                        >
+                            Nuevo Tanque
+                        </SecuredButton>
+                    </div>
                 }
             />
 
@@ -466,9 +516,7 @@ export function TanquesPage() {
                             <option value="FIJO">🏭 Fijos</option>
                             <option value="MOVIL">🚚 Móviles</option>
                         </select>
-                        <DSButton size="sm" onClick={refetch}>
-                            Actualizar
-                        </DSButton>
+                        <DSRefreshButton onClick={refetch} loading={loading} />
                     </div>
                 </div>
             </DSSection>
@@ -634,44 +682,55 @@ export function TanquesPage() {
             </DSModal>
 
             {/* MODAL: Ajuste de Stock */}
-            <DSModal
-                isOpen={stockModalOpen}
-                onClose={closeModal}
-                title="Ajuste Rápido de Stock"
-                size="sm"
-                footer={
-                    <>
-                        <DSButton onClick={closeModal} disabled={saving}>Cancelar</DSButton>
-                        <DSButton variant="primary" onClick={handleSaveStock} disabled={saving} loading={saving}>
-                            {saving ? 'Guardando...' : 'Actualizar Stock'}
-                        </DSButton>
-                    </>
-                }
-            >
-                {formError && (
-                    <DSAlert variant="error" dismissible onDismiss={() => setFormError(null)} className="diesel-alert-margin">
-                        {formError}
-                    </DSAlert>
-                )}
-                <DSModalSection>
-                    <p style={{ marginBottom: '16px' }}>
-                        Ajustar stock actual para: <strong>{stockItem?.nombre}</strong>
-                        <br />
-                        <small className="text-muted">Capacidad Máxima: {parseFloat(stockItem?.capacidad_maxima || 0).toLocaleString()} L</small>
-                    </p>
-                    <FormField label="Nuevo Stock Actual (Litros)" required>
-                        <input
-                            type="number"
-                            className="ds-field__control"
-                            value={newStock}
-                            onChange={(e) => setNewStock(e.target.value)}
-                            placeholder="Ingrese cantidad real"
-                            min="0"
-                            autoFocus
-                        />
-                    </FormField>
-                </DSModalSection>
-            </DSModal>
+            {stockItem && (
+                <DSModal
+                    isOpen={stockModalOpen}
+                    onClose={closeModal}
+                    title={`Ajuste de Stock: ${stockItem.nombre}`}
+                    size="sm"
+                    footer={
+                        <>
+                            <DSButton onClick={closeModal} disabled={saving}>Cancelar</DSButton>
+                            <DSButton variant="warning" onClick={handleSaveStock} disabled={saving} loading={saving}>
+                                {saving ? 'Guardando...' : 'Ajustar Stock'}
+                            </DSButton>
+                        </>
+                    }
+                >
+                    {formError && (
+                        <DSAlert variant="error" dismissible onDismiss={() => setFormError(null)} className="diesel-alert-margin">
+                            {formError}
+                        </DSAlert>
+                    )}
+                    <DSModalSection>
+                        <p className="diesel-text-sm" style={{ marginBottom: '1rem' }}>
+                            Capacidad Máxima: <strong>{stockItem.capacidad_maxima} L</strong>
+                        </p>
+                        <FormField label="Nuevo Stock Actual (L)" required>
+                            <input
+                                type="number"
+                                className="ds-field__control"
+                                value={newStock}
+                                onChange={(e) => setNewStock(e.target.value)}
+                                placeholder="0.00"
+                                min="0"
+                                max={stockItem.capacidad_maxima}
+                            />
+                        </FormField>
+                    </DSModalSection>
+                </DSModal>
+            )}
+
+            <DSBulkImportModal
+                isOpen={bulkModalOpen}
+                onClose={() => setBulkModalOpen(false)}
+                title="Ingreso Masivo de Tanques"
+                columns={bulkColumns}
+                onSave={handleBulkSave}
+                onSuccess={handleBulkSuccess}
+                entityName="tanque"
+                initialRow={{ tipo: 'FIJO' }}
+            />
         </DSPage>
     );
 }

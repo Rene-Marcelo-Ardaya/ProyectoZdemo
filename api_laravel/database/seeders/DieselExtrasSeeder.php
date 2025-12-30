@@ -15,6 +15,9 @@ class DieselExtrasSeeder extends Seeder
         // =============================================
         // PROVEEDORES
         // =============================================
+        // =============================================
+        // PROVEEDORES
+        // =============================================
         $proveedores = [
             [
                 'nombre' => 'YPFB',
@@ -23,9 +26,6 @@ class DieselExtrasSeeder extends Seeder
                 'telefono' => '800-10-1001',
                 'celular' => null,
                 'direccion' => 'La Paz, Bolivia',
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now()
             ],
             [
                 'nombre' => 'Proveedor Diesel Local',
@@ -34,34 +34,59 @@ class DieselExtrasSeeder extends Seeder
                 'telefono' => null,
                 'celular' => '70012345',
                 'direccion' => 'Santa Cruz, Bolivia',
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now()
             ],
         ];
-        DB::table('d_proveedores')->insert($proveedores);
+
+        foreach ($proveedores as $prov) {
+            DB::table('d_proveedores')->updateOrInsert(
+                ['nombre' => $prov['nombre']],
+                [
+                    'razon_social' => $prov['razon_social'],
+                    'nit' => $prov['nit'],
+                    'telefono' => $prov['telefono'],
+                    'celular' => $prov['celular'],
+                    'direccion' => $prov['direccion'],
+                    'is_active' => true,
+                    'updated_at' => now(),
+                    // created_at no es necesario actualizar si ya existe, pero updateOrInsert no lo maneja bien solo para create.
+                    // Podríamos usar firstOrCreate pero queremos actualizar los datos.
+                ]
+            );
+        }
 
         // =============================================
         // TIPOS DE PAGO
         // =============================================
         $tiposPago = [
-            ['nombre' => 'Efectivo', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'Crédito', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'Transferencia', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'Cheque', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['nombre' => 'Efectivo'],
+            ['nombre' => 'Crédito'],
+            ['nombre' => 'Transferencia'],
+            ['nombre' => 'Cheque'],
         ];
-        DB::table('d_tipos_pago')->insert($tiposPago);
+
+        foreach ($tiposPago as $tipo) {
+            DB::table('d_tipos_pago')->updateOrInsert(
+                ['nombre' => $tipo['nombre']],
+                ['is_active' => true, 'updated_at' => now()]
+            );
+        }
 
         // =============================================
         // MOTIVOS DE AJUSTE
         // =============================================
         $motivosAjuste = [
-            ['nombre' => 'Reseteo de medidor', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'Corrección de lectura', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'Derrame accidental', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'Evaporación', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'Ajuste de inventario', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['nombre' => 'Reseteo de medidor'],
+            ['nombre' => 'Corrección de lectura'],
+            ['nombre' => 'Derrame accidental'],
+            ['nombre' => 'Evaporación'],
+            ['nombre' => 'Ajuste de inventario'],
         ];
-        DB::table('d_motivos_ajuste')->insert($motivosAjuste);
+
+        foreach ($motivosAjuste as $motivo) {
+            DB::table('d_motivos_ajuste')->updateOrInsert(
+                ['nombre' => $motivo['nombre']],
+                ['is_active' => true, 'updated_at' => now()]
+            );
+        }
     }
 }

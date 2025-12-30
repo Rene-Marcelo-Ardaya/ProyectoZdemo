@@ -15,6 +15,7 @@ import {
     DSModal,
     DSModalSection,
     SecuredButton,
+    DSRefreshButton,
 } from '../../ds-components';
 
 import './CargosPage.css';
@@ -240,7 +241,12 @@ export function CargosPage() {
             {/* TABLA */}
             <DSSection
                 title="Listado de Cargos"
-                actions={<span className="cargos-panel__count">{cargos.length} cargos</span>}
+                actions={
+                    <div className="ds-section__actions-row">
+                        <DSRefreshButton onClick={refetch} loading={loading} />
+                        <span className="cargos-panel__count">{cargos.length} cargos</span>
+                    </div>
+                }
             >
                 <div className="ds-table-wrapper">
                     {loading ? (

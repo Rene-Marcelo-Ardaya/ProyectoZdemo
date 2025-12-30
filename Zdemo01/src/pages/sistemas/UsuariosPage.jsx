@@ -13,6 +13,7 @@ import {
     DSBadge,
     DSModal,
     SecuredButton,
+    DSRefreshButton,
 } from '../../ds-components';
 
 import './UsuariosPage.css';
@@ -248,7 +249,12 @@ export function UsuariosPage() {
             {/* TABLA */}
             <DSSection
                 title="Listado de Usuarios"
-                actions={<span className="usuarios-panel__count">{users.length} registros</span>}
+                actions={
+                    <div className="ds-section__actions-row">
+                        <DSRefreshButton onClick={refetch} loading={loading} />
+                        <span className="usuarios-panel__count">{users.length} registros</span>
+                    </div>
+                }
             >
                 <div className="ds-table-wrapper">
                     {loading ? (

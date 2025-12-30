@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { CreditCard, Plus, Pencil, Power, HelpCircle } from 'lucide-react';
-import { getTiposPago, getTipoPago, createTipoPago, updateTipoPago, toggleTipoPago } from '../../services/dieselService';
+import { CreditCard, Plus, Pencil, Power, HelpCircle, Upload } from 'lucide-react';
+import { getTiposPago, getTipoPago, createTipoPago, updateTipoPago, toggleTipoPago, createTiposPagoBulk } from '../../services/dieselService';
 
 import {
     DSPage,
@@ -13,6 +13,8 @@ import {
     DSModal,
     DSModalSection,
     SecuredButton,
+    DSRefreshButton,
+    DSBulkImportModal,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -76,6 +78,7 @@ export function TiposPagoPage() {
     const [formError, setFormError] = useState(null);
     const [formSuccess, setFormSuccess] = useState(null);
     const [editingItem, setEditingItem] = useState(null);
+    const [bulkModalOpen, setBulkModalOpen] = useState(false);
 
     const [form, setForm] = useState({ nombre: '' });
 
@@ -166,21 +169,47 @@ export function TiposPagoPage() {
         }
     };
 
+    // Bulk import
+    const bulkColumns = [
+        { field: 'nombre', label: 'Nombre', required: true, placeholder: 'Nombre del tipo de pago' }
+    ];
+
+    const handleBulkSave = async (rows) => {
+        return await createTiposPagoBulk(rows);
+    };
+
+    const handleBulkSuccess = (result, message) => {
+        setFormSuccess(message);
+        refetch();
+        setTimeout(() => setFormSuccess(null), 5000);
+    };
+
     return (
         <DSPage>
             <DSPageHeader
                 title="Gestión de Tipos de Pago"
                 icon={<CreditCard size={22} />}
                 actions={
-                    <SecuredButton
-                        securityId="tipospago.crear"
-                        securityDesc="Crear nuevo tipo de pago"
-                        variant="primary"
-                        icon={<Plus size={16} />}
-                        onClick={openCreate}
-                    >
-                        Nuevo Tipo de Pago
-                    </SecuredButton>
+                    <div className="ds-header__actions-row">
+                        <SecuredButton
+                            securityId="tipospago.crear"
+                            securityDesc="Ingreso masivo de tipos de pago"
+                            variant="secondary"
+                            icon={<Upload size={16} />}
+                            onClick={() => setBulkModalOpen(true)}
+                        >
+                            Ingreso Masivo
+                        </SecuredButton>
+                        <SecuredButton
+                            securityId="tipospago.crear"
+                            securityDesc="Crear nuevo tipo de pago"
+                            variant="primary"
+                            icon={<Plus size={16} />}
+                            onClick={openCreate}
+                        >
+                            Nuevo Tipo de Pago
+                        </SecuredButton>
+                    </div>
                 }
             />
 
@@ -197,7 +226,12 @@ export function TiposPagoPage() {
 
             <DSSection
                 title="Listado de Tipos de Pago"
-                actions={<span className="diesel-panel__count">{tiposPago.length} tipos</span>}
+                actions={
+                    <div className="ds-section__actions-row">
+                        <DSRefreshButton onClick={refetch} loading={loading} />
+                        <span className="diesel-panel__count">{tiposPago.length} tipos</span>
+                    </div>
+                }
             >
                 <div className="ds-table-wrapper">
                     {loading ? (
@@ -295,8 +329,19 @@ export function TiposPagoPage() {
                     </form>
                 </DSModalSection>
             </DSModal>
+
+            <DSBulkImportModal
+                isOpen={bulkModalOpen}
+                onClose={() => setBulkModalOpen(false)}
+                title="Ingreso Masivo de Tipos de Pago"
+                columns={bulkColumns}
+                onSave={handleBulkSave}
+                onSuccess={handleBulkSuccess}
+                entityName="tipo de pago"
+            />
         </DSPage>
     );
 }
 
 export default TiposPagoPage;
+

@@ -81,6 +81,67 @@ class DieselTipoPagoController extends Controller
     }
 
     /**
+     * Crear múltiples tipos de pago (ingreso masivo)
+     */
+    public function storeBulk(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'tipos_pago' => 'required|array|min:1',
+            'tipos_pago.*.nombre' => 'required|string|max:50'
+        ]);
+
+        $creados = [];
+        $errores = [];
+
+        \DB::beginTransaction();
+        try {
+            foreach ($validated['tipos_pago'] as $index => $data) {
+                $existe = TipoPago::where('nombre', $data['nombre'])->exists();
+                if ($existe) {
+                    $errores[] = [
+                        'fila' => $index + 1,
+                        'nombre' => $data['nombre'],
+                        'error' => 'Ya existe un tipo de pago con este nombre'
+                    ];
+                    continue;
+                }
+
+                $tipoPago = TipoPago::create([
+                    'nombre' => $data['nombre'],
+                    'is_active' => true
+                ]);
+                $creados[] = $tipoPago;
+            }
+
+            if (count($errores) > 0 && count($creados) === 0) {
+                \DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se pudo crear ningún tipo de pago',
+                    'errores' => $errores
+                ], 422);
+            }
+
+            \DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => count($creados) . ' tipo(s) de pago creado(s) correctamente',
+                'creados' => count($creados),
+                'errores' => $errores,
+                'data' => $creados
+            ], 201);
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al crear tipos de pago: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Actualizar tipo de pago
      */
     public function update(Request $request, $id): JsonResponse

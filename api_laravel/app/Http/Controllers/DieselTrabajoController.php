@@ -82,6 +82,68 @@ class DieselTrabajoController extends Controller
     }
 
     /**
+     * Crear múltiples trabajos (ingreso masivo)
+     */
+    public function storeBulk(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'trabajos' => 'required|array|min:1',
+            'trabajos.*.nombre' => 'required|string|max:100'
+        ]);
+
+        $creados = [];
+        $errores = [];
+
+        \DB::beginTransaction();
+        try {
+            foreach ($validated['trabajos'] as $index => $data) {
+                // Verificar si ya existe
+                $existe = Trabajo::where('nombre', $data['nombre'])->exists();
+                if ($existe) {
+                    $errores[] = [
+                        'fila' => $index + 1,
+                        'nombre' => $data['nombre'],
+                        'error' => 'Ya existe un trabajo con este nombre'
+                    ];
+                    continue;
+                }
+
+                $trabajo = Trabajo::create([
+                    'nombre' => $data['nombre'],
+                    'is_active' => true
+                ]);
+                $creados[] = $trabajo;
+            }
+
+            if (count($errores) > 0 && count($creados) === 0) {
+                \DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se pudo crear ningún trabajo',
+                    'errores' => $errores
+                ], 422);
+            }
+
+            \DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => count($creados) . ' trabajo(s) creado(s) correctamente',
+                'creados' => count($creados),
+                'errores' => $errores,
+                'data' => $creados
+            ], 201);
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al crear trabajos: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Actualizar trabajo
      */
     public function update(Request $request, $id): JsonResponse
@@ -131,3 +193,4 @@ class DieselTrabajoController extends Controller
         ]);
     }
 }
+

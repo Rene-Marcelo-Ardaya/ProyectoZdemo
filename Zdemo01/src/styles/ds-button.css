@@ -311,3 +311,25 @@
     border-right: 1px solid var(--ds-fieldBorder);
     border-bottom: none;
 }
+
+/* ============================================
+   DS REFRESH BUTTON
+   ============================================ */
+.ds-refresh-button {
+    /* Variante específica del refresh button */
+    gap: 6px;
+}
+
+.ds-refresh-icon--spinning {
+    animation: ds-refresh-spin 1s linear infinite;
+}
+
+@keyframes ds-refresh-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

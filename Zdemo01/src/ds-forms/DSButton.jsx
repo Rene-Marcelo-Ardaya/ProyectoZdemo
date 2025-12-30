@@ -77,3 +77,55 @@ export function DSButtonGroup({ children, vertical = false, className = '' }) {
 
     return <div className={classes}>{children}</div>
 }
+
+/**
+ * DSRefreshButton - Botón de actualizar/refrescar para listados
+ * 
+ * @param {Object} props
+ * @param {Function} props.onClick - Handler de click (típicamente refetch)
+ * @param {boolean} props.loading - Si está cargando/refrescando
+ * @param {string} props.label - Texto del botón (default: "Actualizar")
+ * @param {string} props.className - Clases adicionales
+ */
+export function DSRefreshButton({
+    onClick,
+    loading = false,
+    label = 'Actualizar',
+    className = '',
+    size = 'sm',
+    ...rest
+}) {
+    // Importamos el icono inline para evitar dependencias circulares
+    const RefreshIcon = () => (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={loading ? 'ds-refresh-icon--spinning' : ''}
+        >
+            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+            <path d="M16 16h5v5" />
+        </svg>
+    );
+
+    return (
+        <DSButton
+            size={size}
+            icon={<RefreshIcon />}
+            onClick={onClick}
+            disabled={loading}
+            className={`ds-refresh-button ${className}`}
+            {...rest}
+        >
+            {label}
+        </DSButton>
+    );
+}

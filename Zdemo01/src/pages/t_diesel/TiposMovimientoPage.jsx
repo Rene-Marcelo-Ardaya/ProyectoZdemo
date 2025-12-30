@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Settings2, Plus, Pencil, Power, HelpCircle } from 'lucide-react';
+import { Settings2, Plus, Pencil, Power, HelpCircle, Upload } from 'lucide-react';
 import {
     getTiposMovimiento,
     getTipoMovimiento,
     createTipoMovimiento,
     updateTipoMovimiento,
-    toggleTipoMovimiento
+    toggleTipoMovimiento,
+    createTiposMovimientoBulk
 } from '../../services/dieselService';
 
 import {
@@ -19,6 +20,8 @@ import {
     DSModal,
     DSModalSection,
     SecuredButton,
+    DSRefreshButton,
+    DSBulkImportModal,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -82,6 +85,7 @@ export function TiposMovimientoPage() {
     const [formError, setFormError] = useState(null);
     const [formSuccess, setFormSuccess] = useState(null);
     const [editingItem, setEditingItem] = useState(null);
+    const [bulkModalOpen, setBulkModalOpen] = useState(false);
 
     const [form, setForm] = useState({
         nombre: '',
@@ -182,21 +186,48 @@ export function TiposMovimientoPage() {
         }
     };
 
+    // Bulk import
+    const bulkColumns = [
+        { field: 'nombre', label: 'Nombre', required: true, placeholder: 'Ej: DONACIÓN', width: '1.5' },
+        { field: 'descripcion', label: 'Descripción', placeholder: 'Descripción opcional', width: '2' }
+    ];
+
+    const handleBulkSave = async (rows) => {
+        return await createTiposMovimientoBulk(rows);
+    };
+
+    const handleBulkSuccess = (result, message) => {
+        setFormSuccess(message);
+        refetch();
+        setTimeout(() => setFormSuccess(null), 5000);
+    };
+
     return (
         <DSPage>
             <DSPageHeader
                 title="Tipos de Movimiento"
                 icon={<Settings2 size={22} />}
                 actions={
-                    <SecuredButton
-                        securityId="tiposmovimiento.crear"
-                        securityDesc="Crear nuevo tipo de movimiento"
-                        variant="primary"
-                        icon={<Plus size={16} />}
-                        onClick={openCreate}
-                    >
-                        Nuevo Tipo
-                    </SecuredButton>
+                    <div className="ds-header__actions-row">
+                        <SecuredButton
+                            securityId="tiposmovimiento.crear"
+                            securityDesc="Ingreso masivo de tipos"
+                            variant="secondary"
+                            icon={<Upload size={16} />}
+                            onClick={() => setBulkModalOpen(true)}
+                        >
+                            Ingreso Masivo
+                        </SecuredButton>
+                        <SecuredButton
+                            securityId="tiposmovimiento.crear"
+                            securityDesc="Crear nuevo tipo de movimiento"
+                            variant="primary"
+                            icon={<Plus size={16} />}
+                            onClick={openCreate}
+                        >
+                            Nuevo Tipo
+                        </SecuredButton>
+                    </div>
                 }
             />
 
@@ -213,7 +244,12 @@ export function TiposMovimientoPage() {
 
             <DSSection
                 title="Listado de Tipos"
-                actions={<span className="diesel-panel__count">{tipos.length} tipos</span>}
+                actions={
+                    <div className="ds-section__actions-row">
+                        <DSRefreshButton onClick={refetch} loading={loading} />
+                        <span className="diesel-panel__count">{tipos.length} tipos</span>
+                    </div>
+                }
             >
                 <div className="ds-table-wrapper">
                     {loading ? (
@@ -323,6 +359,16 @@ export function TiposMovimientoPage() {
                     </form>
                 </DSModalSection>
             </DSModal>
+
+            <DSBulkImportModal
+                isOpen={bulkModalOpen}
+                onClose={() => setBulkModalOpen(false)}
+                title="Ingreso Masivo de Tipos de Movimiento"
+                columns={bulkColumns}
+                onSave={handleBulkSave}
+                onSuccess={handleBulkSuccess}
+                entityName="tipo de movimiento"
+            />
         </DSPage>
     );
 }

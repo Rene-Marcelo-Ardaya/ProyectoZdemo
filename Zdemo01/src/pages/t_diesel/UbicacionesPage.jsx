@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { MapPin, Plus, Pencil, Power, HelpCircle } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { MapPin, Plus, Pencil, Power, HelpCircle, Upload } from 'lucide-react';
 import {
     getUbicaciones,
     getUbicacion,
     createUbicacion,
     updateUbicacion,
     toggleUbicacion,
-    comboDivisiones
+    comboDivisiones,
+    createUbicacionesBulk
 } from '../../services/dieselService';
 
 import {
@@ -20,6 +21,8 @@ import {
     DSModal,
     DSModalSection,
     SecuredButton,
+    DSRefreshButton,
+    DSBulkImportModal,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -97,6 +100,7 @@ export function UbicacionesPage() {
     const { ubicaciones, loading, error: loadError, refetch } = useUbicaciones();
     const divisiones = useDivisiones();
 
+    // Modal individual
     const [modalOpen, setModalOpen] = useState(false);
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState(null);
@@ -107,6 +111,9 @@ export function UbicacionesPage() {
         nombre: '',
         d_division_id: ''
     });
+
+    // Modal masivo
+    const [bulkModalOpen, setBulkModalOpen] = useState(false);
 
     const resetForm = useCallback(() => {
         setForm({ nombre: '', d_division_id: '' });
@@ -202,6 +209,31 @@ export function UbicacionesPage() {
         }
     };
 
+    // Bulk import columns con select dinámico para divisiones
+    const bulkColumns = useMemo(() => [
+        { field: 'nombre', label: 'Nombre', required: true, placeholder: 'Nombre de ubicación', width: '2' },
+        {
+            field: 'd_division_id',
+            label: 'División',
+            type: 'select',
+            options: divisiones.map(d => ({ value: d.id, label: d.nombre })),
+            placeholder: '-- Sin división --',
+            width: '1.5'
+        }
+    ], [divisiones]);
+
+    // Bulk save handler
+    const handleBulkSave = async (rows) => {
+        return await createUbicacionesBulk(rows);
+    };
+
+    // Bulk success handler
+    const handleBulkSuccess = (result, message) => {
+        setFormSuccess(message);
+        refetch();
+        setTimeout(() => setFormSuccess(null), 5000);
+    };
+
     // Helper para obtener nombre de división
     const getDivisionNombre = (divisionId) => {
         const division = divisiones.find(d => d.id === divisionId);
@@ -214,15 +246,26 @@ export function UbicacionesPage() {
                 title="Gestión de Ubicaciones Físicas"
                 icon={<MapPin size={22} />}
                 actions={
-                    <SecuredButton
-                        securityId="ubicaciones.crear"
-                        securityDesc="Crear nueva ubicación"
-                        variant="primary"
-                        icon={<Plus size={16} />}
-                        onClick={openCreate}
-                    >
-                        Nueva Ubicación
-                    </SecuredButton>
+                    <div className="ds-header__actions-row">
+                        <SecuredButton
+                            securityId="ubicaciones.crear"
+                            securityDesc="Ingreso masivo de ubicaciones"
+                            variant="secondary"
+                            icon={<Upload size={16} />}
+                            onClick={() => setBulkModalOpen(true)}
+                        >
+                            Ingreso Masivo
+                        </SecuredButton>
+                        <SecuredButton
+                            securityId="ubicaciones.crear"
+                            securityDesc="Crear nueva ubicación"
+                            variant="primary"
+                            icon={<Plus size={16} />}
+                            onClick={openCreate}
+                        >
+                            Nueva Ubicación
+                        </SecuredButton>
+                    </div>
                 }
             />
 
@@ -239,7 +282,12 @@ export function UbicacionesPage() {
 
             <DSSection
                 title="Listado de Ubicaciones"
-                actions={<span className="diesel-panel__count">{ubicaciones.length} ubicaciones</span>}
+                actions={
+                    <div className="ds-section__actions-row">
+                        <DSRefreshButton onClick={refetch} loading={loading} />
+                        <span className="diesel-panel__count">{ubicaciones.length} ubicaciones</span>
+                    </div>
+                }
             >
                 <div className="ds-table-wrapper">
                     {loading ? (
@@ -305,6 +353,7 @@ export function UbicacionesPage() {
                 </div>
             </DSSection>
 
+            {/* Modal Individual */}
             <DSModal
                 isOpen={modalOpen}
                 onClose={closeModal}
@@ -352,6 +401,17 @@ export function UbicacionesPage() {
                     </form>
                 </DSModalSection>
             </DSModal>
+
+            {/* Modal Ingreso Masivo */}
+            <DSBulkImportModal
+                isOpen={bulkModalOpen}
+                onClose={() => setBulkModalOpen(false)}
+                title="Ingreso Masivo de Ubicaciones"
+                columns={bulkColumns}
+                onSave={handleBulkSave}
+                onSuccess={handleBulkSuccess}
+                entityName="ubicación"
+            />
         </DSPage>
     );
 }

@@ -11,7 +11,7 @@ import { DSComboBox } from './DSComboBox'
 import { DSCheckboxGroup } from './DSCheckboxGroup'
 import { DSRadioGroup } from './DSRadioGroup'
 import { DSTimeField } from './DSTimeField'
-import { DSButton, DSButtonGroup } from './DSButton'
+import { DSButton, DSButtonGroup, DSRefreshButton } from './DSButton'
 import { DSField, DSFieldInput, DSFieldsGrid, DSFieldsRow, DSColorField } from './DSField'
 import { DSImageUpload, DSImagesGrid } from './DSImageUpload'
 import { DSSearchSelect } from './DSSearchSelect'
@@ -36,6 +36,7 @@ export {
   // New components
   DSButton,
   DSButtonGroup,
+  DSRefreshButton,
   DSField,
   DSFieldInput,
   DSFieldsGrid,

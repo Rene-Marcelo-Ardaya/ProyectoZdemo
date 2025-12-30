@@ -1,6 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Truck, Plus, Pencil, Power, HelpCircle } from 'lucide-react';
-import { getProveedores, getProveedor, createProveedor, updateProveedor, toggleProveedor } from '../../services/dieselService';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Truck, Plus, Pencil, Power, HelpCircle, Upload } from 'lucide-react';
+import {
+    getProveedores,
+    getProveedor,
+    createProveedor,
+    updateProveedor,
+    toggleProveedor,
+    createProveedoresBulk
+} from '../../services/dieselService';
 
 import {
     DSPage,
@@ -13,6 +20,8 @@ import {
     DSModal,
     DSModalSection,
     SecuredButton,
+    DSRefreshButton,
+    DSBulkImportModal
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -72,6 +81,7 @@ export function ProveedoresPage() {
     const { proveedores, loading, error: loadError, refetch } = useProveedores();
 
     const [modalOpen, setModalOpen] = useState(false);
+    const [bulkModalOpen, setBulkModalOpen] = useState(false);
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState(null);
     const [formSuccess, setFormSuccess] = useState(null);
@@ -116,6 +126,7 @@ export function ProveedoresPage() {
 
     const closeModal = () => {
         setModalOpen(false);
+        setBulkModalOpen(false);
         resetForm();
     };
 
@@ -179,21 +190,52 @@ export function ProveedoresPage() {
         }
     };
 
+    // Bulk Columns
+    const bulkColumns = useMemo(() => [
+        { field: 'nombre', label: 'Nombre', required: true, placeholder: 'Nombre comercial', width: '20%' },
+        { field: 'razon_social', label: 'Razón Social', placeholder: 'Razón social legal', width: '20%' },
+        { field: 'nit', label: 'NIT', placeholder: 'NIT', width: '15%' },
+        { field: 'telefono', label: 'Teléfono', placeholder: 'Fijo', width: '15%' },
+        { field: 'celular', label: 'Celular', placeholder: 'Móvil', width: '15%' },
+        { field: 'direccion', label: 'Dirección', placeholder: 'Dirección completa', type: 'textarea', fullRow: true }
+    ], []);
+
+    const handleBulkSave = async (rows) => {
+        return await createProveedoresBulk(rows);
+    };
+
+    const handleBulkSuccess = (result, message) => {
+        setFormSuccess(message);
+        refetch();
+        setTimeout(() => setFormSuccess(null), 5000);
+    };
+
     return (
         <DSPage>
             <DSPageHeader
                 title="Gestión de Proveedores"
                 icon={<Truck size={22} />}
                 actions={
-                    <SecuredButton
-                        securityId="proveedores.crear"
-                        securityDesc="Crear nuevo proveedor"
-                        variant="primary"
-                        icon={<Plus size={16} />}
-                        onClick={openCreate}
-                    >
-                        Nuevo Proveedor
-                    </SecuredButton>
+                    <div className="ds-header__actions-row">
+                        <SecuredButton
+                            securityId="proveedores.crear"
+                            securityDesc="Ingreso masivo de proveedores"
+                            variant="secondary"
+                            icon={<Upload size={16} />}
+                            onClick={() => setBulkModalOpen(true)}
+                        >
+                            Ingreso Masivo
+                        </SecuredButton>
+                        <SecuredButton
+                            securityId="proveedores.crear"
+                            securityDesc="Crear nuevo proveedor"
+                            variant="primary"
+                            icon={<Plus size={16} />}
+                            onClick={openCreate}
+                        >
+                            Nuevo Proveedor
+                        </SecuredButton>
+                    </div>
                 }
             />
 
@@ -210,7 +252,12 @@ export function ProveedoresPage() {
 
             <DSSection
                 title="Listado de Proveedores"
-                actions={<span className="diesel-panel__count">{proveedores.length} proveedores</span>}
+                actions={
+                    <div className="ds-section__actions-row">
+                        <DSRefreshButton onClick={refetch} loading={loading} />
+                        <span className="diesel-panel__count">{proveedores.length} proveedores</span>
+                    </div>
+                }
             >
                 <div className="ds-table-wrapper">
                     {loading ? (
@@ -280,6 +327,7 @@ export function ProveedoresPage() {
                 </div>
             </DSSection>
 
+            {/* Modal Crear/Editar */}
             <DSModal
                 isOpen={modalOpen}
                 onClose={closeModal}
@@ -363,6 +411,17 @@ export function ProveedoresPage() {
                     </form>
                 </DSModalSection>
             </DSModal>
+
+            {/* Modal Importación Masiva */}
+            <DSBulkImportModal
+                isOpen={bulkModalOpen}
+                onClose={() => setBulkModalOpen(false)}
+                title="Ingreso Masivo de Proveedores"
+                columns={bulkColumns}
+                onSave={handleBulkSave}
+                onSuccess={handleBulkSuccess}
+                entityName="proveedor"
+            />
         </DSPage>
     );
 }

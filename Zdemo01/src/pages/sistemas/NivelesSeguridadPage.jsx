@@ -23,6 +23,7 @@ import {
     DSCount,
     DSModal,
     DSModalSection,
+    DSRefreshButton,
 } from '../../ds-components';
 
 import './NivelesSeguridadPage.css';
@@ -443,7 +444,12 @@ export function NivelesSeguridadPage() {
             {/* TABLA */}
             <DSSection
                 title="Grupos de Seguridad del Sistema"
-                actions={<span className="niveles-panel__count">{niveles.length} grupos</span>}
+                actions={
+                    <div className="ds-section__actions-row">
+                        <DSRefreshButton onClick={refetch} loading={loading} />
+                        <span className="niveles-panel__count">{niveles.length} grupos</span>
+                    </div>
+                }
             >
                 <div className="ds-table-wrapper">
                     {loading ? (

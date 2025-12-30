@@ -62,6 +62,12 @@
     flex-shrink: 0;
 }
 
+.ds-section__actions-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 /* ============================================
    SECTION BODY
    ============================================ */

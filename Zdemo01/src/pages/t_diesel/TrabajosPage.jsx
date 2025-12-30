@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Hammer, Plus, Pencil, Power, HelpCircle } from 'lucide-react';
-import { getTrabajos, getTrabajo, createTrabajo, updateTrabajo, toggleTrabajo } from '../../services/dieselService';
+import { Hammer, Plus, Pencil, Power, HelpCircle, Upload } from 'lucide-react';
+import { getTrabajos, getTrabajo, createTrabajo, updateTrabajo, toggleTrabajo, createTrabajosBulk } from '../../services/dieselService';
 
 import {
     DSPage,
@@ -13,6 +13,8 @@ import {
     DSModal,
     DSModalSection,
     SecuredButton,
+    DSRefreshButton,
+    DSBulkImportModal,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -83,7 +85,7 @@ function FormField({ label, children, required, help }) {
 export function TrabajosPage() {
     const { trabajos, loading, error: loadError, refetch } = useTrabajos();
 
-    // Estado del formulario
+    // Estado del formulario individual
     const [modalOpen, setModalOpen] = useState(false);
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState(null);
@@ -93,6 +95,9 @@ export function TrabajosPage() {
     const [form, setForm] = useState({
         nombre: ''
     });
+
+    // Estado para bulk import
+    const [bulkModalOpen, setBulkModalOpen] = useState(false);
 
     // Reset form
     const resetForm = useCallback(() => {
@@ -192,6 +197,23 @@ export function TrabajosPage() {
         }
     };
 
+    // Bulk import columns
+    const bulkColumns = [
+        { field: 'nombre', label: 'Nombre', required: true, placeholder: 'Nombre del trabajo' }
+    ];
+
+    // Bulk save handler
+    const handleBulkSave = async (rows) => {
+        return await createTrabajosBulk(rows);
+    };
+
+    // Bulk success handler
+    const handleBulkSuccess = (result, message) => {
+        setFormSuccess(message);
+        refetch();
+        setTimeout(() => setFormSuccess(null), 5000);
+    };
+
     return (
         <DSPage>
             {/* HEADER */}
@@ -199,15 +221,26 @@ export function TrabajosPage() {
                 title="Gestión de Trabajos"
                 icon={<Hammer size={22} />}
                 actions={
-                    <SecuredButton
-                        securityId="trabajos.crear"
-                        securityDesc="Crear nuevo trabajo"
-                        variant="primary"
-                        icon={<Plus size={16} />}
-                        onClick={openCreate}
-                    >
-                        Nuevo Trabajo
-                    </SecuredButton>
+                    <div className="ds-header__actions-row">
+                        <SecuredButton
+                            securityId="trabajos.crear"
+                            securityDesc="Ingreso masivo de trabajos"
+                            variant="secondary"
+                            icon={<Upload size={16} />}
+                            onClick={() => setBulkModalOpen(true)}
+                        >
+                            Ingreso Masivo
+                        </SecuredButton>
+                        <SecuredButton
+                            securityId="trabajos.crear"
+                            securityDesc="Crear nuevo trabajo"
+                            variant="primary"
+                            icon={<Plus size={16} />}
+                            onClick={openCreate}
+                        >
+                            Nuevo Trabajo
+                        </SecuredButton>
+                    </div>
                 }
             />
 
@@ -226,7 +259,12 @@ export function TrabajosPage() {
             {/* TABLA */}
             <DSSection
                 title="Listado de Trabajos"
-                actions={<span className="diesel-panel__count">{trabajos.length} trabajos</span>}
+                actions={
+                    <div className="ds-section__actions-row">
+                        <DSRefreshButton onClick={refetch} loading={loading} />
+                        <span className="diesel-panel__count">{trabajos.length} trabajos</span>
+                    </div>
+                }
             >
                 <div className="ds-table-wrapper">
                     {loading ? (
@@ -290,7 +328,7 @@ export function TrabajosPage() {
                 </div>
             </DSSection>
 
-            {/* MODAL */}
+            {/* MODAL INDIVIDUAL */}
             <DSModal
                 isOpen={modalOpen}
                 onClose={closeModal}
@@ -336,8 +374,20 @@ export function TrabajosPage() {
                     </form>
                 </DSModalSection>
             </DSModal>
+
+            {/* MODAL INGRESO MASIVO */}
+            <DSBulkImportModal
+                isOpen={bulkModalOpen}
+                onClose={() => setBulkModalOpen(false)}
+                title="Ingreso Masivo de Trabajos"
+                columns={bulkColumns}
+                onSave={handleBulkSave}
+                onSuccess={handleBulkSuccess}
+                entityName="trabajo"
+            />
         </DSPage>
     );
 }
 
 export default TrabajosPage;
+

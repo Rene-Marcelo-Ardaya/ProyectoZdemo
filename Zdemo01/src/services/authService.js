@@ -183,6 +183,14 @@ export async function authFetch(endpoint, options = {}) {
         ...options.headers,
     };
 
+<<<<<<< HEAD
+=======
+    // Agregar Content-Type si hay body y no está definido
+    if (options.body && !headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json';
+    }
+
+>>>>>>> origin/rm
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }

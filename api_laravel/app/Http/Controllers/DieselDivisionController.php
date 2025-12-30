@@ -81,6 +81,66 @@ class DieselDivisionController extends Controller
     }
 
     /**
+     * Crear múltiples divisiones (ingreso masivo)
+     */
+    public function storeBulk(Request $request): JsonResponse
+    {
+        $request->validate([
+            'divisiones' => 'required|array|min:1',
+            'divisiones.*.nombre' => 'required|string|max:100|distinct'
+        ]);
+
+        $creados = [];
+        $errores = [];
+
+        \DB::beginTransaction();
+        try {
+            foreach ($request->divisiones as $data) {
+                // Verificar duplicados en BD
+                if (Division::where('nombre', $data['nombre'])->exists()) {
+                    $errores[] = [
+                        'nombre' => $data['nombre'],
+                        'error' => 'Ya existe una división con este nombre'
+                    ];
+                    continue;
+                }
+
+                $division = Division::create([
+                    'nombre' => $data['nombre'],
+                    'is_active' => true
+                ]);
+                $creados[] = $division;
+            }
+
+            if (empty($creados) && !empty($errores)) {
+                \DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se pudo crear ninguna división',
+                    'errores' => $errores
+                ], 422);
+            }
+
+            \DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => count($creados) . ' división(es) creada(s) correctamente',
+                'creados' => count($creados),
+                'errores' => $errores,
+                'data' => $creados
+            ], 201);
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al crear divisiones: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Actualizar división
      */
     public function update(Request $request, $id): JsonResponse
