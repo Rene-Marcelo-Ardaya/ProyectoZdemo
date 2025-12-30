@@ -13,7 +13,9 @@ class IngresoDetalle extends Model
     protected $fillable = [
         'd_ingreso_id',
         'd_tanque_id',
-        'litros'
+        'litros',
+        'inicio_tanque',
+        'final_tanque'
     ];
 
     protected $casts = [

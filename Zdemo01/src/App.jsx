@@ -22,6 +22,7 @@ import { TanquesPage } from './pages/t_diesel/TanquesPage';
 import { MaquinasPage } from './pages/t_diesel/MaquinasPage';
 import { TiposMovimientoPage } from './pages/t_diesel/TiposMovimientoPage';
 import { IngresosPage } from './pages/t_diesel/IngresosPage';
+import { RecepcionPage } from './pages/t_diesel/RecepcionPage';
 import { Sidebar } from './components/Sidebar'
 import { ChatWidget } from './components/ChatWidget'
 import { SyncManager } from './components/SyncManager'
@@ -50,7 +51,8 @@ const SUPPORTED_ROUTES = new Set([
   '/diesel/tanques',
   '/diesel/maquinas',
   '/diesel/tipos-movimiento',
-  '/diesel/ingresos'
+  '/diesel/ingresos',
+  '/diesel/recepcion'
 ])
 
 function getStoredActivePage() {
@@ -258,6 +260,7 @@ function App() {
             {activePage === '/diesel/maquinas' && <MaquinasPage />}
             {activePage === '/diesel/tipos-movimiento' && <TiposMovimientoPage />}
             {activePage === '/diesel/ingresos' && <IngresosPage />}
+            {activePage === '/diesel/recepcion' && <RecepcionPage />}
             {activePage === '/diesel/trabajos' && <TrabajosPage />}
             {activePage === '/diesel/divisiones' && <DivisionesPage />}
             {activePage === '/diesel/proveedores' && <ProveedoresPage />}

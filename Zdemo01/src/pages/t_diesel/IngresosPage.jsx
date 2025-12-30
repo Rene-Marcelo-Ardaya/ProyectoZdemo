@@ -80,8 +80,6 @@ const INITIAL_FORM = {
     fecha: getTodayStr(),
     d_proveedor_id: '',
     d_tipo_pago_id: '',
-    nombre_chofer: '',
-    placa_vehiculo: '',
     precio_unitario: '',
     observaciones: '',
     detalles: [{ id: Date.now(), d_tanque_id: '', litros: '' }]
@@ -414,7 +412,7 @@ export function IngresosPage() {
             precio_unitario: parseFloat(row.precio_unitario).toFixed(2),
             observaciones: row.observaciones || '-',
             tanque: renderTanqueColumn(row),
-            estado: <DSBadge variant={row.estado === 'ACTIVO' ? 'success' : 'error'}>{row.estado}</DSBadge>,
+            estado: <DSBadge variant={row.estado === 'PENDIENTE' ? 'warning' : row.estado === 'FINALIZADO' ? 'success' : 'error'}>{row.estado}</DSBadge>,
             actions: row.estado === 'ACTIVO' ? (
                 <DSButton size="sm" variant="ghost-danger" icon={<Trash2 size={16} />} onClick={() => handleAnular(row)} title="Anular" />
             ) : null,
@@ -552,12 +550,12 @@ export function IngresosPage() {
                                         <td>{row.observaciones || '-'}</td>
                                         <td>{renderTanqueColumn(row)}</td>
                                         <td>
-                                            <DSBadge variant={row.estado === 'ACTIVO' ? 'success' : 'error'}>
+                                            <DSBadge variant={row.estado === 'PENDIENTE' ? 'warning' : row.estado === 'FINALIZADO' ? 'success' : 'error'}>
                                                 {row.estado}
                                             </DSBadge>
                                         </td>
                                         <td>
-                                            {row.estado === 'ACTIVO' && (
+                                            {row.estado !== 'ANULADO' && (
                                                 <SecuredButton
                                                     securityId="ingresos.anular"
                                                     securityDesc="Anular ingreso"
@@ -581,7 +579,7 @@ export function IngresosPage() {
             <DSModal
                 isOpen={modalOpen}
                 onClose={closeModal}
-                title="Registrar Nuevo Ingreso"
+                title="Registrar Nueva Compra"
                 size="lg"
                 footer={
                     <div className="diesel-modal-footer">
@@ -648,26 +646,6 @@ export function IngresosPage() {
 
                     <div className="col-span-1">
                         <label className="ds-field__label">
-                            Chofer
-                            <span className="diesel-tooltip">
-                                <HelpCircle size={14} />
-                                <span className="diesel-tooltip__text">Nombre del conductor que transporta el combustible</span>
-                            </span>
-                        </label>
-                        <input type="text" className="ds-field__control" value={form.nombre_chofer} onChange={handleChange('nombre_chofer')} />
-                    </div>
-                    <div className="col-span-1">
-                        <label className="ds-field__label">
-                            Placa
-                            <span className="diesel-tooltip">
-                                <HelpCircle size={14} />
-                                <span className="diesel-tooltip__text">Placa del vehículo cisterna</span>
-                            </span>
-                        </label>
-                        <input type="text" className="ds-field__control" value={form.placa_vehiculo} onChange={handleChange('placa_vehiculo')} />
-                    </div>
-                    <div className="col-span-1">
-                        <label className="ds-field__label">
                             Precio Unitario (Bs) *
                             <span className="diesel-tooltip">
                                 <HelpCircle size={14} />
@@ -676,7 +654,7 @@ export function IngresosPage() {
                         </label>
                         <input type="number" step="0.01" className="ds-field__control" value={form.precio_unitario} onChange={handleChange('precio_unitario')} />
                     </div>
-                    <div className="col-span-1">
+                    <div className="col-span-2">
                         <label className="ds-field__label">
                             Observaciones
                             <span className="diesel-tooltip">

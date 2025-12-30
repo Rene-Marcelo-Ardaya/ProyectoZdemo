@@ -11,51 +11,28 @@ export function SyncManager() {
     const [isSyncing, setIsSyncing] = useState(false);
     const [syncResult, setSyncResult] = useState(null);
 
-    // Monitor pending count and Server Heartbeat
+    // Monitor pending count - Server status is detected automatically via authFetch events
     useEffect(() => {
         const checkPending = async () => {
             const count = await dexieDb.pendingSync.count();
             setPendingCount(count);
         };
 
-        // Heartbeat to check if server is reachable (only if browser is online)
-        const checkServerStatus = async () => {
-            if (navigator.onLine) {
-                try {
-                    // Ping lightweight endpoint
-                    const endpoint = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api');
-                    // Usamos fetch normal para bypass de authFetch (evitar loop de offline)
-                    const res = await fetch(`${endpoint}/config/public`, {
-                        method: 'HEAD',
-                        cache: 'no-store'
-                    });
-
-                    if (res.ok) {
-                        window.dispatchEvent(new Event('zdemo:online-mode'));
-                    } else if (res.status >= 500) {
-                        window.dispatchEvent(new Event('zdemo:offline-mode'));
-                    }
-                } catch (e) {
-                    // Si falla el fetch es porque no hay conexión real al server
-                    window.dispatchEvent(new Event('zdemo:offline-mode'));
-                }
-            }
-        };
-
+        // Check pending on mount
         checkPending();
-        checkServerStatus();
-
-        const interval = setInterval(() => {
-            checkPending();
-            checkServerStatus();
-        }, 5000); // Check every 5s
 
         // Listen for new offline items to update immediately
         window.addEventListener('zdemo:offline-saved', checkPending);
 
+        // Also listen for online/offline mode changes to refresh pending count
+        const handleModeChange = () => checkPending();
+        window.addEventListener('zdemo:online-mode', handleModeChange);
+        window.addEventListener('zdemo:offline-mode', handleModeChange);
+
         return () => {
-            clearInterval(interval);
             window.removeEventListener('zdemo:offline-saved', checkPending);
+            window.removeEventListener('zdemo:online-mode', handleModeChange);
+            window.removeEventListener('zdemo:offline-mode', handleModeChange);
         };
     }, []);
 

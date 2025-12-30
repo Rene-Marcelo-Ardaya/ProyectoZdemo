@@ -161,7 +161,30 @@ class DatabaseSeeder extends Seeder
              ]);
         }
 
-        // Cargar configuraciones del sistema
+        // =============================================
+        // LLAMAR A TODOS LOS SEEDERS EN ORDEN
+        // =============================================
+        
+        // 1. DATOS BASE (sin dependencias de menús)
+        $this->call([
+            DieselBasicosSeeder::class,        // Divisiones, Trabajos, Ubicaciones, Tanques, Máquinas
+            DieselExtrasSeeder::class,         // Proveedores, Tipos de Pago, Motivos Ajuste
+            DieselMovimientosSeeder::class,    // Tipos de Movimiento
+            NivelesSeguridadSeeder::class,     // Niveles de seguridad
+        ]);
+
+        // 2. MENÚS (dependen de que existan los menús base creados arriba)
+        $this->call([
+            DieselMenusSeeder::class,           // Menú padre "Configuraciones Diesel" + submenús
+            DieselMenusExtrasSeeder::class,     // Submenús: Ubicaciones, Tanques, Máquinas (depende de DieselMenusSeeder)
+            DieselMenusMovimientosSeeder::class,// Submenú: Tipos de Movimiento + Menú "Operaciones Diesel"
+            NivelesSeguridadMenuSeeder::class,  // Menú "Grupos de Seguridad" bajo Sistemas
+        ]);
+
+        // 3. CONFIGURACIÓN DEL SISTEMA
         $this->call(SettingSeeder::class);
+
+        // 4. ASIGNACIÓN FINAL DE PERMISOS (debe ir AL FINAL)
+        $this->call(AssignMenusToSuperAdminSeeder::class);  // Asigna TODOS los menús al super-admin
     }
 }

@@ -38,9 +38,14 @@ class Ingreso extends Model
     // SCOPES
     // =============================================
 
-    public function scopeActivos($query)
+    public function scopePendientes($query)
     {
-        return $query->where('estado', 'ACTIVO');
+        return $query->where('estado', 'PENDIENTE');
+    }
+
+    public function scopeFinalizados($query)
+    {
+        return $query->where('estado', 'FINALIZADO');
     }
 
     public function scopeAnulados($query)

@@ -198,7 +198,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::prefix('ingresos')->group(function () {
             Route::get('/', [DieselIngresoController::class, 'index']);
             Route::get('/{id}', [DieselIngresoController::class, 'show']);
-            Route::post('/', [DieselIngresoController::class, 'store']);
+            Route::post('/', [DieselIngresoController::class, 'store']);                    // Fase 1: Dueño
+            Route::patch('/{id}/recepcionar', [DieselIngresoController::class, 'recepcionar']); // Fase 2: Surtidor
             Route::patch('/{id}/anular', [DieselIngresoController::class, 'anular']);
         });
     });

@@ -335,7 +335,7 @@ export function TanquesPage() {
             const payload = {
                 nombre: form.nombre,
                 tipo: form.tipo,
-                d_ubicacion_fisica_id: form.d_ubicacion_fisica_id,
+                d_ubicacion_fisica_id: parseInt(form.d_ubicacion_fisica_id),
                 capacidad_maxima: parseFloat(form.capacidad_maxima),
                 stock_actual: form.stock_actual ? parseFloat(form.stock_actual) : 0
             };

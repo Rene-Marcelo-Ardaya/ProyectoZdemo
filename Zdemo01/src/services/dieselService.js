@@ -414,6 +414,7 @@ export async function getIngreso(id) {
 export async function createIngreso(data) {
   const response = await authFetch('/diesel/ingresos', {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
   return response.json();
@@ -421,6 +422,16 @@ export async function createIngreso(data) {
 export async function anularIngreso(id) {
   const response = await authFetch(`/diesel/ingresos/${id}/anular`, {
     method: 'PATCH'
+  });
+  return response.json();
+}
+
+// Fase 2: Surtidor confirma recepción
+export async function recepcionarIngreso(id, data) {
+  const response = await authFetch(`/diesel/ingresos/${id}/recepcionar`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
   });
   return response.json();
 }

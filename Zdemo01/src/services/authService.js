@@ -37,7 +37,7 @@ export async function login(name, password) {
         if (result.success) {
             // Guardar token
             localStorage.setItem(TOKEN_KEY, result.data.token);
-            
+
             // Guardar datos del usuario
             const userData = {
                 isAuthenticated: true,
@@ -79,7 +79,7 @@ export async function login(name, password) {
  */
 export async function logout() {
     const token = getToken();
-    
+
     if (token) {
         try {
             await fetch(`${API_BASE_URL}/logout`, {
@@ -93,7 +93,7 @@ export async function logout() {
             console.error('Error en logout:', error);
         }
     }
-    
+
     // Limpiar localStorage
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
@@ -141,11 +141,11 @@ export function isAuthenticated() {
  */
 export async function getProfile() {
     const token = getToken();
-    
+
     if (!token) {
         return { success: false, error: 'No hay sesión activa' };
     }
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/me`, {
             method: 'GET',
@@ -179,9 +179,10 @@ export async function authFetch(endpoint, options = {}) {
     const token = getToken();
     const headers = {
         'Accept': 'application/json',
+        'Content-Type': 'application/json',
         ...options.headers,
     };
-    
+
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
@@ -210,8 +211,10 @@ export async function authFetch(endpoint, options = {}) {
                 return mockResponse(cached);
             }
             throw new Error('Sin conexión y sin caché disponible');
-        } else {
-            // Guardar para sincronizar después
+        } else if (method === 'POST' || method === 'PATCH') {
+            // POST y PATCH permiten guardarse offline
+            // - POST: Crear nuevos registros (ej: nuevo ingreso)
+            // - PATCH: Operaciones únicas como recepcionar (solo ocurre una vez, sin conflictos)
             const added = await queueRequest(endpoint, method, options.body ? JSON.parse(options.body) : null);
             if (added) {
                 return mockResponse({
@@ -221,6 +224,15 @@ export async function authFetch(endpoint, options = {}) {
                 });
             }
             throw new Error('Error guardando en base de datos local');
+        } else {
+            // PUT/DELETE requieren conexión - no se permite offline
+            // ═══════════════════════════════════════════════════════════════════
+            // PUT (edición general) se bloquea porque puede causar conflictos 
+            // "Last Write Wins" cuando múltiples usuarios editan el mismo registro.
+            // PATCH se permite porque se usa para operaciones únicas (recepcionar).
+            // DELETE se bloquea porque eliminar offline es peligroso.
+            // ═══════════════════════════════════════════════════════════════════
+            throw new Error('Editar o eliminar requiere conexión a internet');
         }
     };
 
@@ -231,7 +243,7 @@ export async function authFetch(endpoint, options = {}) {
 
     try {
         const response = await fetch(url, { ...options, headers });
-        
+
         // Si el servidor da error 5xx, tratar como offline (server down)
         if (response.status >= 500) {
             console.warn('⚠️ Servidor caído (5xx), pasando a modo offline');
@@ -241,9 +253,13 @@ export async function authFetch(endpoint, options = {}) {
 
         // Si es GET exitoso, guardar en caché
         if (isGet && response.ok) {
-            window.dispatchEvent(new Event('zdemo:online-mode'));
             const clone = response.clone();
             clone.json().then(data => cacheResponse(url, data));
+        }
+
+        // Cualquier respuesta exitosa confirma que estamos online
+        if (response.ok) {
+            window.dispatchEvent(new Event('zdemo:online-mode'));
         }
 
         return response;
@@ -282,16 +298,16 @@ export function getLoginTime() {
 export function checkSessionExpired() {
     const timeout = getSessionTimeout();
     const loginTime = getLoginTime();
-    
+
     // Sin límite de sesión
     if (timeout === null || !loginTime) {
         return { expired: false, remainingMinutes: null };
     }
-    
+
     const now = Date.now();
     const elapsed = (now - loginTime) / 1000 / 60; // en minutos
     const remaining = timeout - elapsed;
-    
+
     return {
         expired: remaining <= 0,
         remainingMinutes: Math.max(0, Math.ceil(remaining))
