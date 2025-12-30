@@ -7,13 +7,15 @@ import { DSOverlayProvider, useMessageBox } from './DSOverlayContext'
 import { DSModal, DSModalSection, DSModalGrid } from './DSModal'
 import { DSAlert } from './DSAlert'
 import { DSLoading, DSSkeleton, DSSkeletonGroup, DSSkeletonRow, DSEmpty, DSErrorState } from './DSLoading'
+import { DSBulkImportModal } from './DSBulkImportModal'
 
 export {
   DSWindow, DSDialog, DSLoadingMask, DSMessageBox, DSOverlayProvider, useMessageBox,
   // New components
   DSModal, DSModalSection, DSModalGrid,
   DSAlert,
-  DSLoading, DSSkeleton, DSSkeletonGroup, DSSkeletonRow, DSEmpty, DSErrorState
+  DSLoading, DSSkeleton, DSSkeletonGroup, DSSkeletonRow, DSEmpty, DSErrorState,
+  DSBulkImportModal
 }
 
 const placeholder = (name, children) =>
@@ -25,3 +27,4 @@ const placeholder = (name, children) =>
   )
 
 export const DSToast = (props) => placeholder('DSToast', props.children)
+

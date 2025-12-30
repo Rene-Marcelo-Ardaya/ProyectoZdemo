@@ -109,6 +109,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('/combo', [DieselDivisionController::class, 'combo']);
             Route::get('/{id}', [DieselDivisionController::class, 'show']);
             Route::post('/', [DieselDivisionController::class, 'store']);
+            Route::post('/bulk', [DieselDivisionController::class, 'storeBulk']);
             Route::put('/{id}', [DieselDivisionController::class, 'update']);
             Route::patch('/{id}/toggle', [DieselDivisionController::class, 'toggleActivo']);
         });
@@ -119,6 +120,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('/combo', [DieselTrabajoController::class, 'combo']);
             Route::get('/{id}', [DieselTrabajoController::class, 'show']);
             Route::post('/', [DieselTrabajoController::class, 'store']);
+            Route::post('/bulk', [DieselTrabajoController::class, 'storeBulk']); // Ingreso masivo
             Route::put('/{id}', [DieselTrabajoController::class, 'update']);
             Route::patch('/{id}/toggle', [DieselTrabajoController::class, 'toggleActivo']);
         });
@@ -129,6 +131,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('/combo', [DieselUbicacionController::class, 'combo']); // ?division_id=X
             Route::get('/{id}', [DieselUbicacionController::class, 'show']);
             Route::post('/', [DieselUbicacionController::class, 'store']);
+            Route::post('/bulk', [DieselUbicacionController::class, 'storeBulk']); // Ingreso masivo
             Route::put('/{id}', [DieselUbicacionController::class, 'update']);
             Route::patch('/{id}/toggle', [DieselUbicacionController::class, 'toggleActivo']);
         });
@@ -139,6 +142,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('/combo', [DieselTanqueController::class, 'combo']); // ?ubicacion_id=X
             Route::get('/{id}', [DieselTanqueController::class, 'show']);
             Route::post('/', [DieselTanqueController::class, 'store']);
+            Route::post('/bulk', [DieselTanqueController::class, 'storeBulk']);
             Route::put('/{id}', [DieselTanqueController::class, 'update']);
             Route::patch('/{id}/toggle', [DieselTanqueController::class, 'toggleActivo']);
             Route::patch('/{id}/adjust-stock', [DieselTanqueController::class, 'adjustStock']);
@@ -150,6 +154,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('/combo', [DieselMaquinaController::class, 'combo']); // ?division_id=X
             Route::get('/{id}', [DieselMaquinaController::class, 'show']);
             Route::post('/', [DieselMaquinaController::class, 'store']);
+            Route::post('/bulk', [DieselMaquinaController::class, 'storeBulk']);
             Route::put('/{id}', [DieselMaquinaController::class, 'update']);
             Route::patch('/{id}/toggle', [DieselMaquinaController::class, 'toggleActivo']);
         });
@@ -160,6 +165,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('/combo', [DieselProveedorController::class, 'combo']);
             Route::get('/{id}', [DieselProveedorController::class, 'show']);
             Route::post('/', [DieselProveedorController::class, 'store']);
+            Route::post('/bulk', [DieselProveedorController::class, 'storeBulk']); // Ingreso masivo
             Route::put('/{id}', [DieselProveedorController::class, 'update']);
             Route::patch('/{id}/toggle', [DieselProveedorController::class, 'toggleActivo']);
         });
@@ -170,6 +176,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('/combo', [DieselTipoPagoController::class, 'combo']);
             Route::get('/{id}', [DieselTipoPagoController::class, 'show']);
             Route::post('/', [DieselTipoPagoController::class, 'store']);
+            Route::post('/bulk', [DieselTipoPagoController::class, 'storeBulk']);
             Route::put('/{id}', [DieselTipoPagoController::class, 'update']);
             Route::patch('/{id}/toggle', [DieselTipoPagoController::class, 'toggleActivo']);
         });
@@ -180,6 +187,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('/combo', [DieselMotivoAjusteController::class, 'combo']);
             Route::get('/{id}', [DieselMotivoAjusteController::class, 'show']);
             Route::post('/', [DieselMotivoAjusteController::class, 'store']);
+            Route::post('/bulk', [DieselMotivoAjusteController::class, 'storeBulk']);
             Route::put('/{id}', [DieselMotivoAjusteController::class, 'update']);
             Route::patch('/{id}/toggle', [DieselMotivoAjusteController::class, 'toggleActivo']);
         });
@@ -190,6 +198,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('/combo', [DieselTipoMovimientoController::class, 'combo']);
             Route::get('/{id}', [DieselTipoMovimientoController::class, 'show']);
             Route::post('/', [DieselTipoMovimientoController::class, 'store']);
+            Route::post('/bulk', [DieselTipoMovimientoController::class, 'storeBulk']);
             Route::put('/{id}', [DieselTipoMovimientoController::class, 'update']);
             Route::patch('/{id}/toggle', [DieselTipoMovimientoController::class, 'toggleActivo']);
         });

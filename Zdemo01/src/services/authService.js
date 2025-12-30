@@ -37,7 +37,7 @@ export async function login(name, password) {
         if (result.success) {
             // Guardar token
             localStorage.setItem(TOKEN_KEY, result.data.token);
-            
+
             // Guardar datos del usuario
             const userData = {
                 isAuthenticated: true,
@@ -79,7 +79,7 @@ export async function login(name, password) {
  */
 export async function logout() {
     const token = getToken();
-    
+
     if (token) {
         try {
             await fetch(`${API_BASE_URL}/logout`, {
@@ -93,7 +93,7 @@ export async function logout() {
             console.error('Error en logout:', error);
         }
     }
-    
+
     // Limpiar localStorage
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
@@ -141,11 +141,11 @@ export function isAuthenticated() {
  */
 export async function getProfile() {
     const token = getToken();
-    
+
     if (!token) {
         return { success: false, error: 'No hay sesión activa' };
     }
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/me`, {
             method: 'GET',
@@ -181,7 +181,12 @@ export async function authFetch(endpoint, options = {}) {
         'Accept': 'application/json',
         ...options.headers,
     };
-    
+
+    // Agregar Content-Type si hay body y no está definido
+    if (options.body && !headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json';
+    }
+
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
@@ -231,7 +236,7 @@ export async function authFetch(endpoint, options = {}) {
 
     try {
         const response = await fetch(url, { ...options, headers });
-        
+
         // Si el servidor da error 5xx, tratar como offline (server down)
         if (response.status >= 500) {
             console.warn('⚠️ Servidor caído (5xx), pasando a modo offline');
@@ -282,16 +287,16 @@ export function getLoginTime() {
 export function checkSessionExpired() {
     const timeout = getSessionTimeout();
     const loginTime = getLoginTime();
-    
+
     // Sin límite de sesión
     if (timeout === null || !loginTime) {
         return { expired: false, remainingMinutes: null };
     }
-    
+
     const now = Date.now();
     const elapsed = (now - loginTime) / 1000 / 60; // en minutos
     const remaining = timeout - elapsed;
-    
+
     return {
         expired: remaining <= 0,
         remainingMinutes: Math.max(0, Math.ceil(remaining))

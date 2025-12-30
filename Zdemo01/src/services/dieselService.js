@@ -55,6 +55,14 @@ export async function toggleTrabajo(id) {
   return response.json();
 }
 
+export async function createTrabajosBulk(trabajos) {
+  const response = await authFetch('/diesel/trabajos/bulk', {
+    method: 'POST',
+    body: JSON.stringify({ trabajos })
+  });
+  return response.json();
+}
+
 // ============================================
 // DIVISIONES
 // ============================================
@@ -93,6 +101,14 @@ export async function updateDivision(id, data) {
 export async function toggleDivision(id) {
   const response = await authFetch(`/diesel/divisiones/${id}/toggle`, {
     method: 'PATCH'
+  });
+  return response.json();
+}
+
+export async function createDivisionesBulk(divisiones) {
+  const response = await authFetch('/diesel/divisiones/bulk', {
+    method: 'POST',
+    body: JSON.stringify({ divisiones })
   });
   return response.json();
 }
@@ -139,6 +155,14 @@ export async function toggleProveedor(id) {
   return response.json();
 }
 
+export async function createProveedoresBulk(proveedores) {
+  const response = await authFetch('/diesel/proveedores/bulk', {
+    method: 'POST',
+    body: JSON.stringify({ proveedores })
+  });
+  return response.json();
+}
+
 // ============================================
 // TIPOS DE PAGO
 // ============================================
@@ -177,6 +201,14 @@ export async function updateTipoPago(id, data) {
 export async function toggleTipoPago(id) {
   const response = await authFetch(`/diesel/tipos-pago/${id}/toggle`, {
     method: 'PATCH'
+  });
+  return response.json();
+}
+
+export async function createTiposPagoBulk(tiposPago) {
+  const response = await authFetch('/diesel/tipos-pago/bulk', {
+    method: 'POST',
+    body: JSON.stringify({ tipos_pago: tiposPago })
   });
   return response.json();
 }
@@ -223,6 +255,14 @@ export async function toggleMotivoAjuste(id) {
   return response.json();
 }
 
+export async function createMotivosAjusteBulk(motivosAjuste) {
+  const response = await authFetch('/diesel/motivos-ajuste/bulk', {
+    method: 'POST',
+    body: JSON.stringify({ motivos_ajuste: motivosAjuste })
+  });
+  return response.json();
+}
+
 // ============================================
 // UBICACIONES
 // ============================================
@@ -262,6 +302,14 @@ export async function updateUbicacion(id, data) {
 export async function toggleUbicacion(id) {
   const response = await authFetch(`/diesel/ubicaciones/${id}/toggle`, {
     method: 'PATCH'
+  });
+  return response.json();
+}
+
+export async function createUbicacionesBulk(ubicaciones) {
+  const response = await authFetch('/diesel/ubicaciones/bulk', {
+    method: 'POST',
+    body: JSON.stringify({ ubicaciones })
   });
   return response.json();
 }
@@ -320,6 +368,14 @@ export async function adjustStock(id, nuevoStock) {
   return response.json();
 }
 
+export async function createTanquesBulk(tanques) {
+  const response = await authFetch('/diesel/tanques/bulk', {
+    method: 'POST',
+    body: JSON.stringify({ tanques })
+  });
+  return response.json();
+}
+
 // ============================================
 // MÁQUINAS
 // ============================================
@@ -366,6 +422,14 @@ export async function toggleMaquina(id) {
   return response.json();
 }
 
+export async function createMaquinasBulk(maquinas) {
+  const response = await authFetch('/diesel/maquinas/bulk', {
+    method: 'POST',
+    body: JSON.stringify({ maquinas })
+  });
+  return response.json();
+}
+
 // =============================================
 // TIPOS DE MOVIMIENTO
 // =============================================
@@ -395,6 +459,14 @@ export async function updateTipoMovimiento(id, data) {
 export async function toggleTipoMovimiento(id) {
   const response = await authFetch(`/diesel/tipos-movimiento/${id}/toggle`, {
     method: 'PATCH'
+  });
+  return response.json();
+}
+
+export async function createTiposMovimientoBulk(tiposMovimiento) {
+  const response = await authFetch('/diesel/tipos-movimiento/bulk', {
+    method: 'POST',
+    body: JSON.stringify({ tipos_movimiento: tiposMovimiento })
   });
   return response.json();
 }

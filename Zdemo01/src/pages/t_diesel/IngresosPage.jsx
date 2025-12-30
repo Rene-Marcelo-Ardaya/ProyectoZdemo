@@ -23,6 +23,7 @@ import {
     DSFieldsGrid,
     DSEditableGrid,
     SecuredButton,
+    DSRefreshButton,
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -524,7 +525,14 @@ export function IngresosPage() {
             </DSSection>
 
             {/* TABLA */}
-            <DSSection>
+            <DSSection
+                actions={
+                    <div className="ds-section__actions-row">
+                        <DSRefreshButton onClick={fetchIngresos} loading={loading} />
+                        <span className="diesel-panel__count">{ingresos.length} registros</span>
+                    </div>
+                }
+            >
                 <div className="diesel-table-wrapper">
                     {loading ? <DSLoading /> : ingresos.length === 0 ? (
                         <div className="diesel-empty">No hay ingresos registrados para este período</div>

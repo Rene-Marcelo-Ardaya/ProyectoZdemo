@@ -79,6 +79,69 @@ class DieselTipoMovimientoController extends Controller
     }
 
     /**
+     * Crear múltiples tipos de movimiento (ingreso masivo)
+     */
+    public function storeBulk(Request $request)
+    {
+        $request->validate([
+            'tipos_movimiento' => 'required|array|min:1',
+            'tipos_movimiento.*.nombre' => 'required|string|max:50',
+            'tipos_movimiento.*.descripcion' => 'nullable|string|max:255'
+        ]);
+
+        $creados = [];
+        $errores = [];
+
+        \DB::beginTransaction();
+        try {
+            foreach ($request->tipos_movimiento as $index => $data) {
+                $existe = TipoMovimiento::where('nombre', strtoupper($data['nombre']))->exists();
+                if ($existe) {
+                    $errores[] = [
+                        'fila' => $index + 1,
+                        'nombre' => $data['nombre'],
+                        'error' => 'Ya existe un tipo con este nombre'
+                    ];
+                    continue;
+                }
+
+                $tipo = TipoMovimiento::create([
+                    'nombre' => strtoupper($data['nombre']),
+                    'descripcion' => $data['descripcion'] ?? null,
+                    'is_active' => true
+                ]);
+                $creados[] = $tipo;
+            }
+
+            if (count($errores) > 0 && count($creados) === 0) {
+                \DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se pudo crear ningún tipo',
+                    'errores' => $errores
+                ], 422);
+            }
+
+            \DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => count($creados) . ' tipo(s) creado(s) correctamente',
+                'creados' => count($creados),
+                'errores' => $errores,
+                'data' => $creados
+            ], 201);
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al crear tipos: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Actualizar tipo
      */
     public function update(Request $request, $id)

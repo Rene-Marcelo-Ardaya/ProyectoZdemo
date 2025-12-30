@@ -109,6 +109,87 @@ class DieselTanqueController extends Controller
     }
 
     /**
+     * Crear múltiples tanques (ingreso masivo)
+     */
+    public function storeBulk(Request $request): JsonResponse
+    {
+        $request->validate([
+            'tanques' => 'required|array|min:1',
+            'tanques.*.nombre' => 'required|string|max:100',
+            'tanques.*.tipo' => 'required|in:FIJO,MOVIL',
+            'tanques.*.d_ubicacion_fisica_id' => 'required|exists:d_ubicaciones_fisicas,id',
+            'tanques.*.capacidad_maxima' => 'required|numeric|min:1',
+            'tanques.*.stock_actual' => 'nullable|numeric|min:0'
+        ]);
+
+        $creados = [];
+        $errores = [];
+
+        \DB::beginTransaction();
+        try {
+            foreach ($request->tanques as $index => $data) {
+                // Verificar duplicado
+                $existe = Tanque::where('nombre', $data['nombre'])->exists();
+                if ($existe) {
+                    $errores[] = [
+                        'fila' => $index + 1,
+                        'nombre' => $data['nombre'],
+                        'error' => 'Ya existe un tanque con este nombre'
+                    ];
+                    continue;
+                }
+
+                // Validar que stock no exceda capacidad
+                $stock = $data['stock_actual'] ?? 0;
+                if ($stock > $data['capacidad_maxima']) {
+                    $errores[] = [
+                        'fila' => $index + 1,
+                        'nombre' => $data['nombre'],
+                        'error' => 'El stock no puede exceder la capacidad máxima'
+                    ];
+                    continue;
+                }
+
+                $tanque = Tanque::create([
+                    'nombre' => $data['nombre'],
+                    'tipo' => $data['tipo'],
+                    'd_ubicacion_fisica_id' => $data['d_ubicacion_fisica_id'],
+                    'capacidad_maxima' => $data['capacidad_maxima'],
+                    'stock_actual' => $stock,
+                    'is_active' => true
+                ]);
+                $creados[] = $tanque;
+            }
+
+            if (count($errores) > 0 && count($creados) === 0) {
+                \DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se pudo crear ningún tanque',
+                    'errores' => $errores
+                ], 422);
+            }
+
+            \DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => count($creados) . ' tanque(s) creado(s) correctamente',
+                'creados' => count($creados),
+                'errores' => $errores,
+                'data' => $creados
+            ], 201);
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al crear tanques: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Actualizar tanque
      */
     public function update(Request $request, $id): JsonResponse

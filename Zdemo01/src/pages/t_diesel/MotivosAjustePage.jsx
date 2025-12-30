@@ -1,6 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ClipboardList, Plus, Pencil, Power, HelpCircle } from 'lucide-react';
-import { getMotivosAjuste, getMotivoAjuste, createMotivoAjuste, updateMotivoAjuste, toggleMotivoAjuste } from '../../services/dieselService';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { ClipboardList, Plus, Pencil, Power, HelpCircle, Upload } from 'lucide-react';
+import {
+    getMotivosAjuste,
+    getMotivoAjuste,
+    createMotivoAjuste,
+    updateMotivoAjuste,
+    toggleMotivoAjuste,
+    createMotivosAjusteBulk
+} from '../../services/dieselService';
 
 import {
     DSPage,
@@ -13,6 +20,8 @@ import {
     DSModal,
     DSModalSection,
     SecuredButton,
+    DSRefreshButton,
+    DSBulkImportModal
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -72,6 +81,7 @@ export function MotivosAjustePage() {
     const { motivos, loading, error: loadError, refetch } = useMotivosAjuste();
 
     const [modalOpen, setModalOpen] = useState(false);
+    const [bulkModalOpen, setBulkModalOpen] = useState(false);
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState(null);
     const [formSuccess, setFormSuccess] = useState(null);
@@ -102,6 +112,7 @@ export function MotivosAjustePage() {
 
     const closeModal = () => {
         setModalOpen(false);
+        setBulkModalOpen(false);
         resetForm();
     };
 
@@ -166,21 +177,47 @@ export function MotivosAjustePage() {
         }
     };
 
+    // Bulk Columns
+    const bulkColumns = useMemo(() => [
+        { field: 'nombre', label: 'Nombre', required: true, placeholder: 'Nombre del motivo' }
+    ], []);
+
+    const handleBulkSave = async (rows) => {
+        return await createMotivosAjusteBulk(rows);
+    };
+
+    const handleBulkSuccess = (result, message) => {
+        setFormSuccess(message);
+        refetch();
+        setTimeout(() => setFormSuccess(null), 5000);
+    };
+
     return (
         <DSPage>
             <DSPageHeader
                 title="Gestión de Motivos de Ajuste"
                 icon={<ClipboardList size={22} />}
                 actions={
-                    <SecuredButton
-                        securityId="motivosajuste.crear"
-                        securityDesc="Crear nuevo motivo de ajuste"
-                        variant="primary"
-                        icon={<Plus size={16} />}
-                        onClick={openCreate}
-                    >
-                        Nuevo Motivo
-                    </SecuredButton>
+                    <div className="ds-header__actions-row">
+                        <SecuredButton
+                            securityId="motivosajuste.crear"
+                            securityDesc="Ingreso masivo de motivos"
+                            variant="secondary"
+                            icon={<Upload size={16} />}
+                            onClick={() => setBulkModalOpen(true)}
+                        >
+                            Ingreso Masivo
+                        </SecuredButton>
+                        <SecuredButton
+                            securityId="motivosajuste.crear"
+                            securityDesc="Crear nuevo motivo de ajuste"
+                            variant="primary"
+                            icon={<Plus size={16} />}
+                            onClick={openCreate}
+                        >
+                            Nuevo Motivo
+                        </SecuredButton>
+                    </div>
                 }
             />
 
@@ -197,7 +234,12 @@ export function MotivosAjustePage() {
 
             <DSSection
                 title="Listado de Motivos de Ajuste"
-                actions={<span className="diesel-panel__count">{motivos.length} motivos</span>}
+                actions={
+                    <div className="ds-section__actions-row">
+                        <DSRefreshButton onClick={refetch} loading={loading} />
+                        <span className="diesel-panel__count">{motivos.length} motivos</span>
+                    </div>
+                }
             >
                 <div className="ds-table-wrapper">
                     {loading ? (
@@ -261,6 +303,7 @@ export function MotivosAjustePage() {
                 </div>
             </DSSection>
 
+            {/* Modal Crear/Editar */}
             <DSModal
                 isOpen={modalOpen}
                 onClose={closeModal}
@@ -295,6 +338,18 @@ export function MotivosAjustePage() {
                     </form>
                 </DSModalSection>
             </DSModal>
+
+            {/* Modal Importación Masiva */}
+            <DSBulkImportModal
+                isOpen={bulkModalOpen}
+                onClose={() => setBulkModalOpen(false)}
+                title="Ingreso Masivo de Motivos de Ajuste"
+                columns={bulkColumns}
+                onSave={handleBulkSave}
+                onSuccess={handleBulkSuccess}
+                entityName="motivo"
+                size="md"
+            />
         </DSPage>
     );
 }

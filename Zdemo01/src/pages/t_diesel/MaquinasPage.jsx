@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Cog, Plus, Pencil, Power, HelpCircle } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Cog, Plus, Pencil, Power, HelpCircle, Upload } from 'lucide-react';
 import {
     getMaquinas,
     getMaquina,
     createMaquina,
     updateMaquina,
     toggleMaquina,
-    comboDivisiones
+    comboDivisiones,
+    createMaquinasBulk
 } from '../../services/dieselService';
 
 import {
@@ -20,6 +21,8 @@ import {
     DSModal,
     DSModalSection,
     SecuredButton,
+    DSRefreshButton,
+    DSBulkImportModal
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -98,15 +101,13 @@ export function MaquinasPage() {
     const divisiones = useDivisiones();
 
     const [modalOpen, setModalOpen] = useState(false);
+    const [bulkModalOpen, setBulkModalOpen] = useState(false);
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState(null);
     const [formSuccess, setFormSuccess] = useState(null);
     const [editingItem, setEditingItem] = useState(null);
 
-    const [form, setForm] = useState({
-        codigo: '',
-        d_division_id: ''
-    });
+    const [form, setForm] = useState({ codigo: '', d_division_id: '' });
 
     const resetForm = useCallback(() => {
         setForm({ codigo: '', d_division_id: '' });
@@ -124,8 +125,8 @@ export function MaquinasPage() {
         if (detail.data) {
             setEditingItem(item);
             setForm({
-                codigo: detail.data.codigo || '',
-                d_division_id: detail.data.d_division_id || ''
+                codigo: detail.data.codigo,
+                d_division_id: detail.data.d_division_id
             });
             setFormError(null);
             setModalOpen(true);
@@ -134,6 +135,7 @@ export function MaquinasPage() {
 
     const closeModal = () => {
         setModalOpen(false);
+        setBulkModalOpen(false);
         resetForm();
     };
 
@@ -158,11 +160,8 @@ export function MaquinasPage() {
         setFormError(null);
 
         try {
-            const payload = {
-                codigo: form.codigo,
-                d_division_id: form.d_division_id
-            };
-
+            // Asegurar que se envíe el ID numérico
+            const payload = { ...form, d_division_id: parseInt(form.d_division_id) };
             let result;
             if (editingItem) {
                 result = await updateMaquina(editingItem.id, payload);
@@ -187,7 +186,7 @@ export function MaquinasPage() {
 
     const handleToggle = async (item) => {
         const action = item.is_active ? 'desactivar' : 'activar';
-        if (!window.confirm(`¿${action.charAt(0).toUpperCase() + action.slice(1)} "${item.codigo}"?`)) return;
+        if (!window.confirm(`¿${action.charAt(0).toUpperCase() + action.slice(1)} la máquina "${item.codigo}"?`)) return;
 
         try {
             const result = await toggleMaquina(item.id);
@@ -203,21 +202,60 @@ export function MaquinasPage() {
         }
     };
 
+    // Bulk Import Logic
+    const divisionOptions = useMemo(() => {
+        return divisiones.map(d => ({ value: d.id, label: d.nombre }));
+    }, [divisiones]);
+
+    const bulkColumns = useMemo(() => [
+        { field: 'codigo', label: 'Código', required: true, placeholder: 'Código de máquina', width: '50%' },
+        {
+            field: 'd_division_id',
+            label: 'División',
+            required: true,
+            type: 'select',
+            options: divisionOptions,
+            width: '50%',
+            placeholder: 'Seleccione división'
+        }
+    ], [divisionOptions]);
+
+    const handleBulkSave = async (rows) => {
+        return await createMaquinasBulk(rows);
+    };
+
+    const handleBulkSuccess = (result, message) => {
+        setFormSuccess(message);
+        refetch();
+        setTimeout(() => setFormSuccess(null), 5000);
+    };
+
     return (
         <DSPage>
             <DSPageHeader
                 title="Gestión de Máquinas"
                 icon={<Cog size={22} />}
                 actions={
-                    <SecuredButton
-                        securityId="maquinas.crear"
-                        securityDesc="Crear nueva máquina"
-                        variant="primary"
-                        icon={<Plus size={16} />}
-                        onClick={openCreate}
-                    >
-                        Nueva Máquina
-                    </SecuredButton>
+                    <div className="ds-header__actions-row">
+                        <SecuredButton
+                            securityId="maquinas.crear"
+                            securityDesc="Ingreso masivo de máquinas"
+                            variant="secondary"
+                            icon={<Upload size={16} />}
+                            onClick={() => setBulkModalOpen(true)}
+                        >
+                            Ingreso Masivo
+                        </SecuredButton>
+                        <SecuredButton
+                            securityId="maquinas.crear"
+                            securityDesc="Crear nueva máquina"
+                            variant="primary"
+                            icon={<Plus size={16} />}
+                            onClick={openCreate}
+                        >
+                            Nueva Máquina
+                        </SecuredButton>
+                    </div>
                 }
             />
 
@@ -234,7 +272,12 @@ export function MaquinasPage() {
 
             <DSSection
                 title="Listado de Máquinas"
-                actions={<span className="diesel-panel__count">{maquinas.length} máquinas</span>}
+                actions={
+                    <div className="ds-section__actions-row">
+                        <DSRefreshButton onClick={refetch} loading={loading} />
+                        <span className="diesel-panel__count">{maquinas.length} máquinas</span>
+                    </div>
+                }
             >
                 <div className="ds-table-wrapper">
                     {loading ? (
@@ -244,10 +287,10 @@ export function MaquinasPage() {
                             <thead>
                                 <tr>
                                     <th style={{ width: '10%' }}>ID</th>
-                                    <th style={{ width: '30%' }}>Código</th>
+                                    <th style={{ width: '40%' }}>Código</th>
                                     <th style={{ width: '30%' }}>División</th>
-                                    <th style={{ width: '15%' }}>Estado</th>
-                                    <th style={{ width: '15%' }}>Acciones</th>
+                                    <th style={{ width: '10%' }}>Estado</th>
+                                    <th style={{ width: '10%' }}>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -262,7 +305,7 @@ export function MaquinasPage() {
                                         <tr key={item.id}>
                                             <td>{item.id}</td>
                                             <td><strong>{item.codigo}</strong></td>
-                                            <td>{item.division?.nombre || '-'}</td>
+                                            <td>{item.division?.nombre || 'N/A'}</td>
                                             <td>
                                                 <DSBadge variant={item.is_active ? 'success' : 'error'}>
                                                     {item.is_active ? 'Activo' : 'Inactivo'}
@@ -300,6 +343,7 @@ export function MaquinasPage() {
                 </div>
             </DSSection>
 
+            {/* Modal Crear/Editar */}
             <DSModal
                 isOpen={modalOpen}
                 onClose={closeModal}
@@ -322,17 +366,17 @@ export function MaquinasPage() {
 
                 <DSModalSection title="Información de la Máquina">
                     <form className="diesel-form" onSubmit={e => e.preventDefault()}>
-                        <FormField label="Código" required help="Código único de la máquina. Ej: D6M, JD-8430">
+                        <FormField label="Código" required help="Identificador único del equipo o maquinaria">
                             <input
                                 type="text"
                                 className="ds-field__control"
                                 value={form.codigo}
                                 onChange={handleChange('codigo')}
-                                placeholder="Ej: D6M"
+                                placeholder="Ej: MQ-01"
                             />
                         </FormField>
 
-                        <FormField label="División" required help="División a la que pertenece esta máquina.">
+                        <FormField label="División" required help="Área a la que pertenece">
                             <select
                                 className="ds-field__control"
                                 value={form.d_division_id}
@@ -347,6 +391,18 @@ export function MaquinasPage() {
                     </form>
                 </DSModalSection>
             </DSModal>
+
+            {/* Modal Importación Masiva */}
+            <DSBulkImportModal
+                isOpen={bulkModalOpen}
+                onClose={() => setBulkModalOpen(false)}
+                title="Ingreso Masivo de Máquinas"
+                columns={bulkColumns}
+                onSave={handleBulkSave}
+                onSuccess={handleBulkSuccess}
+                entityName="máquina"
+                size="lg"
+            />
         </DSPage>
     );
 }

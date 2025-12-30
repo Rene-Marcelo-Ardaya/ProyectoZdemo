@@ -333,3 +333,79 @@
 .diesel-refresh-btn:active {
     transform: scale(0.95);
 }
+
+/* ============================================
+   Bulk Import Grid
+   ============================================ */
+.diesel-bulk-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--ds-fieldBorder, #e5e7eb);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.diesel-bulk-grid__header {
+    display: flex;
+    background: var(--ds-secondaryBg, #f9fafb);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--ds-secondaryText);
+    border-bottom: 1px solid var(--ds-fieldBorder, #e5e7eb);
+}
+
+.diesel-bulk-grid__row {
+    display: flex;
+    border-bottom: 1px solid var(--ds-fieldBorder, #e5e7eb);
+    transition: background 0.15s;
+}
+
+.diesel-bulk-grid__row:last-child {
+    border-bottom: none;
+}
+
+.diesel-bulk-grid__row:hover {
+    background: var(--ds-hoverBg, #f8fafc);
+}
+
+.diesel-bulk-grid__col {
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+}
+
+.diesel-bulk-grid__col--nombre {
+    flex: 2;
+}
+
+.diesel-bulk-grid__col--division {
+    flex: 1.5;
+}
+
+.diesel-bulk-grid__col--actions {
+    width: 50px;
+    justify-content: center;
+    flex: none;
+}
+
+.diesel-bulk-grid__add {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Header Actions Row */
+.ds-header__actions-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Modal Footer Info */
+.diesel-modal-footer__info {
+    font-size: 13px;
+    color: var(--ds-secondaryText);
+    font-weight: 500;
+}

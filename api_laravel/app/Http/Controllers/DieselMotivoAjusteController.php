@@ -81,6 +81,66 @@ class DieselMotivoAjusteController extends Controller
     }
 
     /**
+     * Crear múltiples motivos de ajuste (ingreso masivo)
+     */
+    public function storeBulk(Request $request): JsonResponse
+    {
+        $request->validate([
+            'motivos_ajuste' => 'required|array|min:1',
+            'motivos_ajuste.*.nombre' => 'required|string|max:100|distinct'
+        ]);
+
+        $creados = [];
+        $errores = [];
+
+        \DB::beginTransaction();
+        try {
+            foreach ($request->motivos_ajuste as $data) {
+                // Verificar duplicados en BD
+                if (MotivoAjuste::where('nombre', $data['nombre'])->exists()) {
+                    $errores[] = [
+                        'nombre' => $data['nombre'],
+                        'error' => 'Ya existe un motivo con este nombre'
+                    ];
+                    continue;
+                }
+
+                $motivo = MotivoAjuste::create([
+                    'nombre' => $data['nombre'],
+                    'is_active' => true
+                ]);
+                $creados[] = $motivo;
+            }
+
+            if (empty($creados) && !empty($errores)) {
+                \DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se pudo crear ningún motivo de ajuste',
+                    'errores' => $errores
+                ], 422);
+            }
+
+            \DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => count($creados) . ' motivo(s) creado(s) correctamente',
+                'creados' => count($creados),
+                'errores' => $errores,
+                'data' => $creados
+            ], 201);
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al crear motivos de ajuste: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Actualizar motivo de ajuste
      */
     public function update(Request $request, $id): JsonResponse

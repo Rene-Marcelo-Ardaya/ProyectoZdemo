@@ -83,6 +83,70 @@ class DieselUbicacionController extends Controller
     }
 
     /**
+     * Crear múltiples ubicaciones (ingreso masivo)
+     */
+    public function storeBulk(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'ubicaciones' => 'required|array|min:1',
+            'ubicaciones.*.nombre' => 'required|string|max:100',
+            'ubicaciones.*.d_division_id' => 'nullable|exists:d_divisiones,id'
+        ]);
+
+        $creadas = [];
+        $errores = [];
+
+        \DB::beginTransaction();
+        try {
+            foreach ($validated['ubicaciones'] as $index => $data) {
+                // Verificar si ya existe
+                $existe = UbicacionFisica::where('nombre', $data['nombre'])->exists();
+                if ($existe) {
+                    $errores[] = [
+                        'fila' => $index + 1,
+                        'nombre' => $data['nombre'],
+                        'error' => 'Ya existe una ubicación con este nombre'
+                    ];
+                    continue;
+                }
+
+                $ubicacion = UbicacionFisica::create([
+                    'nombre' => $data['nombre'],
+                    'd_division_id' => $data['d_division_id'] ?? null,
+                    'is_active' => true
+                ]);
+                $creadas[] = $ubicacion;
+            }
+
+            if (count($errores) > 0 && count($creadas) === 0) {
+                \DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se pudo crear ninguna ubicación',
+                    'errores' => $errores
+                ], 422);
+            }
+
+            \DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => count($creadas) . ' ubicación(es) creada(s) correctamente',
+                'creadas' => count($creadas),
+                'errores' => $errores,
+                'data' => $creadas
+            ], 201);
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al crear ubicaciones: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Actualizar ubicación
      */
     public function update(Request $request, $id): JsonResponse
@@ -133,3 +197,4 @@ class DieselUbicacionController extends Controller
         ]);
     }
 }
+

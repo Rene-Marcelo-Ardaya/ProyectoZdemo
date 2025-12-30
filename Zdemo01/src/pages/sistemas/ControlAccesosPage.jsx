@@ -18,6 +18,7 @@ import {
     DSModalSection,
     DSModalGrid,
     SecuredButton,
+    DSRefreshButton,
 } from '../../ds-components';
 
 import './ControlAccesosPage.css';
@@ -329,7 +330,12 @@ export function ControlAccesosPage() {
             {/* TABLA */}
             <DSSection
                 title="Perfiles y Roles del Sistema"
-                actions={<span className="accesos-panel__count">{roles.length} roles</span>}
+                actions={
+                    <div className="ds-section__actions-row">
+                        <DSRefreshButton onClick={refetch} loading={loading} />
+                        <span className="accesos-panel__count">{roles.length} roles</span>
+                    </div>
+                }
             >
                 <div className="ds-table-wrapper">
                     {loading ? (

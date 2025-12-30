@@ -1,6 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Building2, Plus, Pencil, Power, HelpCircle } from 'lucide-react';
-import { getDivisiones, getDivision, createDivision, updateDivision, toggleDivision } from '../../services/dieselService';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Building2, Plus, Pencil, Power, HelpCircle, Upload } from 'lucide-react';
+import {
+    getDivisiones,
+    getDivision,
+    createDivision,
+    updateDivision,
+    toggleDivision,
+    createDivisionesBulk
+} from '../../services/dieselService';
 
 import {
     DSPage,
@@ -13,6 +20,8 @@ import {
     DSModal,
     DSModalSection,
     SecuredButton,
+    DSRefreshButton,
+    DSBulkImportModal
 } from '../../ds-components';
 
 import './DieselPages.css';
@@ -72,6 +81,7 @@ export function DivisionesPage() {
     const { divisiones, loading, error: loadError, refetch } = useDivisiones();
 
     const [modalOpen, setModalOpen] = useState(false);
+    const [bulkModalOpen, setBulkModalOpen] = useState(false);
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState(null);
     const [formSuccess, setFormSuccess] = useState(null);
@@ -102,6 +112,7 @@ export function DivisionesPage() {
 
     const closeModal = () => {
         setModalOpen(false);
+        setBulkModalOpen(false);
         resetForm();
     };
 
@@ -166,21 +177,47 @@ export function DivisionesPage() {
         }
     };
 
+    // Bulk Columns
+    const bulkColumns = useMemo(() => [
+        { field: 'nombre', label: 'Nombre', required: true, placeholder: 'Nombre de la división' }
+    ], []);
+
+    const handleBulkSave = async (rows) => {
+        return await createDivisionesBulk(rows);
+    };
+
+    const handleBulkSuccess = (result, message) => {
+        setFormSuccess(message);
+        refetch();
+        setTimeout(() => setFormSuccess(null), 5000);
+    };
+
     return (
         <DSPage>
             <DSPageHeader
                 title="Gestión de Divisiones"
                 icon={<Building2 size={22} />}
                 actions={
-                    <SecuredButton
-                        securityId="divisiones.crear"
-                        securityDesc="Crear nueva división"
-                        variant="primary"
-                        icon={<Plus size={16} />}
-                        onClick={openCreate}
-                    >
-                        Nueva División
-                    </SecuredButton>
+                    <div className="ds-header__actions-row">
+                        <SecuredButton
+                            securityId="divisiones.crear"
+                            securityDesc="Ingreso masivo de divisiones"
+                            variant="secondary"
+                            icon={<Upload size={16} />}
+                            onClick={() => setBulkModalOpen(true)}
+                        >
+                            Ingreso Masivo
+                        </SecuredButton>
+                        <SecuredButton
+                            securityId="divisiones.crear"
+                            securityDesc="Crear nueva división"
+                            variant="primary"
+                            icon={<Plus size={16} />}
+                            onClick={openCreate}
+                        >
+                            Nueva División
+                        </SecuredButton>
+                    </div>
                 }
             />
 
@@ -197,7 +234,12 @@ export function DivisionesPage() {
 
             <DSSection
                 title="Listado de Divisiones"
-                actions={<span className="diesel-panel__count">{divisiones.length} divisiones</span>}
+                actions={
+                    <div className="ds-section__actions-row">
+                        <DSRefreshButton onClick={refetch} loading={loading} />
+                        <span className="diesel-panel__count">{divisiones.length} divisiones</span>
+                    </div>
+                }
             >
                 <div className="ds-table-wrapper">
                     {loading ? (
@@ -261,6 +303,7 @@ export function DivisionesPage() {
                 </div>
             </DSSection>
 
+            {/* Modal Crear/Editar */}
             <DSModal
                 isOpen={modalOpen}
                 onClose={closeModal}
@@ -295,6 +338,18 @@ export function DivisionesPage() {
                     </form>
                 </DSModalSection>
             </DSModal>
+
+            {/* Modal Importación Masiva */}
+            <DSBulkImportModal
+                isOpen={bulkModalOpen}
+                onClose={() => setBulkModalOpen(false)}
+                title="Ingreso Masivo de Divisiones"
+                columns={bulkColumns}
+                onSave={handleBulkSave}
+                onSuccess={handleBulkSuccess}
+                entityName="división"
+                size="md"
+            />
         </DSPage>
     );
 }

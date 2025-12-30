@@ -16,6 +16,7 @@ import {
     DSModalGrid,
     DSSearchSelect,
     SecuredButton,
+    DSRefreshButton,
 } from '../../ds-components';
 
 import './PersonalPage.css';
@@ -309,7 +310,12 @@ export function PersonalPage() {
             {/* TABLA */}
             <DSSection
                 title="Listado de Personal"
-                actions={<span className="personal-panel__count">{personal.length} empleados activos</span>}
+                actions={
+                    <div className="ds-section__actions-row">
+                        <DSRefreshButton onClick={refetch} loading={loading} />
+                        <span className="personal-panel__count">{personal.length} empleados activos</span>
+                    </div>
+                }
             >
                 <div className="ds-table-wrapper">
                     {loading ? (

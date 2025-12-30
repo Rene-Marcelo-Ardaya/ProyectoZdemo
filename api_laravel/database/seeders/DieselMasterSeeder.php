@@ -23,6 +23,9 @@ class DieselMasterSeeder extends Seeder
             
             // Datos transaccionales o adicionales
             DieselMovimientosSeeder::class,
+            
+            // Asignar menús al super-admin
+            AssignMenusToSuperAdminSeeder::class,
         ]);
     }
 }
