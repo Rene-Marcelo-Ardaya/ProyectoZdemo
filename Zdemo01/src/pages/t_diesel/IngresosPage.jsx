@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Download, Plus, Trash2, Save, Eye, Search, Calendar, Filter, RefreshCw, HelpCircle } from 'lucide-react';
+import { Download, Plus, Trash2, Save, Eye, Search, Calendar, Filter, RefreshCw, HelpCircle, Image } from 'lucide-react';
+import CONFIG from '../../config';
 import {
     getIngresos,
     createIngreso,
@@ -105,6 +106,11 @@ export function IngresosPage() {
     const [formError, setFormError] = useState(null);
     const [formSuccess, setFormSuccess] = useState(null);
     const [form, setForm] = useState(INITIAL_FORM);
+
+    // Modal para ver foto
+    const [fotoModalOpen, setFotoModalOpen] = useState(false);
+    const [fotoUrl, setFotoUrl] = useState(null);
+    const [fotoIngreso, setFotoIngreso] = useState(null);
 
     // Filtered proveedores for search
     const filteredProveedores = useMemo(() => {
@@ -342,6 +348,16 @@ export function IngresosPage() {
         setViewModalOpen(true);
     };
 
+    // Abrir modal de foto
+    const openFotoModal = (ingreso) => {
+        if (ingreso.foto_recepcion) {
+            const fotoApiUrl = `${CONFIG.API_BASE_URL}/diesel/ingresos/${ingreso.id}/foto`;
+            setFotoUrl(fotoApiUrl);
+            setFotoIngreso(ingreso);
+            setFotoModalOpen(true);
+        }
+    };
+
     // Render helper for tanque column
     const renderTanqueColumn = (row) => {
         const detalles = row.detalles || [];
@@ -542,9 +558,9 @@ export function IngresosPage() {
                                     <th>Proveedor</th>
                                     <th>Cantidad</th>
                                     <th>Precio</th>
-                                    <th>Obs</th>
                                     <th>Tanque</th>
                                     <th>Estado</th>
+                                    <th>Foto</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -555,13 +571,25 @@ export function IngresosPage() {
                                         <td>{row.proveedor?.nombre || row.proveedor?.razon_social || '-'}</td>
                                         <td className="text-right">{parseFloat(row.total_litros).toFixed(2)}</td>
                                         <td className="text-right">{parseFloat(row.precio_unitario).toFixed(2)}</td>
-                                        <td>{row.observaciones || '-'}</td>
                                         <td>{renderTanqueColumn(row)}</td>
                                         <td>
                                             <DSBadge variant={row.estado === 'PENDIENTE' ? 'warning' : row.estado === 'FINALIZADO' ? 'success' : 'error'}>
                                                 {row._offlinePending && '☁️ '}
                                                 {row.estado}
                                             </DSBadge>
+                                        </td>
+                                        <td>
+                                            {row.foto_recepcion ? (
+                                                <DSButton
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    icon={<Image size={16} />}
+                                                    onClick={() => openFotoModal(row)}
+                                                    title="Ver foto"
+                                                />
+                                            ) : (
+                                                <span style={{ color: '#9ca3af', fontSize: '11px' }}>-</span>
+                                            )}
                                         </td>
                                         <td>
                                             {row.estado !== 'ANULADO' && (
@@ -706,6 +734,15 @@ export function IngresosPage() {
                             <p><strong>Proveedor:</strong> {viewIngreso.proveedor?.nombre}</p>
                             <p><strong>Total Litros:</strong> {parseFloat(viewIngreso.total_litros).toFixed(2)}</p>
                             <p><strong>Total Bs:</strong> {parseFloat(viewIngreso.total).toFixed(2)}</p>
+                            {viewIngreso.estado === 'FINALIZADO' && (
+                                <>
+                                    <p><strong>Chofer:</strong> {viewIngreso.nombre_chofer || 'No registrado'}</p>
+                                    <p><strong>Placa:</strong> {viewIngreso.placa_vehiculo || 'No registrada'}</p>
+                                </>
+                            )}
+                            {viewIngreso.observaciones && (
+                                <p style={{ gridColumn: '1 / -1' }}><strong>Obs:</strong> {viewIngreso.observaciones}</p>
+                            )}
                         </div>
                         <h4 className="diesel-view-subtitle">Distribución por Tanques:</h4>
                         <table className="diesel-view-table">
@@ -713,18 +750,71 @@ export function IngresosPage() {
                                 <tr>
                                     <th>Tanque</th>
                                     <th>Litros</th>
+                                    {viewIngreso.estado === 'FINALIZADO' && (
+                                        <>
+                                            <th>Inicio</th>
+                                            <th>Final</th>
+                                        </>
+                                    )}
                                 </tr>
                             </thead>
                             <tbody>
                                 {(viewIngreso.detalles || []).map((det, idx) => (
                                     <tr key={idx}>
                                         <td>{det.tanque?.nombre || '-'}</td>
-                                        <td>{parseFloat(det.litros).toFixed(2)}</td>
+                                        <td className="text-right">{parseFloat(det.litros).toFixed(2)}</td>
+                                        {viewIngreso.estado === 'FINALIZADO' && (
+                                            <>
+                                                <td className="text-right">{det.inicio_tanque ? parseFloat(det.inicio_tanque).toFixed(2) : '-'}</td>
+                                                <td className="text-right">{det.final_tanque ? parseFloat(det.final_tanque).toFixed(2) : '-'}</td>
+                                            </>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+                        {viewIngreso.foto_recepcion && (
+                            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                                <DSButton
+                                    variant="secondary"
+                                    icon={<Image size={16} />}
+                                    onClick={() => {
+                                        setViewModalOpen(false);
+                                        openFotoModal(viewIngreso);
+                                    }}
+                                >
+                                    Ver Foto de Recepción
+                                </DSButton>
+                            </div>
+                        )}
                     </>
+                )}
+            </DSModal>
+
+            {/* MODAL FOTO */}
+            <DSModal
+                isOpen={fotoModalOpen}
+                onClose={() => setFotoModalOpen(false)}
+                title={`Foto de Recepción - ${fotoIngreso?.fecha || ''}`}
+                size="lg"
+            >
+                {fotoUrl && (
+                    <div style={{ textAlign: 'center' }}>
+                        <img
+                            src={fotoUrl}
+                            alt="Foto de recepción"
+                            style={{
+                                maxWidth: '100%',
+                                maxHeight: '70vh',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                            }}
+                        />
+                        <p style={{ marginTop: '1rem', color: '#6b7280' }}>
+                            Chofer: {fotoIngreso?.nombre_chofer || 'No registrado'} |
+                            Placa: {fotoIngreso?.placa_vehiculo || 'No registrada'}
+                        </p>
+                    </div>
                 )}
             </DSModal>
         </DSPage >

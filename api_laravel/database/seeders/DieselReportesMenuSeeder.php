@@ -30,19 +30,8 @@ class DieselReportesMenuSeeder extends Seeder
         
         $reportesParentId = DB::table('menus')->where('name', 'Reportes Diesel')->value('id');
 
-        // 2. Submenú: Historial de Recepciones
-        DB::table('menus')->updateOrInsert(
-            ['url' => '/diesel/historial-recepciones'],
-            [
-                'name' => 'Historial de Recepciones',
-                'icon' => 'ClipboardList',
-                'parent_id' => $reportesParentId,
-                'order' => 1,
-                'module' => 'DIESEL',
-                'is_active' => true,
-                'updated_at' => now()
-            ]
-        );
+        // 2. Submenús futuros...
+        // Por ahora se mantiene limpio ya que se consolidó en IngresosPage
 
         echo "✓ Menús de Reportes Diesel creados\n";
     }
