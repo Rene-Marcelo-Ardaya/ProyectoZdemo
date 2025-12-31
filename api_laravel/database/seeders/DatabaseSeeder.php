@@ -183,14 +183,11 @@ class DatabaseSeeder extends Seeder
 
         // 3. CONFIGURACIÓN DEL SISTEMA
         $this->call(SettingSeeder::class);
-<<<<<<< HEAD
-
-        // 4. ASIGNACIÓN FINAL DE PERMISOS (debe ir AL FINAL)
-        $this->call(AssignMenusToSuperAdminSeeder::class);  // Asigna TODOS los menús al super-admin
-=======
         
-        // Cargar módulo Diesel
+        // 4. Cargar módulo Diesel
         $this->call(DieselMasterSeeder::class);
->>>>>>> origin/rm
+
+        // 5. ASIGNACIÓN FINAL DE PERMISOS (debe ir AL FINAL)
+        $this->call(AssignMenusToSuperAdminSeeder::class);  // Asigna TODOS los menús al super-admin
     }
 }
