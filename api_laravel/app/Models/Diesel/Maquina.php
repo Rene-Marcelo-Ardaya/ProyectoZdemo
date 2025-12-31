@@ -15,11 +15,13 @@ class Maquina extends Model
     protected $fillable = [
         'codigo',
         'd_division_id',
+        'horometro_actual',
         'is_active'
     ];
 
     protected $casts = [
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
+        'horometro_actual' => 'decimal:2'
     ];
 
     // =============================================
@@ -70,7 +72,7 @@ class Maquina extends Model
             $query->where('d_division_id', $divisionId);
         }
 
-        return $query->get(['id', 'codigo', 'd_division_id']);
+        return $query->get(['id', 'codigo', 'd_division_id', 'horometro_actual']);
     }
 
     // =============================================

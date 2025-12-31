@@ -548,3 +548,58 @@ export async function recepcionarIngreso(id, data, foto = null) {
   });
   return response.json();
 }
+
+// =============================================
+// EGRESOS (Salidas de combustible)
+// =============================================
+export async function getEgresos(filters = {}) {
+  const params = new URLSearchParams(filters).toString();
+  const response = await authFetch(`/diesel/egresos?${params}`);
+  return response.json();
+}
+
+export async function getEgreso(id) {
+  const response = await authFetch(`/diesel/egresos/${id}`);
+  return response.json();
+}
+
+export async function getEgresosCombos() {
+  const response = await authFetch('/diesel/egresos/combos');
+  return response.json();
+}
+
+export async function createEgreso(data) {
+  const response = await authFetch('/diesel/egresos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  return response.json();
+}
+
+export async function completarEgreso(id, data) {
+  const response = await authFetch(`/diesel/egresos/${id}/completar`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  return response.json();
+}
+
+export async function anularEgreso(id) {
+  const response = await authFetch(`/diesel/egresos/${id}/anular`, {
+    method: 'PATCH'
+  });
+  return response.json();
+}
+
+export async function uploadFotoEgreso(id, foto) {
+  const formData = new FormData();
+  formData.append('foto', foto, 'egreso.jpg');
+  
+  const response = await authFetch(`/diesel/egresos/${id}/foto`, {
+    method: 'POST',
+    body: formData
+  });
+  return response.json();
+}

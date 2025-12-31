@@ -23,6 +23,7 @@ use App\Http\Controllers\DieselTipoPagoController;
 use App\Http\Controllers\DieselMotivoAjusteController;
 use App\Http\Controllers\DieselTipoMovimientoController;
 use App\Http\Controllers\DieselIngresoController;
+use App\Http\Controllers\DieselEgresoController;
 
 
 // Rutas públicas (sin autenticación)
@@ -31,6 +32,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/config/public', [SettingController::class, 'getPublic']); // Configuración pública para branding
 Route::get('/config/branding/{filename}', [SettingController::class, 'getBrandingImage']); // Servir imágenes de branding vía API
 Route::get('/diesel/ingresos/{id}/foto', [DieselIngresoController::class, 'getFoto']); // Foto de recepción (acceso directo para <img>)
+Route::get('/diesel/egresos/{id}/foto', [DieselEgresoController::class, 'getFoto']); // Foto de egreso (acceso directo para <img>)
 
 // Rutas protegidas
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -217,6 +219,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::patch('/{id}/recepcionar', [DieselIngresoController::class, 'recepcionar']); // Fase 2: Surtidor (JSON)
             Route::post('/{id}/recepcionar', [DieselIngresoController::class, 'recepcionar']);  // Fase 2: Surtidor (FormData con foto)
             Route::patch('/{id}/anular', [DieselIngresoController::class, 'anular']);
+        });
+
+        // ==================== EGRESOS ====================
+        Route::prefix('egresos')->group(function () {
+            Route::get('/combos', [DieselEgresoController::class, 'getCombos']);
+            Route::get('/', [DieselEgresoController::class, 'index']);
+            Route::get('/{id}', [DieselEgresoController::class, 'show']);
+            Route::post('/', [DieselEgresoController::class, 'store']);
+            Route::put('/{id}/completar', [DieselEgresoController::class, 'completar']);
+            Route::patch('/{id}/anular', [DieselEgresoController::class, 'anular']);
+            Route::post('/{id}/foto', [DieselEgresoController::class, 'uploadFoto']);
         });
     });
 });

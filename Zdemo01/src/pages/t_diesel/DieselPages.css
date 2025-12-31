@@ -464,3 +464,162 @@
         min-width: 100%;
     }
 }
+
+/* ============================================
+   Egreso Wizard Styles
+   ============================================ */
+.egreso-step {
+    padding: 16px 0;
+}
+
+.egreso-step__title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ds-primaryText);
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.egreso-step--tipo {
+    padding: 24px 0;
+}
+
+.egreso-tipo-cards {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+}
+
+.egreso-tipo-card {
+    flex: 1;
+    max-width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 32px 24px;
+    background: var(--ds-fieldBg, #fff);
+    border: 2px solid var(--ds-fieldBorder, #e5e7eb);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--ds-secondaryText);
+}
+
+.egreso-tipo-card:hover {
+    border-color: var(--ds-accent, #3b82f6);
+    background: var(--ds-accentLight, #eff6ff);
+}
+
+.egreso-tipo-card--selected {
+    border-color: var(--ds-accent, #3b82f6);
+    background: var(--ds-accentLight, #eff6ff);
+    color: var(--ds-accent, #3b82f6);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.egreso-tipo-card--selected svg {
+    color: var(--ds-accent, #3b82f6);
+}
+
+.egreso-tipo-card__title {
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.egreso-tipo-card__desc {
+    font-size: 12px;
+    opacity: 0.8;
+    text-align: center;
+}
+
+/* Tanque info bar */
+.egreso-tanque-info {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: var(--ds-secondaryBg, #f9fafb);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--ds-secondaryText);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.egreso-tanque-info__sep {
+    color: var(--ds-fieldBorder);
+}
+
+/* Resumen paso 3 */
+.egreso-resumen {
+    background: var(--ds-secondaryBg, #f9fafb);
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    font-size: 14px;
+}
+
+.egreso-resumen p {
+    margin: 0;
+}
+
+/* PIN field */
+.egreso-pin-field {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.egreso-pin-input {
+    width: 150px;
+    text-align: center;
+    font-size: 24px;
+    letter-spacing: 8px;
+    padding: 12px;
+}
+
+.egreso-pin-hint {
+    font-size: 11px;
+    color: var(--ds-secondaryText);
+    text-align: center;
+}
+
+/* Completar modal */
+.egreso-completar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.egreso-completar__info {
+    padding: 12px 16px;
+    background: var(--ds-secondaryBg, #f9fafb);
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.egreso-completar__info p {
+    margin: 0 0 4px;
+}
+
+@media (max-width: 640px) {
+    .egreso-tipo-cards {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .egreso-tipo-card {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .egreso-resumen {
+        grid-template-columns: 1fr;
+    }
+}
