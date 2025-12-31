@@ -64,5 +64,19 @@ class DieselMenusMovimientosSeeder extends Seeder
                 'updated_at' => now()
             ]
         );
+
+        // 4. Agregar 'Recepción de Combustible' a 'Operaciones Diesel'
+        DB::table('menus')->updateOrInsert(
+            ['url' => '/diesel/recepcion'],
+            [
+                'name' => 'Recepción de Combustible',
+                'icon' => 'Truck', // Icono de camión cisterna
+                'parent_id' => $operacionesParentId,
+                'order' => 2,
+                'module' => 'DIESEL',
+                'is_active' => true,
+                'updated_at' => now()
+            ]
+        );
     }
 }

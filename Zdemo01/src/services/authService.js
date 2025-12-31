@@ -177,9 +177,12 @@ import { db, queueRequest, cacheResponse, getCachedResponse } from '../db/db';
  */
 export async function authFetch(endpoint, options = {}) {
     const token = getToken();
+    const isFormData = options.body instanceof FormData;
+    
+    // Si es FormData, NO establecer Content-Type (el navegador lo hace con boundary)
     const headers = {
         'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         ...options.headers,
     };
 
@@ -213,8 +216,10 @@ export async function authFetch(endpoint, options = {}) {
             throw new Error('Sin conexión y sin caché disponible');
         } else if (method === 'POST' || method === 'PATCH') {
             // POST y PATCH permiten guardarse offline
-            // - POST: Crear nuevos registros (ej: nuevo ingreso)
-            // - PATCH: Operaciones únicas como recepcionar (solo ocurre una vez, sin conflictos)
+            // FormData no se puede guardar offline fácilmente, rechazar
+            if (isFormData) {
+                throw new Error('Subir archivos requiere conexión a internet');
+            }
             const added = await queueRequest(endpoint, method, options.body ? JSON.parse(options.body) : null);
             if (added) {
                 return mockResponse({

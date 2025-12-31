@@ -19,6 +19,7 @@ import {
     DSFieldsGrid,
 } from '../../ds-components';
 
+import { PhotoCapture } from '../../components/PhotoCapture';
 import './DieselPages.css';
 
 export function RecepcionPage() {
@@ -46,6 +47,9 @@ export function RecepcionPage() {
 
     // Tanques data
     const [tanques, setTanques] = useState([]);
+
+    // Estado para foto de recepción
+    const [fotoRecepcion, setFotoRecepcion] = useState(null);
 
     // Cargar tanques
     useEffect(() => {
@@ -220,10 +224,12 @@ export function RecepcionPage() {
                 }))
             };
 
-            const result = await recepcionarIngreso(selectedIngreso.id, payload);
+            // Enviar con foto si existe
+            const result = await recepcionarIngreso(selectedIngreso.id, payload, fotoRecepcion);
 
             if (result.success) {
                 setFormSuccess('Ingreso recepcionado correctamente');
+                setFotoRecepcion(null); // Limpiar foto
                 closeModal();
                 fetchPendientes();
                 setTimeout(() => setFormSuccess(null), 3000);
@@ -411,6 +417,16 @@ export function RecepcionPage() {
                                 />
                             </div>
                         </DSFieldsGrid>
+
+                        {/* Captura de foto */}
+                        <div className="mb-4">
+                            <PhotoCapture
+                                onCapture={(blob) => setFotoRecepcion(blob)}
+                                value={fotoRecepcion ? URL.createObjectURL(fotoRecepcion) : null}
+                                disabled={saving}
+                                label="Foto del Camión/Chofer (opcional)"
+                            />
+                        </div>
 
                         {/* Tabla de detalles */}
                         <h4 className="diesel-view-subtitle">Registro por Tanque:</h4>

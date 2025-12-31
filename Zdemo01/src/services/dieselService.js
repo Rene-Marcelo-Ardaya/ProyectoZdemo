@@ -499,7 +499,31 @@ export async function anularIngreso(id) {
 }
 
 // Fase 2: Surtidor confirma recepción
-export async function recepcionarIngreso(id, data) {
+// Ahora soporta envío de foto mediante FormData
+export async function recepcionarIngreso(id, data, foto = null) {
+  // Si hay foto, usar FormData
+  if (foto) {
+    const formData = new FormData();
+    formData.append('nombre_chofer', data.nombre_chofer || '');
+    formData.append('placa_vehiculo', data.placa_vehiculo || '');
+    formData.append('foto_recepcion', foto, 'recepcion.jpg');
+    
+    // Los detalles deben enviarse como JSON string o como campos individuales
+    data.detalles.forEach((det, index) => {
+      formData.append(`detalles[${index}][id]`, det.id);
+      formData.append(`detalles[${index}][inicio_tanque]`, det.inicio_tanque);
+      formData.append(`detalles[${index}][final_tanque]`, det.final_tanque);
+    });
+
+    const response = await authFetch(`/diesel/ingresos/${id}/recepcionar`, {
+      method: 'POST', // Cambiar a POST para FormData con _method
+      body: formData
+      // No establecer Content-Type, el navegador lo hace automáticamente con boundary
+    });
+    return response.json();
+  }
+  
+  // Sin foto, comportamiento original con JSON
   const response = await authFetch(`/diesel/ingresos/${id}/recepcionar`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },

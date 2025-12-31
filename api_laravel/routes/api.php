@@ -29,6 +29,7 @@ use App\Http\Controllers\DieselIngresoController;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/config/public', [SettingController::class, 'getPublic']); // Configuración pública para branding
+Route::get('/diesel/ingresos/{id}/foto', [DieselIngresoController::class, 'getFoto']); // Foto de recepción (acceso directo para <img>)
 
 // Rutas protegidas
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -208,7 +209,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('/', [DieselIngresoController::class, 'index']);
             Route::get('/{id}', [DieselIngresoController::class, 'show']);
             Route::post('/', [DieselIngresoController::class, 'store']);                    // Fase 1: Dueño
-            Route::patch('/{id}/recepcionar', [DieselIngresoController::class, 'recepcionar']); // Fase 2: Surtidor
+            Route::patch('/{id}/recepcionar', [DieselIngresoController::class, 'recepcionar']); // Fase 2: Surtidor (JSON)
+            Route::post('/{id}/recepcionar', [DieselIngresoController::class, 'recepcionar']);  // Fase 2: Surtidor (FormData con foto)
             Route::patch('/{id}/anular', [DieselIngresoController::class, 'anular']);
         });
     });

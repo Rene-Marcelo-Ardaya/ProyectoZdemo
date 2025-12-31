@@ -201,6 +201,7 @@ class DieselIngresoController extends Controller
         $request->validate([
             'nombre_chofer' => 'nullable|string|max:150',
             'placa_vehiculo' => 'nullable|string|max:20',
+            'foto_recepcion' => 'nullable|image|mimes:jpeg,png,jpg|max:5120', // 5MB máximo
             'detalles' => 'required|array|min:1',
             'detalles.*.id' => 'required|exists:d_ingreso_detalles,id',
             'detalles.*.inicio_tanque' => 'required|numeric|min:0',
@@ -223,6 +224,14 @@ class DieselIngresoController extends Controller
             // Actualizar datos del chofer/vehículo
             $ingreso->nombre_chofer = $request->nombre_chofer;
             $ingreso->placa_vehiculo = $request->placa_vehiculo;
+
+            // Guardar foto de recepción si existe
+            if ($request->hasFile('foto_recepcion')) {
+                $file = $request->file('foto_recepcion');
+                $filename = $ingreso->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('recepciones', $filename, 'public');
+                $ingreso->foto_recepcion = $path;
+            }
 
             // Procesar cada detalle
             foreach ($request->detalles as $detalleData) {
@@ -364,5 +373,31 @@ class DieselIngresoController extends Controller
                 'message' => $e->getMessage()
             ], 400);
         }
+    }
+
+    /**
+     * Servir foto de recepción (alternativa a storage link para Windows)
+     */
+    public function getFoto($id)
+    {
+        $ingreso = Ingreso::find($id);
+
+        if (!$ingreso || !$ingreso->foto_recepcion) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Foto no encontrada'
+            ], 404);
+        }
+
+        $path = storage_path('app/public/' . $ingreso->foto_recepcion);
+
+        if (!file_exists($path)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Archivo no encontrado'
+            ], 404);
+        }
+
+        return response()->file($path);
     }
 }

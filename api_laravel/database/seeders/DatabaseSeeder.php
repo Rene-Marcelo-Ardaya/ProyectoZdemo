@@ -125,32 +125,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
         
-        // Módulo: Comunicación (Chat)
-        \Illuminate\Support\Facades\DB::table('menus')->updateOrInsert(
-            ['name' => 'Comunicación', 'parent_id' => null],
-            [
-                'icon' => 'MessageCircle',
-                'order' => 10,
-                'module' => 'Chat',
-                'is_active' => true,
-                'updated_at' => now(),
-            ]
-        );
-        $comMenuId = \Illuminate\Support\Facades\DB::table('menus')->where('name', 'Comunicación')->whereNull('parent_id')->value('id');
-
-        // Submenú: Chat
-        \Illuminate\Support\Facades\DB::table('menus')->updateOrInsert(
-            ['url' => '/chat'],
-            [
-                'name' => 'Chat',
-                'icon' => 'MessageCircle',
-                'parent_id' => $comMenuId,
-                'order' => 1,
-                'module' => 'Chat',
-                'is_active' => true,
-                'updated_at' => now(),
-            ]
-        );
+        // NOTA: Sección de Comunicación/Chat removida - no se utiliza en este proyecto
         
         // Asignar menus al rol admin (Ver todo)
         $menus = \Illuminate\Support\Facades\DB::table('menus')->pluck('id');

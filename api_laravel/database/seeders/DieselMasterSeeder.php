@@ -20,6 +20,7 @@ class DieselMasterSeeder extends Seeder
             DieselMenusSeeder::class,
             DieselMenusExtrasSeeder::class,
             DieselMenusMovimientosSeeder::class,
+            DieselReportesMenuSeeder::class, // Menú de Reportes Diesel
             
             // Datos transaccionales o adicionales
             DieselMovimientosSeeder::class,
