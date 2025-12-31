@@ -4,14 +4,14 @@
  * Reutiliza estilos similares a ControlAccesosPage
  */
 
-/* Modal más alto y overflow visible para tooltips */
+/* Modal más alto y overflow visible para tooltips SOLO en menús */
 .menus-form {
     min-height: 250px;
 }
 
-.ds-modal__content,
-.ds-modal__body {
-    overflow: visible !important;
+/* Overflow visible solo para tooltips del icon picker - usar selector específico */
+.menus-icon-picker .menus-icon-picker__dropdown {
+    /* Este dropdown ya tiene position: absolute, no necesita overflow visible en el padre */
 }
 
 /* Alert y count (igual que accesos) */

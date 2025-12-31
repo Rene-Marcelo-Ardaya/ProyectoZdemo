@@ -126,54 +126,59 @@ export function Sidebar({ menus = [], activePage, onNavigate, user, onLogout, is
                         </button>
                     </div>
 
-                    {/* Menús dinámicos */}
-                    {menus.map((menu) => {
-                        const isExpanded = !!expandedMenus[menu.codMenu];
-                        const MenuIcon = getMenuIconComponent(menu.descripcion || menu.codMenu);
-                        return (
-                            <div key={menu.codMenu} className="sidebar__menu-group">
-                                <button
-                                    className={`sidebar__menu-header ${isExpanded ? 'is-expanded' : ''}`}
-                                    onClick={() => toggleMenu(menu.codMenu)}
-                                    aria-expanded={isExpanded}
-                                    title={isCollapsed ? menu.descripcion : ""}
-                                >
-                                    <span className="sidebar__menu-icon"><MenuIcon size={18} /></span>
-                                    {!isCollapsed && (
-                                        <>
-                                            <span className="sidebar__menu-title">{menu.descripcion}</span>
-                                            <span className={`sidebar__menu-arrow ${isExpanded ? 'rotated' : ''}`}>
-                                                <ChevronRight size={16} />
-                                            </span>
-                                        </>
-                                    )}
-                                </button>
+                    {/* Menús dinámicos - filtrar Chat/Comunicación (se accede via widget flotante) */}
+                    {menus
+                        .filter(menu => {
+                            const name = (menu.descripcion || menu.codMenu || '').toLowerCase();
+                            return !name.includes('chat') && !name.includes('comunicación') && !name.includes('comunicacion');
+                        })
+                        .map((menu) => {
+                            const isExpanded = !!expandedMenus[menu.codMenu];
+                            const MenuIcon = getMenuIconComponent(menu.descripcion || menu.codMenu);
+                            return (
+                                <div key={menu.codMenu} className="sidebar__menu-group">
+                                    <button
+                                        className={`sidebar__menu-header ${isExpanded ? 'is-expanded' : ''}`}
+                                        onClick={() => toggleMenu(menu.codMenu)}
+                                        aria-expanded={isExpanded}
+                                        title={isCollapsed ? menu.descripcion : ""}
+                                    >
+                                        <span className="sidebar__menu-icon"><MenuIcon size={18} /></span>
+                                        {!isCollapsed && (
+                                            <>
+                                                <span className="sidebar__menu-title">{menu.descripcion}</span>
+                                                <span className={`sidebar__menu-arrow ${isExpanded ? 'rotated' : ''}`}>
+                                                    <ChevronRight size={16} />
+                                                </span>
+                                            </>
+                                        )}
+                                    </button>
 
-                                <div
-                                    className={`sidebar__submenu-wrapper ${isExpanded ? 'expanded' : ''}`}
-                                    aria-hidden={!isExpanded}
-                                >
-                                    <ul className="sidebar__submenu">
-                                        {menu.submenus?.map((sub) => {
-                                            const SubIcon = getSubmenuIconComponent(sub.rutaReact || sub.descripcion);
-                                            return (
-                                                <li key={sub.codSubMenu}>
-                                                    <button
-                                                        className={`sidebar__submenu-item ${activePage === sub.rutaReact ? 'is-active' : ''}`}
-                                                        onClick={() => handleSubmenuClick(sub.rutaReact)}
-                                                        role="menuitem"
-                                                    >
-                                                        <span className="sidebar__submenu-icon"><SubIcon size={14} /></span>
-                                                        <span className="sidebar__submenu-text">{sub.descripcion}</span>
-                                                    </button>
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
+                                    <div
+                                        className={`sidebar__submenu-wrapper ${isExpanded ? 'expanded' : ''}`}
+                                        aria-hidden={!isExpanded}
+                                    >
+                                        <ul className="sidebar__submenu">
+                                            {menu.submenus?.map((sub) => {
+                                                const SubIcon = getSubmenuIconComponent(sub.rutaReact || sub.descripcion);
+                                                return (
+                                                    <li key={sub.codSubMenu}>
+                                                        <button
+                                                            className={`sidebar__submenu-item ${activePage === sub.rutaReact ? 'is-active' : ''}`}
+                                                            onClick={() => handleSubmenuClick(sub.rutaReact)}
+                                                            role="menuitem"
+                                                        >
+                                                            <span className="sidebar__submenu-icon"><SubIcon size={14} /></span>
+                                                            <span className="sidebar__submenu-text">{sub.descripcion}</span>
+                                                        </button>
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
                 </nav>
 
                 {/* Footer */}
