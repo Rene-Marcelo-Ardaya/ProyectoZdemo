@@ -17,6 +17,7 @@ import {
     DSBadge,
     DSModal,
     DSFieldsGrid,
+    SecuredButton,
 } from '../../ds-components';
 
 import { PhotoCapture } from '../../components/PhotoCapture';
@@ -24,7 +25,7 @@ import './DieselPages.css';
 
 export function RecepcionPage() {
     // Data state
-    const [ingresosPendientes, setIngresosPendientes] = useState([]);
+    const [ingresos, setIngresos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -71,27 +72,30 @@ export function RecepcionPage() {
         detalles: [] // { id, d_tanque_id, tanque_nombre, litros, inicio_sistema, final_sistema, inicio_digital, final_digital, stock_actual }
     });
 
-    // Fetch ingresos pendientes
-    const fetchPendientes = useCallback(async () => {
+    // Fetch ingresos (pendientes primero por backend)
+    const fetchIngresos = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
-            const result = await getIngresos({ estado: 'PENDIENTE' });
+            // Sin filtro de estado para traer todo (el backend ordena)
+            const result = await getIngresos({});
             // Filtrar items que ya fueron recepcionados offline (estado cambió a FINALIZADO localmente)
-            const pendientes = (result.data || []).filter(
-                item => !(item._offlinePending && item.estado !== 'PENDIENTE')
-            );
-            setIngresosPendientes(pendientes);
+            const data = (result.data || []).map(item => ({
+                ...item,
+                _isPending: item.estado === 'PENDIENTE'
+            }));
+
+            setIngresos(data);
         } catch (err) {
-            setError('Error cargando ingresos pendientes');
+            setError('Error cargando ingresos');
         } finally {
             setLoading(false);
         }
     }, []);
 
     useEffect(() => {
-        fetchPendientes();
-    }, [fetchPendientes]);
+        fetchIngresos();
+    }, [fetchIngresos]);
 
     // Abrir modal para recepcionar
     const openRecepcionar = async (ingreso) => {
@@ -231,7 +235,7 @@ export function RecepcionPage() {
                 setFormSuccess('Ingreso recepcionado correctamente');
                 setFotoRecepcion(null); // Limpiar foto
                 closeModal();
-                fetchPendientes();
+                fetchIngresos();
                 setTimeout(() => setFormSuccess(null), 3000);
             } else {
                 setFormError(result.message || 'Error al recepcionar');
@@ -273,7 +277,7 @@ export function RecepcionPage() {
                     <DSButton
                         variant="secondary"
                         icon={<RefreshCw size={16} />}
-                        onClick={fetchPendientes}
+                        onClick={fetchIngresos}
                     >
                         Actualizar
                     </DSButton>
@@ -290,10 +294,10 @@ export function RecepcionPage() {
 
             <DSSection>
                 <div className="diesel-table-wrapper">
-                    {loading ? <DSLoading /> : ingresosPendientes.length === 0 ? (
+                    {loading ? <DSLoading /> : ingresos.length === 0 ? (
                         <div className="diesel-empty">
                             <CheckCircle size={48} style={{ opacity: 0.3, marginBottom: '1rem' }} />
-                            <p>No hay ingresos pendientes de recepción</p>
+                            <p>No hay ingresos registrados</p>
                         </div>
                     ) : (
                         <table className="diesel-table">
@@ -304,42 +308,55 @@ export function RecepcionPage() {
                                     <th>Total Litros</th>
                                     <th>Tanques</th>
                                     <th>Observaciones</th>
-                                    <th></th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {ingresosPendientes.map(row => (
-                                    <tr key={row.id}>
-                                        <td>{row.fecha}</td>
-                                        <td>{row.proveedor?.nombre || row.proveedor?.razon_social || '-'}</td>
-                                        <td className="text-right">{parseFloat(row.total_litros).toFixed(2)}</td>
-                                        <td>
-                                            {(row.detalles || []).map((d, i) => (
-                                                <span key={i}>
-                                                    {d.tanque?.nombre}
-                                                    {i < row.detalles.length - 1 ? ', ' : ''}
-                                                </span>
-                                            ))}
-                                        </td>
-                                        <td>
-                                            {row._offlinePending ? (
-                                                <span style={{ color: '#6366f1' }}>☁️ Creado offline</span>
-                                            ) : (
-                                                row.observaciones || '-'
-                                            )}
-                                        </td>
-                                        <td>
-                                            <DSButton
-                                                size="sm"
-                                                variant="primary"
-                                                icon={<Truck size={16} />}
-                                                onClick={() => openRecepcionar(row)}
-                                            >
-                                                Recepcionar
-                                            </DSButton>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {ingresos.map(row => {
+                                    const isPending = row.estado === 'PENDIENTE';
+                                    return (
+                                        <tr key={row.id} className={!isPending ? 'diesel-row-finished' : ''}>
+                                            <td>{row.fecha}</td>
+                                            <td>{row.proveedor?.nombre || row.proveedor?.razon_social || '-'}</td>
+                                            <td className="text-right">{parseFloat(row.total_litros).toFixed(2)}</td>
+                                            <td>
+                                                {(row.detalles || []).map((d, i) => (
+                                                    <span key={i}>
+                                                        {d.tanque?.nombre}
+                                                        {i < row.detalles.length - 1 ? ', ' : ''}
+                                                    </span>
+                                                ))}
+                                            </td>
+                                            <td>
+                                                {row._offlinePending ? (
+                                                    <span style={{ color: '#6366f1' }}>☁️ Creado offline</span>
+                                                ) : (
+                                                    row.observaciones || '-'
+                                                )}
+                                            </td>
+                                            <td>
+                                                <DSBadge variant={isPending ? 'warning' : 'success'}>
+                                                    {isPending ? 'Pendiente' : 'Finalizado'}
+                                                </DSBadge>
+                                            </td>
+                                            <td>
+                                                {isPending && (
+                                                    <SecuredButton
+                                                        securityId="recepcion.procesar"
+                                                        securityDesc="Procesar Recepción de Combustible"
+                                                        size="sm"
+                                                        variant="primary"
+                                                        icon={<Truck size={16} />}
+                                                        onClick={() => openRecepcionar(row)}
+                                                    >
+                                                        Recepcionar
+                                                    </SecuredButton>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     )}

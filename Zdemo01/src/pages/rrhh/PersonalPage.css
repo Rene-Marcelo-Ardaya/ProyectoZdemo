@@ -105,4 +105,13 @@
     background: var(--ds-codeBg, rgba(0, 0, 0, 0.1));
     border-radius: 4px;
     color: var(--ds-accent);
+    color: var(--ds-accent);
+}
+
+@media (max-width: 768px) {
+    .personal-form__row {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
 }

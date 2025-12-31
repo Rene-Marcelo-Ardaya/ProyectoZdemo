@@ -121,9 +121,13 @@
    ============================================ */
 .ds-modal__body {
     flex: 1;
+    min-height: 0;
+    /* Critical for flex scrolling */
     padding: 16px;
     background: var(--ds-surfaceBg, #f5f7fb);
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Ensure smooth scrolling on all devices */
 }
 
 .ds-modal__body--flush {
@@ -204,12 +208,62 @@
 }
 
 @media (max-width: 768px) {
+    .ds-modal-overlay {
+        padding-top: 0;
+        align-items: center;
+        /* Center on mobile */
+        padding: 16px;
+        /* Safe area padding */
+    }
+
     .ds-modal {
-        min-width: 90vw;
-        max-height: 95vh;
+        min-width: 0;
+        width: 94%;
+        height: 80dvh;
+        /* Slightly smaller to be safe */
+        max-height: none;
+        display: flex;
+        flex-direction: column;
+        border-radius: 12px;
+        overflow: hidden;
+        margin: auto;
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .ds-modal__header {
+        flex-shrink: 0;
+        z-index: 2;
+        /* Header above body */
+        position: relative;
+    }
+
+    /* Force body to scroll */
+    .ds-modal__body {
+        flex: 1;
+        /* Fill space */
+        min-height: 0;
+        height: auto;
+        overflow-y: scroll !important;
+        /* Force scrollbar */
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+        /* Enable touch scroll */
+        padding-bottom: 80px;
+        /* Extra padding */
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Ensure footer stays on top */
+    .ds-modal__footer {
+        position: relative;
+        z-index: 10;
+        flex-shrink: 0;
+        background: var(--ds-primaryBg, #f5f8fc);
+        border-top: 1px solid var(--ds-surfaceBorder);
     }
 
     .ds-modal-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
     }
 }

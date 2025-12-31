@@ -22,7 +22,25 @@ class DieselIngresoController extends Controller
         $query = Ingreso::with(['proveedor', 'tipoPago', 'usuario', 'detalles.tanque'])
             ->recientes();
 
-        // Filtro por estado
+        $userId = Auth::id() ?? 1;
+
+        // SEGURIDAD: Si no es SuperAdmin, filtrar por tanques asignados
+        if ($userId !== 1) {
+            $personal = \App\Models\Personal::where('user_id', $userId)->first();
+            if ($personal) {
+                $tanquesIds = $personal->tanques()->pluck('d_tanques.id')->toArray();
+                
+                // Mostrar solo ingresos donde participe al menos uno de sus tanques asignados
+                $query->whereHas('detalles', function ($q) use ($tanquesIds) {
+                    $q->whereIn('d_tanque_id', $tanquesIds);
+                });
+            } else {
+                // Si no tiene personal asociado, no ve nada (excepto si es admin, ya manejado arriba)
+                return response()->json(['success' => true, 'data' => []]);
+            }
+        }
+
+        // Filtro por estado (opcional, si el front lo envía)
         if ($request->has('estado') && $request->estado) {
             $query->where('estado', $request->estado);
         }
@@ -51,6 +69,11 @@ class DieselIngresoController extends Controller
         if ($request->has('fecha_fin') && $request->fecha_fin) {
             $query->where('fecha', '<=', $request->fecha_fin);
         }
+
+        // ORDENAMIENTO: Pendientes primero, luego por fecha descendente
+        $query->orderByRaw("CASE WHEN estado = 'PENDIENTE' THEN 0 ELSE 1 END")
+              ->orderBy('fecha', 'desc')
+              ->orderBy('id', 'desc');
 
         return response()->json([
             'success' => true,
@@ -209,6 +232,35 @@ class DieselIngresoController extends Controller
         ]);
 
         $userId = Auth::id() ?? 1;
+
+        // VALIDACIÓN DE PERSONAL Y TANQUES
+        // Si no es el admin principal (ID 1), verificar asignación de tanques
+        if ($userId !== 1) {
+            $personal = \App\Models\Personal::where('user_id', $userId)->first();
+
+            if (!$personal) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no vinculado a personal. No tiene permisos para recepcionar.'
+                ], 403);
+            }
+
+            // Obtener IDs de tanques involucrados en este ingreso
+            $tanquesInvolucrados = $ingreso->detalles->pluck('d_tanque_id')->unique();
+            
+            // Obtener IDs de tanques autorizados para este personal
+            $tanquesAutorizados = $personal->tanques()->pluck('d_tanques.id')->toArray();
+
+            // Verificar si hay algún tanque no autorizado
+            $noAutorizados = $tanquesInvolucrados->diff($tanquesAutorizados);
+
+            if ($noAutorizados->count() > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tiene autorización para operar los tanques involucrados en este ingreso.'
+                ], 403);
+            }
+        }
         $tipoIngreso = TipoMovimiento::where('nombre', 'INGRESO')->first();
 
         if (!$tipoIngreso) {

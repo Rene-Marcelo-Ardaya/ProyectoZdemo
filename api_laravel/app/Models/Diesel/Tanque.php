@@ -43,6 +43,11 @@ class Tanque extends Model
         return $this->belongsTo(UbicacionFisica::class, 'd_ubicacion_fisica_id');
     }
 
+    public function personal(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(\App\Models\Personal::class, 'd_tanque_personal', 'd_tanque_id', 'personal_id');
+    }
+
     // =============================================
     // SCOPES
     // =============================================

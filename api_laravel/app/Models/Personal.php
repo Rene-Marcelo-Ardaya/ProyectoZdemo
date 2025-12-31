@@ -60,6 +60,14 @@ class Personal extends Model
     }
 
     /**
+     * Tanques asignados a este personal
+     */
+    public function tanques(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(\App\Models\Diesel\Tanque::class, 'd_tanque_personal', 'personal_id', 'd_tanque_id');
+    }
+
+    /**
      * Nombre completo del empleado
      */
     public function getNombreCompletoAttribute(): string

@@ -29,6 +29,7 @@ use App\Http\Controllers\DieselIngresoController;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/config/public', [SettingController::class, 'getPublic']); // Configuración pública para branding
+Route::get('/config/branding/{filename}', [SettingController::class, 'getBrandingImage']); // Servir imágenes de branding vía API
 Route::get('/diesel/ingresos/{id}/foto', [DieselIngresoController::class, 'getFoto']); // Foto de recepción (acceso directo para <img>)
 
 // Rutas protegidas
@@ -147,6 +148,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::put('/{id}', [DieselTanqueController::class, 'update']);
             Route::patch('/{id}/toggle', [DieselTanqueController::class, 'toggleActivo']);
             Route::patch('/{id}/adjust-stock', [DieselTanqueController::class, 'adjustStock']);
+            
+            // Asignación de personal
+            Route::get('/{id}/personal', [DieselTanqueController::class, 'getPersonal']);
+            Route::post('/{id}/personal', [DieselTanqueController::class, 'assignPersonal']);
         });
 
         // ==================== MÁQUINAS ====================

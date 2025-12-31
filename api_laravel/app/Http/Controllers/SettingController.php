@@ -169,4 +169,21 @@ class SettingController extends Controller
             'message' => 'Imagen eliminada correctamente'
         ]);
     }
+
+    /**
+     * Servir imagen de branding vía API (alternativa a storage link)
+     */
+    public function getBrandingImage($filename)
+    {
+        $path = storage_path('app/public/branding/' . $filename);
+
+        if (!file_exists($path)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Archivo no encontrado'
+            ], 404);
+        }
+
+        return response()->file($path);
+    }
 }

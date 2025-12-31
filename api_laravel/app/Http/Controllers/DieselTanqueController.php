@@ -283,4 +283,43 @@ class DieselTanqueController extends Controller
             'data' => $tanque
         ]);
     }
+
+    /**
+     * Obtener personal asignado a un tanque
+     */
+    public function getPersonal($id): JsonResponse
+    {
+        $tanque = Tanque::find($id);
+        if (!$tanque) {
+            return response()->json(['success' => false, 'error' => 'Tanque no encontrado'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $tanque->personal
+        ]);
+    }
+
+    /**
+     * Asignar personal a un tanque
+     */
+    public function assignPersonal(Request $request, $id): JsonResponse
+    {
+        $tanque = Tanque::find($id);
+        if (!$tanque) {
+            return response()->json(['success' => false, 'error' => 'Tanque no encontrado'], 404);
+        }
+
+        $request->validate([
+            'personal_ids' => 'present|array',
+            'personal_ids.*' => 'exists:personal,id'
+        ]);
+
+        $tanque->personal()->sync($request->personal_ids);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Personal asignado correctamente'
+        ]);
+    }
 }

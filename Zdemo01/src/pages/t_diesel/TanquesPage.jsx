@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Container, Plus, Pencil, Power, Search, Truck, Factory, MapPin, AlertTriangle, Droplets, Upload } from 'lucide-react';
+import { Container, Plus, Pencil, Power, Search, Truck, Factory, MapPin, AlertTriangle, Droplets, Upload, Users } from 'lucide-react';
 import {
     getTanques,
     getTanque,
@@ -8,8 +8,12 @@ import {
     toggleTanque,
     comboUbicaciones,
     adjustStock,
-    createTanquesBulk
+    createTanquesBulk,
+    getTanquePersonal,
+    assignTanquePersonal
 } from '../../services/dieselService';
+
+import { getPersonal } from '../../services/personalService';
 
 import {
     DSPage,
@@ -59,7 +63,7 @@ function TanqueGauge({ nivel, capacidad }) {
 // =============================================
 // COMPONENTE: Tarjeta de Tanque
 // =============================================
-function TanqueCard({ tanque, onEdit, onToggle, onAdjustStock }) {
+function TanqueCard({ tanque, onEdit, onToggle, onAdjustStock, onAssignPersonal }) {
     const esMovil = tanque.tipo === 'MOVIL';
     const porcentaje = tanque.capacidad_maxima > 0
         ? (tanque.stock_actual / tanque.capacidad_maxima) * 100
@@ -123,6 +127,17 @@ function TanqueCard({ tanque, onEdit, onToggle, onAdjustStock }) {
                     />
                     <SecuredButton
                         securityId="tanques.editar"
+                        securityDesc="Asignar Personal"
+                        size="sm"
+                        variant="secondary"
+                        iconOnly
+                        icon={<Users size={14} />}
+                        onClick={() => onAssignPersonal(tanque)}
+                        title="Asignar Personal"
+                        style={{ marginRight: '0.25rem' }}
+                    />
+                    <SecuredButton
+                        securityId="tanques.editar"
                         securityDesc="Editar tanque"
                         size="sm"
                         iconOnly
@@ -143,6 +158,107 @@ function TanqueCard({ tanque, onEdit, onToggle, onAdjustStock }) {
                 </div>
             </div>
         </div>
+    );
+}
+
+// =============================================
+// COMPONENTE: Modal Asignación Personal
+// =============================================
+function TanquePersonalModal({ isOpen, onClose, tanque, onSave, loading }) {
+    const [personalList, setPersonalList] = useState([]);
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [loadingData, setLoadingData] = useState(false);
+
+    useEffect(() => {
+        if (isOpen && tanque) {
+            loadData();
+        }
+    }, [isOpen, tanque]);
+
+    const loadData = async () => {
+        setLoadingData(true);
+        try {
+            const [allPersonal, assigned] = await Promise.all([
+                getPersonal(),
+                getTanquePersonal(tanque.id)
+            ]);
+
+            setPersonalList(allPersonal || []);
+            const assignedIds = (assigned.data || []).map(p => p.id);
+            setSelectedIds(assignedIds);
+        } catch (error) {
+            console.error('Error loading personal data', error);
+        } finally {
+            setLoadingData(false);
+        }
+    };
+
+    const toggleSelection = (id) => {
+        setSelectedIds(prev =>
+            prev.includes(id)
+                ? prev.filter(pId => pId !== id)
+                : [...prev, id]
+        );
+    };
+
+    const filteredPersonal = personalList.filter(p => {
+        const nombreCompleto = `${p.nombre} ${p.apellido_paterno} ${p.apellido_materno || ''}`.toLowerCase();
+        return nombreCompleto.includes(searchTerm.toLowerCase());
+    });
+
+    return (
+        <DSModal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={`Asignar Personal - ${tanque?.nombre}`}
+            size="md"
+            footer={
+                <>
+                    <DSButton onClick={onClose} disabled={loading}>Cancelar</DSButton>
+                    <DSButton variant="primary" onClick={() => onSave(selectedIds)} disabled={loading || loadingData} loading={loading}>
+                        Guardar Asignación
+                    </DSButton>
+                </>
+            }
+        >
+            <DSModalSection>
+                <div className="tanques-search" style={{ marginBottom: '1rem' }}>
+                    <Search size={16} />
+                    <input
+                        type="text"
+                        placeholder="Buscar personal..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="ds-field__control"
+                    />
+                </div>
+
+                {loadingData ? (
+                    <DSLoading text="Cargando personal..." />
+                ) : (
+                    <div className="personal-list" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                        {filteredPersonal.map(p => (
+                            <label key={p.id} className="personal-item" style={{ display: 'flex', alignItems: 'center', padding: '0.5rem', borderBottom: '1px solid #eee', cursor: 'pointer' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={selectedIds.includes(p.id)}
+                                    onChange={() => toggleSelection(p.id)}
+                                    style={{ marginRight: '0.75rem' }}
+                                />
+                                <div>
+                                    <div style={{ fontWeight: 500 }}>{p.nombre} {p.apellido_paterno} {p.apellido_materno}</div>
+                                    <div style={{ fontSize: '0.8rem', color: '#666' }}>{p.ci} - {p.cargo?.nombre || 'Sin cargo'}</div>
+                                </div>
+                            </label>
+                        ))}
+                        {filteredPersonal.length === 0 && (
+                            <div style={{ textAlign: 'center', padding: '1rem', color: '#666' }}>No se encontraron resultados</div>
+                        )}
+                    </div>
+                )}
+            </DSModalSection>
+        </DSModal>
     );
 }
 
@@ -237,11 +353,13 @@ export function TanquesPage() {
     const [modalOpen, setModalOpen] = useState(false);
     const [stockModalOpen, setStockModalOpen] = useState(false);
     const [bulkModalOpen, setBulkModalOpen] = useState(false);
+    const [personalModalOpen, setPersonalModalOpen] = useState(false);
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState(null);
     const [formSuccess, setFormSuccess] = useState(null);
     const [editingItem, setEditingItem] = useState(null);
     const [stockItem, setStockItem] = useState(null);
+    const [assigningTanque, setAssigningTanque] = useState(null);
 
     const [form, setForm] = useState({
         nombre: '',
@@ -306,13 +424,39 @@ export function TanquesPage() {
         setStockModalOpen(true);
     };
 
+
+
+    const openAssignPersonal = (tanque) => {
+        setAssigningTanque(tanque);
+        setPersonalModalOpen(true);
+    };
+
     const closeModal = () => {
         setModalOpen(false);
         setStockModalOpen(false);
         setBulkModalOpen(false);
+        setPersonalModalOpen(false);
+        setAssigningTanque(null);
         resetForm();
         setNewStock('');
         setStockItem(null);
+    };
+
+    const handleSavePersonal = async (selectedIds) => {
+        setSaving(true);
+        try {
+            const result = await assignTanquePersonal(assigningTanque.id, selectedIds);
+            if (result.success) {
+                setFormSuccess('Personal asignado correctamente');
+                closeModal();
+            } else {
+                setFormError('Error al asignar personal');
+            }
+        } catch (error) {
+            setFormError('Error de conexión');
+        } finally {
+            setSaving(false);
+        }
     };
 
     const handleChange = (field) => (e) => {
@@ -551,6 +695,7 @@ export function TanquesPage() {
                                             onEdit={openEdit}
                                             onToggle={handleToggle}
                                             onAdjustStock={openStockAdjust}
+                                            onAssignPersonal={openAssignPersonal}
                                         />
                                     ))}
                                 </div>
@@ -584,6 +729,7 @@ export function TanquesPage() {
                                             onEdit={openEdit}
                                             onToggle={handleToggle}
                                             onAdjustStock={openStockAdjust}
+                                            onAssignPersonal={openAssignPersonal}
                                         />
                                     ))}
                                 </div>
@@ -730,6 +876,14 @@ export function TanquesPage() {
                 onSuccess={handleBulkSuccess}
                 entityName="tanque"
                 initialRow={{ tipo: 'FIJO' }}
+            />
+
+            <TanquePersonalModal
+                isOpen={personalModalOpen}
+                onClose={closeModal}
+                tanque={assigningTanque}
+                onSave={handleSavePersonal}
+                loading={saving}
             />
         </DSPage>
     );

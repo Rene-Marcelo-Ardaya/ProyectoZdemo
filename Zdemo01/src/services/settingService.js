@@ -160,6 +160,13 @@ export async function deleteSettingImage(key) {
 export function getImageUrl(path) {
     if (!path) return null;
     if (path.startsWith('http')) return path;
+
+    // Si es imagen de branding (logo, favicon, etc.), usar endpoint API
+    if (path.startsWith('branding/')) {
+        const filename = path.split('/').pop();
+        return `${CONFIG.API_URL}/config/branding/${filename}`;
+    }
+
     return `${CONFIG.API_URL.replace('/api', '')}/storage/${path}`;
 }
 

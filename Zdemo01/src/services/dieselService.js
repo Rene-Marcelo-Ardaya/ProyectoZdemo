@@ -377,6 +377,23 @@ export async function createTanquesBulk(tanques) {
 }
 
 // ============================================
+// ASIGNACIÓN PERSONAL - TANQUES
+// ============================================
+export async function getTanquePersonal(tanqueId) {
+  const response = await authFetch(`/diesel/tanques/${tanqueId}/personal`);
+  return response.json();
+}
+
+export async function assignTanquePersonal(tanqueId, personalIds) {
+  const response = await authFetch(`/diesel/tanques/${tanqueId}/personal`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ personal_ids: personalIds })
+  });
+  return response.json();
+}
+
+// ============================================
 // MÁQUINAS
 // ============================================
 export async function getMaquinas(activos = false, divisionId = null) {
