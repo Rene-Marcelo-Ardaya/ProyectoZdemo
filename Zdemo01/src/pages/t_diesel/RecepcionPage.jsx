@@ -17,6 +17,7 @@ import {
     DSBadge,
     DSModal,
     DSFieldsGrid,
+    DSEditableGrid,
     SecuredButton,
 } from '../../ds-components';
 
@@ -143,6 +144,71 @@ export function RecepcionPage() {
     const getTanqueInfo = (tanqueId) => {
         return tanques.find(t => t.id === parseInt(tanqueId)) || null;
     };
+
+    // Columnas para el grid de recepción
+    const detalleColumns = [
+        {
+            field: 'tanque_nombre',
+            title: 'Tanque',
+            width: '20%',
+            editable: false,
+            render: (row) => <strong>{row.tanque_nombre}</strong>
+        },
+        {
+            title: 'Stock Sistema',
+            width: '15%',
+            editable: false,
+            render: (row) => {
+                const info = getTanqueInfo(row.d_tanque_id);
+                return info ? `${parseFloat(info.stock_actual).toFixed(2)} L` : '-';
+            }
+        },
+        {
+            title: 'Stock Final',
+            width: '15%',
+            editable: false,
+            render: (row) => {
+                const info = getTanqueInfo(row.d_tanque_id);
+                if (!info) return '-';
+                const stockActual = parseFloat(info.stock_actual);
+                const litrosEsperados = parseFloat(row.litros) || 0;
+                return `${(stockActual + litrosEsperados).toFixed(2)} L`;
+            }
+        },
+        {
+            field: 'inicio_digital',
+            title: 'Inicio Digital *',
+            width: '18%',
+            type: 'number',
+        },
+        {
+            field: 'final_digital',
+            title: 'Final Digital *',
+            width: '18%',
+            type: 'number',
+        },
+        {
+            title: 'Diferencia',
+            width: '14%',
+            editable: false,
+            render: (row) => {
+                const litrosEsperados = parseFloat(row.litros) || 0;
+                const inicioDigital = parseFloat(row.inicio_digital) || 0;
+                const finalDigital = parseFloat(row.final_digital) || 0;
+                const litrosRecibidos = finalDigital - inicioDigital;
+                const diferencia = litrosRecibidos - litrosEsperados;
+
+                if (!row.inicio_digital || !row.final_digital) return '-';
+
+                const color = Math.abs(diferencia) < 0.5 ? '#16a34a' : '#dc2626';
+                return (
+                    <strong style={{ color }}>
+                        {diferencia > 0 ? '+' : ''}{diferencia.toFixed(2)} L
+                    </strong>
+                );
+            }
+        }
+    ];
 
     const handleChange = (field) => (e) => {
         setForm(prev => ({ ...prev, [field]: e.target.value }));
@@ -445,87 +511,17 @@ export function RecepcionPage() {
                             />
                         </div>
 
-                        {/* Tabla de detalles */}
-                        <h4 className="diesel-view-subtitle">Registro por Tanque:</h4>
-                        <div style={{ overflowX: 'auto' }}>
-                            <table className="diesel-table">
-                                <thead>
-                                    <tr>
-                                        <th>Tanque</th>
-                                        <th>Inicio Tanque (Sistema)</th>
-                                        <th>Final</th>
-                                        <th>Inicio Tanque Digital *</th>
-                                        <th>Final Digital *</th>
-                                        <th>Diferencia</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {form.detalles.map((det, idx) => {
-                                        const tanqueInfo = getTanqueInfo(det.d_tanque_id);
-                                        const stockActual = tanqueInfo ? parseFloat(tanqueInfo.stock_actual) : 0;
-                                        const litrosEsperados = parseFloat(det.litros) || 0;
-                                        const finalEsperado = stockActual + litrosEsperados;
-
-                                        const inicioDigital = parseFloat(det.inicio_digital) || 0;
-                                        const finalDigital = parseFloat(det.final_digital) || 0;
-                                        const litrosRecibidos = finalDigital - inicioDigital;
-
-                                        const diferencia = litrosRecibidos - litrosEsperados;
-
-                                        return (
-                                            <tr key={det.id}>
-                                                <td><strong>{det.tanque_nombre}</strong></td>
-
-                                                {/* INICIO TANQUE (SISTEMA STOCK) */}
-                                                <td className="text-right" style={{ backgroundColor: '#f8f9fa' }}>
-                                                    {stockActual.toFixed(2)} L
-                                                </td>
-
-                                                {/* FINAL TANQUE (SISTEMA) */}
-                                                <td className="text-right" style={{ backgroundColor: '#f8f9fa' }}>
-                                                    {finalEsperado.toFixed(2)} L
-                                                </td>
-
-                                                {/* INICIO TANQUE DIGITAL */}
-                                                <td>
-                                                    <input
-                                                        type="number"
-                                                        step="0.01"
-                                                        className="ds-field__control"
-                                                        value={det.inicio_digital}
-                                                        onChange={(e) => handleDetalleChange(det.id, 'inicio_digital', e.target.value)}
-                                                        style={{ width: '140px' }}
-                                                    />
-                                                </td>
-
-                                                {/* FINAL TANQUE DIGITAL */}
-                                                <td>
-                                                    <input
-                                                        type="number"
-                                                        step="0.01"
-                                                        className="ds-field__control"
-                                                        value={det.final_digital}
-                                                        onChange={(e) => handleDetalleChange(det.id, 'final_digital', e.target.value)}
-                                                        style={{ width: '140px' }}
-                                                    />
-                                                </td>
-
-                                                {/* DIFERENCIA */}
-                                                <td className="text-right">
-                                                    {det.inicio_digital && det.final_digital ? (
-                                                        <strong style={{ color: Math.abs(diferencia) < 0.5 ? '#16a34a' : '#dc2626' }}>
-                                                            {diferencia > 0 ? '+' : ''}{diferencia.toFixed(2)} L
-                                                        </strong>
-                                                    ) : (
-                                                        <span>-</span>
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
+                        {/* Grid de detalles por tanque */}
+                        <div className="diesel-combo-header diesel-combo-header--section">
+                            <span className="diesel-section-title">Registro por Tanque</span>
                         </div>
+                        <DSEditableGrid
+                            columns={detalleColumns}
+                            data={form.detalles}
+                            onChange={handleDetalleChange}
+                            canRemove={false}
+                            emptyText="No hay tanques para recepcionar"
+                        />
                     </>
                 )}
             </DSModal>
