@@ -23,6 +23,7 @@ use App\Http\Controllers\DieselTipoPagoController;
 use App\Http\Controllers\DieselMotivoAjusteController;
 use App\Http\Controllers\DieselTipoMovimientoController;
 use App\Http\Controllers\DieselIngresoController;
+use App\Http\Controllers\DieselEgresoController;
 
 
 // Rutas públicas (sin autenticación)
@@ -148,7 +149,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::put('/{id}', [DieselTanqueController::class, 'update']);
             Route::patch('/{id}/toggle', [DieselTanqueController::class, 'toggleActivo']);
             Route::patch('/{id}/adjust-stock', [DieselTanqueController::class, 'adjustStock']);
-            
+
             // Asignación de personal
             Route::get('/{id}/personal', [DieselTanqueController::class, 'getPersonal']);
             Route::post('/{id}/personal', [DieselTanqueController::class, 'assignPersonal']);
@@ -217,6 +218,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::patch('/{id}/recepcionar', [DieselIngresoController::class, 'recepcionar']); // Fase 2: Surtidor (JSON)
             Route::post('/{id}/recepcionar', [DieselIngresoController::class, 'recepcionar']);  // Fase 2: Surtidor (FormData con foto)
             Route::patch('/{id}/anular', [DieselIngresoController::class, 'anular']);
+        });
+
+        // ==================== EGRESOS ====================
+        Route::prefix('egresos')->group(function () {
+            Route::get('/datos-formulario', [DieselEgresoController::class, 'getDatosFormulario']); // Datos para crear egreso
+            Route::get('/tanque/{tanqueId}/stock', [DieselEgresoController::class, 'getStockTanque']); // Stock actual de tanque
+            Route::post('/validar-pin', [DieselEgresoController::class, 'validarPin']); // Validar PIN
+            Route::get('/', [DieselEgresoController::class, 'index']);
+            Route::get('/{id}', [DieselEgresoController::class, 'show']);
+            Route::post('/', [DieselEgresoController::class, 'store']);              // Crear egreso (con PINs)
+            Route::patch('/{id}/anular', [DieselEgresoController::class, 'anular']); // Anular egreso
         });
     });
 });
