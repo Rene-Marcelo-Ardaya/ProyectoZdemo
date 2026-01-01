@@ -65,6 +65,11 @@ export default defineConfig({
   server: {
     port: 5173,
     // CORS permitido para desarrollo
-    cors: true
+    cors: true,
+    // Permitir hosts de Cloudflare Tunnel
+    allowedHosts: [
+      'localhost',
+      '.trycloudflare.com'
+    ]
   },
 })
