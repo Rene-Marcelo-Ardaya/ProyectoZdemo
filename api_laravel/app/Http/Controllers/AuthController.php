@@ -82,6 +82,7 @@ class AuthController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'roles' => $roles,
+                    'tenant_id' => $user->tenant_id,  // Para identificar Super Admin
                 ],
                 'token' => $token,
                 'menus' => $formattedMenus

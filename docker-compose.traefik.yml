@@ -1,0 +1,151 @@
+# docker-compose.traefik.yml
+# ============================================
+# Configuración de Traefik para Producción
+# ============================================
+# Usar con: docker-compose -f docker-compose.yml -f docker-compose.traefik.yml up -d
+#
+# IMPORTANTE: Antes de usar en producción:
+# 1. Cambiar "tu-dominio.com" por tu dominio real
+# 2. Cambiar "tu-email@ejemplo.com" por tu email real
+# 3. Configurar DNS wildcard: *.tu-dominio.com -> IP del servidor
+# ============================================
+
+version: '3.9'
+
+services:
+  # ============================================
+  # Traefik - Reverse Proxy & SSL
+  # ============================================
+  traefik:
+    image: traefik:v3.0
+    container_name: demoz01_traefik
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - TZ=America/La_Paz
+    command:
+      # API y Dashboard
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+      # Providers
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=demoz01_network"
+      # Entrypoints
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # Redirect HTTP -> HTTPS
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      # Let's Encrypt SSL automático
+      - "--certificatesresolvers.letsencrypt.acme.email=tu-email@ejemplo.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      # Logs
+      - "--log.level=INFO"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_certs:/letsencrypt
+    networks:
+      - demoz01_network
+    labels:
+      # Dashboard de Traefik (protegido)
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.tu-dominio.com`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      # Autenticación básica para dashboard (cambiar usuario:contraseña)
+      # Generar con: htpasswd -nb admin tu-contraseña
+      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=admin:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
+
+  # ============================================
+  # Frontend - Labels para Traefik
+  # ============================================
+  frontend:
+    labels:
+      - "traefik.enable=true"
+      # Ruta para cualquier subdominio (tenants)
+      - "traefik.http.routers.frontend.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.tu-dominio.com`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.frontend.loadbalancer.server.port=5173"
+      # Ruta para dominio principal (landing page / super-admin)
+      - "traefik.http.routers.frontend-main.rule=Host(`tu-dominio.com`) || Host(`www.tu-dominio.com`)"
+      - "traefik.http.routers.frontend-main.entrypoints=websecure"
+      - "traefik.http.routers.frontend-main.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.frontend-main.service=frontend"
+    # Remover puerto expuesto directamente (Traefik maneja todo)
+    ports: []
+
+  # ============================================
+  # API Laravel - Labels para Traefik
+  # ============================================
+  api_laravel:
+    labels:
+      - "traefik.enable=true"
+      # API para subdominios de tenants
+      - "traefik.http.routers.api.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.tu-dominio.com`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.api.loadbalancer.server.port=8000"
+      # API para dominio principal
+      - "traefik.http.routers.api-main.rule=(Host(`tu-dominio.com`) || Host(`www.tu-dominio.com`)) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api-main.entrypoints=websecure"
+      - "traefik.http.routers.api-main.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.api-main.service=api"
+    # Remover puerto expuesto directamente
+    ports: []
+
+  # ============================================
+  # Evolution API - Labels para Traefik
+  # ============================================
+  evolution_api:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.evolution.rule=Host(`evolution.tu-dominio.com`)"
+      - "traefik.http.routers.evolution.entrypoints=websecure"
+      - "traefik.http.routers.evolution.tls.certresolver=letsencrypt"
+      - "traefik.http.services.evolution.loadbalancer.server.port=8080"
+    ports: []
+
+  # ============================================
+  # n8n - Labels para Traefik
+  # ============================================
+  n8n:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.tu-dominio.com`)"
+      - "traefik.http.routers.n8n.entrypoints=websecure"
+      - "traefik.http.routers.n8n.tls.certresolver=letsencrypt"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+    ports: []
+
+  # ============================================
+  # Soketi - Labels para Traefik (WebSocket)
+  # ============================================
+  soketi:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.soketi.rule=Host(`ws.tu-dominio.com`)"
+      - "traefik.http.routers.soketi.entrypoints=websecure"
+      - "traefik.http.routers.soketi.tls.certresolver=letsencrypt"
+      - "traefik.http.services.soketi.loadbalancer.server.port=6001"
+    ports: []
+
+# ============================================
+# Volumes adicionales
+# ============================================
+volumes:
+  traefik_certs:
+    driver: local
+
+# ============================================
+# Networks (ya definida en docker-compose.yml)
+# ============================================
+networks:
+  demoz01_network:
+    external: true

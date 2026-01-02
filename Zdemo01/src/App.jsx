@@ -16,6 +16,8 @@ import { CargosPage } from './pages/rrhh/CargosPage';
 import { NivelesSeguridadPage } from './pages/sistemas/NivelesSeguridadPage';
 import { ApisConfigPage } from './pages/sistemas/ApisConfigPage';
 import { TanquesPage } from './pages/diesel/TanquesPage';
+import { SuperAdminLayout, SuperAdminDashboard, TenantsPage, PlansPage, ModulesPage, AuditLogsPage } from './pages/superadmin';
+import { Shield } from 'lucide-react';
 import { Sidebar } from './components/Sidebar'
 import { ChatWidget } from './components/ChatWidget'
 import { logout, getSession } from './services/authService'
@@ -56,6 +58,8 @@ function App() {
   const [userMenus, setUserMenus] = useState([])
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [appConfig, setAppConfig] = useState({})
+  const [superAdminMode, setSuperAdminMode] = useState(false)
+  const [superAdminPage, setSuperAdminPage] = useState('dashboard')
 
   // Verificar sesión al cargar
   useEffect(() => {
@@ -135,6 +139,25 @@ function App() {
     return <LoginPage onLoginSuccess={handleLoginSuccess} />
   }
 
+  // Panel Super Admin
+  if (superAdminMode && userData?.tenant_id === null) {
+    return (
+      <div className="super-admin-wrapper">
+        <SuperAdminLayout
+          activePage={superAdminPage}
+          onNavigate={setSuperAdminPage}
+          onBack={() => setSuperAdminMode(false)}
+        >
+          {superAdminPage === 'dashboard' && <SuperAdminDashboard />}
+          {superAdminPage === 'tenants' && <TenantsPage />}
+          {superAdminPage === 'plans' && <PlansPage />}
+          {superAdminPage === 'modules' && <ModulesPage />}
+          {superAdminPage === 'audit-logs' && <AuditLogsPage />}
+        </SuperAdminLayout>
+      </div>
+    );
+  }
+
   const { Icon: HeaderIcon, title: headerTitle } = getHeaderConfig(activePage)
 
   return (
@@ -170,6 +193,29 @@ function App() {
               </span>
             </h1>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              {/* Botón Super Admin - solo visible si no tiene tenant_id */}
+              {userData?.tenant_id === null && (
+                <button
+                  onClick={() => setSuperAdminMode(true)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+                    color: 'white',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                  }}
+                  title="Panel Super Admin"
+                >
+                  <Shield size={14} />
+                  Admin
+                </button>
+              )}
               <span style={{ fontSize: '12px', color: 'var(--ds-secondaryText)' }}>
                 {userData?.name || userData?.email}
               </span>

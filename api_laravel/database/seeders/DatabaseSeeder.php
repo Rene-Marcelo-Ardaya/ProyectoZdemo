@@ -239,5 +239,12 @@ class DatabaseSeeder extends Seeder
 
         // Cargar configuraciones del sistema
         $this->call(SettingSeeder::class);
+
+        // ==========================================
+        // SaaS Multi-Tenant Seeders
+        // ==========================================
+        $this->call(PlansSeeder::class);
+        $this->call(ModulesSeeder::class);
+        $this->call(TenantsSeeder::class);
     }
 }

@@ -1,0 +1,452 @@
+/* TenantsPage.css - Gestión de Clientes */
+
+.tenants-page {
+  max-width: 1400px;
+}
+
+/* ============================================
+   Summary Stats
+   ============================================ */
+.tenants-summary {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.tenants-summary__item {
+  background: var(--sa-bg-secondary, #1e293b);
+  border: 1px solid var(--sa-border-color, #475569);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.2s ease;
+}
+
+.tenants-summary__item:hover {
+  border-color: var(--sa-primary-color, #3b82f6);
+}
+
+.tenants-summary__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.tenants-summary__icon--blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.tenants-summary__icon--green {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.tenants-summary__icon--yellow {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.tenants-summary__icon--red {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.tenants-summary__text {
+  display: flex;
+  flex-direction: column;
+}
+
+.tenants-summary__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--sa-text-primary, #f1f5f9);
+  line-height: 1.2;
+}
+
+.tenants-summary__label {
+  font-size: 0.75rem;
+  color: var(--sa-text-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* ============================================
+   Error Message
+   ============================================ */
+.tenants-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--sa-danger-color, #ef4444);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tenants-error p {
+  color: #f87171;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.tenants-error button {
+  background: var(--sa-danger-color, #ef4444);
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.tenants-error button:hover {
+  background: #dc2626;
+}
+
+/* ============================================
+   Actions Bar
+   ============================================ */
+.tenants-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tenants-actions-left {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.tenants-actions-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Filter Tabs */
+.tenants-filter-tabs {
+  display: flex;
+  background: var(--sa-bg-secondary, #1e293b);
+  border-radius: 8px;
+  padding: 0.25rem;
+  border: 1px solid var(--sa-border-color, #475569);
+}
+
+.tenants-filter-tab {
+  padding: 0.5rem 0.875rem;
+  background: transparent;
+  border: none;
+  color: var(--sa-text-secondary, #94a3b8);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.tenants-filter-tab:hover {
+  color: var(--sa-text-primary, #f1f5f9);
+}
+
+.tenants-filter-tab--active {
+  background: var(--sa-primary-color, #3b82f6);
+  color: white;
+}
+
+/* ============================================
+   Status & Plan Badges
+   ============================================ */
+.tenant-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.tenant-status--active {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+.tenant-status--inactive {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.tenant-status--trial {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+.tenant-plan {
+  padding: 0.375rem 0.875rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  background: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+}
+
+.tenant-plan--trial {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+.tenant-plan--basic,
+.tenant-plan--starter {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+.tenant-plan--pro,
+.tenant-plan--professional {
+  background: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+}
+
+.tenant-plan--enterprise {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+/* ============================================
+   Table Rows
+   ============================================ */
+.row--inactive {
+  opacity: 0.6;
+}
+
+.tenant-cell-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tenant-cell-name {
+  font-weight: 600;
+  color: var(--sa-text-primary, #f1f5f9);
+}
+
+.tenant-cell-domain {
+  font-size: 0.75rem;
+  color: var(--sa-text-muted, #64748b);
+  font-family: 'Monaco', 'Consolas', monospace;
+}
+
+/* ============================================
+   Action Buttons
+   ============================================ */
+.tenant-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tenant-action-btn {
+  background: var(--sa-bg-tertiary, #334155);
+  border: 1px solid var(--sa-border-color, #475569);
+  border-radius: 8px;
+  padding: 0.5rem;
+  color: var(--sa-text-secondary, #94a3b8);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tenant-action-btn:hover {
+  background: var(--sa-primary-color, #3b82f6);
+  border-color: var(--sa-primary-color, #3b82f6);
+  color: white;
+}
+
+.tenant-action-btn--warning:hover {
+  background: #f59e0b;
+  border-color: #f59e0b;
+}
+
+.tenant-action-btn--success:hover {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.tenant-action-btn--danger:hover {
+  background: var(--sa-danger-color, #ef4444);
+  border-color: var(--sa-danger-color, #ef4444);
+}
+
+/* ============================================
+   Modal Form
+   ============================================ */
+.tenant-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.tenant-form__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tenant-form__section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sa-text-secondary, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--sa-border-color, #475569);
+}
+
+.tenant-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.tenant-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tenant-form__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--sa-text-secondary, #94a3b8);
+}
+
+.tenant-form__help {
+  font-size: 0.7rem;
+  color: var(--sa-text-muted, #64748b);
+  margin: 0;
+}
+
+.tenant-form__select {
+  padding: 0.75rem;
+  background: var(--sa-bg-tertiary, #334155);
+  border: 1px solid var(--sa-border-color, #475569);
+  border-radius: 8px;
+  color: var(--sa-text-primary, #f1f5f9);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.tenant-form__select:focus {
+  outline: none;
+  border-color: var(--sa-primary-color, #3b82f6);
+}
+
+.tenant-form__options {
+  padding: 1rem;
+  background: rgba(51, 65, 85, 0.2);
+  border-radius: 10px;
+  border: 1px solid var(--sa-border-color, #475569);
+}
+
+/* Plan Preview */
+.tenant-form__plan-preview {
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.tenant-form__plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.tenant-form__plan-name {
+  font-weight: 600;
+  color: var(--sa-text-primary, #f1f5f9);
+}
+
+.tenant-form__plan-price {
+  font-weight: 600;
+  color: var(--sa-success-color, #10b981);
+}
+
+.tenant-form__plan-limits {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--sa-text-secondary, #94a3b8);
+}
+
+.tenant-form__plan-limits span {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Actions */
+.tenant-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--sa-border-color, #475569);
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 1024px) {
+  .tenants-actions-left {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tenant-form__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .tenants-summary {
+    flex-direction: column;
+  }
+
+  .tenants-actions {
+    flex-direction: column;
+  }
+
+  .data-table-container {
+    overflow-x: auto;
+  }
+}
+
+/* ============================================
+   Spin Animation
+   ============================================ */
+.spin-animation {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

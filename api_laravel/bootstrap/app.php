@@ -17,6 +17,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'api/*',
         ]);
+
+        // Registrar alias de middlewares personalizados
+        $middleware->alias([
+            'tenant' => \App\Http\Middleware\TenantMiddleware::class,
+            'super-admin' => \App\Http\Middleware\SuperAdminMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -3,17 +3,19 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens, SoftDeletes;
+    use HasFactory, Notifiable, HasApiTokens, SoftDeletes, BelongsToTenant;
 
     /**
      * The attributes that are mass assignable.
@@ -25,6 +27,7 @@ class User extends Authenticatable
         'email',
         'password',
         'is_active',
+        'tenant_id',
     ];
 
     /**
@@ -91,5 +94,29 @@ class User extends Authenticatable
         return $this->belongsToMany(Persona::class, 'personal_user', 'user_id', 'personal_id')
             ->withTimestamps();
     }
-}
 
+    /**
+     * Verificar si es Super Admin (sin tenant_id y con rol super-admin)
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->tenant_id === null && 
+               $this->roles()->where('slug', 'super-admin')->exists();
+    }
+
+    /**
+     * Verificar si pertenece a un tenant
+     */
+    public function hasTenant(): bool
+    {
+        return $this->tenant_id !== null;
+    }
+
+    /**
+     * Obtener el tenant del usuario
+     */
+    public function getTenant(): ?Tenant
+    {
+        return $this->tenant;
+    }
+}

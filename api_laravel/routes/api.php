@@ -111,7 +111,57 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/alertas/{id}/test', [\App\Http\Controllers\Diesel\AlertConfigurationController::class, 'testAlert']);
         Route::apiResource('alertas', \App\Http\Controllers\Diesel\AlertConfigurationController::class);
     });
+
+    // =====================================================
+    // INSTANCIAS DE WHATSAPP (Multi-tenant)
+    // =====================================================
+    Route::prefix('whatsapp-instances')->group(function () {
+        Route::get('/', [\App\Http\Controllers\WhatsappInstanceController::class, 'index']);
+        Route::post('/', [\App\Http\Controllers\WhatsappInstanceController::class, 'store']);
+        Route::get('/{id}', [\App\Http\Controllers\WhatsappInstanceController::class, 'show']);
+        Route::delete('/{id}', [\App\Http\Controllers\WhatsappInstanceController::class, 'destroy']);
+        Route::post('/{id}/qrcode', [\App\Http\Controllers\WhatsappInstanceController::class, 'getQRCode']);
+        Route::post('/{id}/logout', [\App\Http\Controllers\WhatsappInstanceController::class, 'logout']);
+        Route::post('/{id}/restart', [\App\Http\Controllers\WhatsappInstanceController::class, 'restart']);
+    });
+
+    // =====================================================
+    // RUTAS DE SUPER ADMIN (Solo usuarios sin tenant_id)
+    // =====================================================
+    Route::prefix('super-admin')->middleware('super-admin')->group(function () {
+        // Dashboard Stats
+        Route::get('/stats', [\App\Http\Controllers\SuperAdmin\TenantController::class, 'stats']);
+        
+        // Tenants CRUD
+        Route::get('/tenants', [\App\Http\Controllers\SuperAdmin\TenantController::class, 'index']);
+        Route::post('/tenants', [\App\Http\Controllers\SuperAdmin\TenantController::class, 'store']);
+        Route::get('/tenants/{id}', [\App\Http\Controllers\SuperAdmin\TenantController::class, 'show']);
+        Route::put('/tenants/{id}', [\App\Http\Controllers\SuperAdmin\TenantController::class, 'update']);
+        Route::delete('/tenants/{id}', [\App\Http\Controllers\SuperAdmin\TenantController::class, 'destroy']);
+        
+        // Planes CRUD
+        Route::get('/plans', [\App\Http\Controllers\SuperAdmin\PlanController::class, 'index']);
+        Route::post('/plans', [\App\Http\Controllers\SuperAdmin\PlanController::class, 'store']);
+        Route::get('/plans/{id}', [\App\Http\Controllers\SuperAdmin\PlanController::class, 'show']);
+        Route::put('/plans/{id}', [\App\Http\Controllers\SuperAdmin\PlanController::class, 'update']);
+        Route::patch('/plans/{id}/toggle-active', [\App\Http\Controllers\SuperAdmin\PlanController::class, 'toggleActive']);
+        Route::delete('/plans/{id}', [\App\Http\Controllers\SuperAdmin\PlanController::class, 'destroy']);
+        
+        // Módulos CRUD
+        Route::get('/modules', [\App\Http\Controllers\SuperAdmin\ModuleController::class, 'index']);
+        Route::post('/modules', [\App\Http\Controllers\SuperAdmin\ModuleController::class, 'store']);
+        Route::get('/modules/{id}', [\App\Http\Controllers\SuperAdmin\ModuleController::class, 'show']);
+        Route::put('/modules/{id}', [\App\Http\Controllers\SuperAdmin\ModuleController::class, 'update']);
+        Route::patch('/modules/{id}/toggle-active', [\App\Http\Controllers\SuperAdmin\ModuleController::class, 'toggleActive']);
+        Route::delete('/modules/{id}', [\App\Http\Controllers\SuperAdmin\ModuleController::class, 'destroy']);
+        
+        // Audit Logs
+        Route::get('/audit-logs', [\App\Http\Controllers\SuperAdmin\AuditLogController::class, 'index']);
+        Route::get('/audit-logs/stats', [\App\Http\Controllers\SuperAdmin\AuditLogController::class, 'stats']);
+        Route::get('/audit-logs/{id}', [\App\Http\Controllers\SuperAdmin\AuditLogController::class, 'show']);
+    });
 });
 
 // Ruta pública para credenciales no secretas (app_key, cluster para frontend)
 Route::get('/api-credentials/{provider}/public', [\App\Http\Controllers\ApiCredentialController::class, 'getPublicCredentials']);
+
